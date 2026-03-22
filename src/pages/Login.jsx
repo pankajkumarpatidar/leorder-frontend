@@ -1,47 +1,156 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
-function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function Login() {
+  const [isSignup, setIsSignup] = useState(false);
 
-  const handleLogin = async () => {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: ""
+  });
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const API = process.env.REACT_APP_API;
+
+  const handleSubmit = async () => {
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        { email, password }
-      );
+      const url = isSignup
+        ? `${API}/api/auth/register`
+        : `${API}/api/auth/login`;
 
-      localStorage.setItem("token", res.data.token);
+      const res = await axios.post(url, form);
 
-      alert("Login Success");
-
-      window.location.href = "/dashboard";
+      if (res.data.success) {
+        if (!isSignup) {
+          localStorage.setItem("token", res.data.token);
+          localStorage.setItem("role", res.data.user.role);
+          window.location.href = "/dashboard";
+        } else {
+          alert("Signup successful! अब login करो");
+          setIsSignup(false);
+        }
+      } else {
+        alert(res.data.message);
+      }
     } catch (err) {
-      alert("Login Failed");
+      alert("Error");
     }
   };
 
   return (
-    <div style={{ maxWidth: 300, margin: "100px auto", display: "flex", flexDirection: "column", gap: 10 }}>
-      <h2>Login</h2>
+    <div style={styles.container}>
+      <div style={styles.card}>
+        
+        <h2 style={styles.title}>
+          {isSignup ? "Create Account" : "Welcome Back"}
+        </h2>
 
-      <input
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+        {isSignup && (
+          <input
+            name="name"
+            placeholder="Full Name"
+            style={styles.input}
+            onChange={handleChange}
+          />
+        )}
 
-      <input
-        placeholder="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <input
+          name="email"
+          placeholder="Email"
+          style={styles.input}
+          onChange={handleChange}
+        />
 
-      <button onClick={handleLogin}>Login</button>
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          style={styles.input}
+          onChange={handleChange}
+        />
+
+        <button style={styles.button} onClick={handleSubmit}>
+          {isSignup ? "Sign Up" : "Login"}
+        </button>
+
+        <p style={styles.toggle}>
+          {isSignup ? "Already have account?" : "New here?"}
+          <span
+            style={styles.link}
+            onClick={() => setIsSignup(!isSignup)}
+          >
+            {isSignup ? " Login" : " Create Account"}
+          </span>
+        </p>
+      </div>
     </div>
   );
 }
 
-export default Login;
+
+// 🎨 STYLES
+const styles = {
+  container: {
+    height: "100vh",
+    background: "linear-gradient(135deg, #3b82f6, #6366f1)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+
+  card: {
+    width: "90%",
+    maxWidth: 380,
+    padding: 25,
+    borderRadius: 20,
+    background: "rgba(255,255,255,0.15)",
+    backdropFilter: "blur(15px)",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+    display: "flex",
+    flexDirection: "column"
+  },
+
+  title: {
+    textAlign: "center",
+    color: "#fff",
+    marginBottom: 20
+  },
+
+  input: {
+    padding: 12,
+    marginBottom: 12,
+    borderRadius: 10,
+    border: "none",
+    outline: "none",
+    fontSize: 14
+  },
+
+  button: {
+    padding: 12,
+    borderRadius: 10,
+    border: "none",
+    background: "#fff",
+    color: "#333",
+    fontWeight: "bold",
+    cursor: "pointer",
+    marginTop: 10
+  },
+
+  toggle: {
+    marginTop: 15,
+    textAlign: "center",
+    color: "#fff",
+    fontSize: 14
+  },
+
+  link: {
+    marginLeft: 5,
+    fontWeight: "bold",
+    cursor: "pointer",
+    color: "#fff"
+  }
+};
