@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-export default function Login() {
+export default function Signup() {
   const [form, setForm] = useState({
+    name: "",
     email: "",
     password: ""
   });
@@ -15,14 +16,11 @@ export default function Login() {
 
   const handleSubmit = async () => {
     try {
-      const res = await axios.post(`${API}/api/auth/login`, form);
+      const res = await axios.post(`${API}/api/auth/register`, form);
 
       if (res.data.success) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("role", res.data.user.role);
-
-        alert("Login Success ✅");
-        window.location.href = "/dashboard";
+        alert("✅ Account Created Successfully!");
+        window.location.href = "/login";
       } else {
         alert(res.data.message);
       }
@@ -37,7 +35,14 @@ export default function Login() {
     <div style={styles.container}>
       <div style={styles.card}>
         
-        <h2 style={styles.title}>Welcome Back</h2>
+        <h2 style={styles.title}>Create Account</h2>
+
+        <input
+          name="name"
+          placeholder="Full Name"
+          style={styles.input}
+          onChange={handleChange}
+        />
 
         <input
           name="email"
@@ -55,26 +60,26 @@ export default function Login() {
         />
 
         <button style={styles.button} onClick={handleSubmit}>
-          Login
+          Sign Up
         </button>
 
         <p style={styles.toggle}>
-          New here?
+          Already have account?
           <span
             style={styles.link}
-            onClick={() => (window.location.href = "/signup")}
+            onClick={() => (window.location.href = "/login")}
           >
-            Create Account
+            Login
           </span>
         </p>
 
       </div>
     </div>
   );
-};
+}
 
 
-// 🎨 SAME STYLE (reuse)
+// 🎨 SAME STYLES
 const styles = {
   container: {
     height: "100vh",
