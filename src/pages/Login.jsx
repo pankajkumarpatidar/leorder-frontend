@@ -25,19 +25,21 @@ export default function Login() {
       const res = await axios.post(url, form);
 
       if (res.data.success) {
-        if (!isSignup) {
+        if (isSignup) {
+          alert("Account Created ✅ अब login करो");
+          setIsSignup(false);
+        } else {
           localStorage.setItem("token", res.data.token);
           localStorage.setItem("role", res.data.user.role);
           window.location.href = "/dashboard";
-        } else {
-          alert("Signup successful! अब login करो");
-          setIsSignup(false);
         }
       } else {
         alert(res.data.message);
       }
+
     } catch (err) {
-      alert("Error");
+      console.log("ERROR 👉", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Server Error");
     }
   };
 
@@ -86,6 +88,7 @@ export default function Login() {
             {isSignup ? " Login" : " Create Account"}
           </span>
         </p>
+
       </div>
     </div>
   );
