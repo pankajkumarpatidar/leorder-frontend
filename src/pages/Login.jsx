@@ -14,7 +14,7 @@ export default function Login() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const API = process.env.REACT_APP_API;
+  const API = "https://leorder-api.onrender.com";
 
   const handleSubmit = async () => {
     try {
