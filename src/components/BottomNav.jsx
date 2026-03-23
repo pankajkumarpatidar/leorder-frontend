@@ -5,47 +5,39 @@ export default function BottomNav() {
   const location = useLocation();
 
   const items = [
-    { name: "Home", path: "/dashboard", icon: "🏠" },
-    { name: "Orders", path: "/orders", icon: "📦" },
-    { name: "Price", path: "/price", icon: "💰" },
-    { name: "Profile", path: "/profile", icon: "👤" }
+    { path: "/dashboard", icon: "🏠" },
+    { path: "/orders", icon: "📦" },
+    { path: "/price", icon: "💰" },
+    { path: "/profile", icon: "👤" }
   ];
 
   const handleNav = (path) => {
-    // 🔥 FIX 1: blur input (remove keyboard + google popup)
     if (document.activeElement) {
       document.activeElement.blur();
     }
-
-    // 🔥 FIX 2: body focus
     document.body.focus();
-
-    // 🔥 FIX 3: scroll top
-    window.scrollTo(0, 0);
-
     navigate(path);
   };
 
   return (
     <>
-      {/* 🧊 Glass Floating Nav */}
-      <div style={styles.container}>
+      {/* 🧊 Floating Glass Nav */}
+      <div style={styles.nav}>
         {items.map((item, i) => (
           <div
             key={i}
             onClick={() => handleNav(item.path)}
             style={{
-              ...styles.item,
+              ...styles.iconBox,
               ...(location.pathname === item.path && styles.active)
             }}
           >
-            <div style={styles.icon}>{item.icon}</div>
-            <small>{item.name}</small>
+            {item.icon}
           </div>
         ))}
       </div>
 
-      {/* ➕ Floating Button */}
+      {/* 🔥 Center FAB */}
       <div style={styles.fab} onClick={() => handleNav("/order")}>
         +
       </div>
@@ -54,58 +46,61 @@ export default function BottomNav() {
 }
 
 const styles = {
-  container: {
+  nav: {
     position: "fixed",
     bottom: 20,
     left: "50%",
     transform: "translateX(-50%)",
-    width: "90%",
+    width: "85%",
     maxWidth: 420,
-    height: 70,
-    borderRadius: 25,
+    height: 65,
+    borderRadius: 40,
     display: "flex",
     justifyContent: "space-around",
     alignItems: "center",
 
     background: "rgba(255,255,255,0.6)",
-    backdropFilter: "blur(15px)",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+    backdropFilter: "blur(18px)",
+    boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
     zIndex: 100
   },
 
-  item: {
-    textAlign: "center",
+  iconBox: {
+    fontSize: 22,
     color: "#555",
     cursor: "pointer",
-    fontSize: 13,
-    transition: "0.2s"
-  },
-
-  icon: {
-    fontSize: 20
+    transition: "0.3s",
+    width: 40,
+    height: 40,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 12
   },
 
   active: {
+    background: "rgba(37,99,235,0.1)",
     color: "#2563eb",
-    transform: "scale(1.1)"
+    transform: "scale(1.2)"
   },
 
   fab: {
     position: "fixed",
-    bottom: 55,
+    bottom: 50,
     left: "50%",
     transform: "translateX(-50%)",
-    width: 60,
-    height: 60,
+    width: 65,
+    height: 65,
     borderRadius: "50%",
     background: "linear-gradient(135deg,#2563eb,#4f46e5)",
     color: "#fff",
-    fontSize: 30,
+    fontSize: 32,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
+    boxShadow: "0 15px 30px rgba(0,0,0,0.3)",
     cursor: "pointer",
-    zIndex: 200
+    zIndex: 200,
+    border: "4px solid white" // 🔥 floating cut effect
   }
 };
