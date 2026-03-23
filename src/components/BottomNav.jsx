@@ -47,7 +47,7 @@ export default function BottomNav() {
         <div style={{ width: 60 }} />
 
         <div
-          style={styles.iconBox(location.pathname === "/price")}
+          style={styles.iconBox(location.pathname === "/PriceList")}
           onClick={() => handleNav("/price")}
         >
           <IndianRupee size={22} />
