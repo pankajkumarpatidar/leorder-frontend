@@ -12,3 +12,15 @@ button {
 button:active {
   transform: scale(0.96);
 }
+
+input, textarea {
+  outline: none;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  user-select: none;
+}

@@ -1,21 +1,26 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { Home, Package, IndianRupee, User, Plus } from "lucide-react";
 
 export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const items = [
-    { path: "/dashboard", icon: "🏠" },
-    { path: "/orders", icon: "📦" },
-    { path: "/price", icon: "💰" },
-    { path: "/profile", icon: "👤" }
-  ];
-
   const handleNav = (path) => {
+    // 🔥 FORCE REMOVE ALL INPUT FOCUS (Google popup fix)
     if (document.activeElement) {
       document.activeElement.blur();
     }
-    document.body.focus();
+
+    // 🔥 HARD FIX (mobile keyboards)
+    const inputs = document.querySelectorAll("input, textarea");
+    inputs.forEach((el) => el.blur());
+
+    // 🔥 REMOVE SELECTION
+    window.getSelection()?.removeAllRanges();
+
+    // 🔥 scroll reset
+    window.scrollTo(0, 0);
+
     navigate(path);
   };
 
@@ -23,28 +28,49 @@ export default function BottomNav() {
     <>
       {/* 🧊 Floating Glass Nav */}
       <div style={styles.nav}>
-        {items.map((item, i) => (
-          <div
-            key={i}
-            onClick={() => handleNav(item.path)}
-            style={{
-              ...styles.iconBox,
-              ...(location.pathname === item.path && styles.active)
-            }}
-          >
-            {item.icon}
-          </div>
-        ))}
+        
+        <div
+          style={styles.iconBox(location.pathname === "/dashboard")}
+          onClick={() => handleNav("/dashboard")}
+        >
+          <Home size={22} />
+        </div>
+
+        <div
+          style={styles.iconBox(location.pathname === "/orders")}
+          onClick={() => handleNav("/orders")}
+        >
+          <Package size={22} />
+        </div>
+
+        {/* ⭕ Empty space for FAB */}
+        <div style={{ width: 60 }} />
+
+        <div
+          style={styles.iconBox(location.pathname === "/price")}
+          onClick={() => handleNav("/price")}
+        >
+          <IndianRupee size={22} />
+        </div>
+
+        <div
+          style={styles.iconBox(location.pathname === "/profile")}
+          onClick={() => handleNav("/profile")}
+        >
+          <User size={22} />
+        </div>
       </div>
 
-      {/* 🔥 Center FAB */}
+      {/* 🔥 CENTER FAB (PERFECT ALIGN) */}
       <div style={styles.fab} onClick={() => handleNav("/order")}>
-        +
+        <Plus size={26} />
       </div>
     </>
   );
 }
 
+
+// 🎨 STYLES
 const styles = {
   nav: {
     position: "fixed",
@@ -65,42 +91,35 @@ const styles = {
     zIndex: 100
   },
 
-  iconBox: {
-    fontSize: 22,
-    color: "#555",
-    cursor: "pointer",
-    transition: "0.3s",
-    width: 40,
-    height: 40,
+  iconBox: (active) => ({
+    width: 45,
+    height: 45,
+    borderRadius: 14,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 12
-  },
-
-  active: {
-    background: "rgba(37,99,235,0.1)",
-    color: "#2563eb",
-    transform: "scale(1.2)"
-  },
+    cursor: "pointer",
+    color: active ? "#2563eb" : "#666",
+    background: active ? "rgba(37,99,235,0.1)" : "transparent",
+    transition: "0.2s"
+  }),
 
   fab: {
     position: "fixed",
-    bottom: 50,
+    bottom: 45,
     left: "50%",
     transform: "translateX(-50%)",
     width: 65,
     height: 65,
     borderRadius: "50%",
     background: "linear-gradient(135deg,#2563eb,#4f46e5)",
-    color: "#fff",
-    fontSize: 32,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    boxShadow: "0 15px 30px rgba(0,0,0,0.3)",
+    boxShadow: "0 15px 35px rgba(0,0,0,0.3)",
+    color: "#fff",
     cursor: "pointer",
     zIndex: 200,
-    border: "4px solid white" // 🔥 floating cut effect
+    border: "4px solid white"
   }
 };

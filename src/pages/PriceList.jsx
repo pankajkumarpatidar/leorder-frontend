@@ -1,37 +1,48 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import axios from "axios";
 
 export default function PriceList() {
+  const API = import.meta.env.VITE_API_URL;
+
+  const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
-  const [brand, setBrand] = useState("All");
-  const [category, setCategory] = useState("All");
+  const [brandId, setBrandId] = useState(1); // 🔥 default brand
 
-  // 🔥 Dummy 2000+ products
-  const products = useMemo(() => {
-    return Array.from({ length: 2000 }, (_, i) => ({
-      id: i + 1,
-      name: "Product " + (i + 1),
-      brand: ["Amaron", "Exide", "Luminous"][i % 3],
-      category: ["Battery", "Inverter", "Solar"][i % 3],
-      price: Math.floor(Math.random() * 5000)
-    }));
-  }, []);
+  // 🔥 FETCH PRICE LIST (YOUR API)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(
+          `${API}/api/product/price-list/${brandId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+          }
+        );
 
-  // 🔍 FILTER LOGIC
+        setProducts(res.data);
+
+      } catch (err) {
+        console.error("PRICE LIST ERROR ❌", err);
+      }
+    };
+
+    fetchData();
+  }, [brandId]);
+
+  // 🔍 SEARCH FILTER
   const filtered = useMemo(() => {
-    return products.filter((p) => {
-      return (
-        p.name.toLowerCase().includes(search.toLowerCase()) &&
-        (brand === "All" || p.brand === brand) &&
-        (category === "All" || p.category === category)
-      );
-    });
-  }, [search, brand, category, products]);
+    return products.filter((p) =>
+      p.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search, products]);
 
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>Price List 💰</h2>
 
-      {/* 🔍 Search */}
+      {/* 🔍 SEARCH */}
       <input
         placeholder="Search product..."
         autoComplete="off"
@@ -39,35 +50,30 @@ export default function PriceList() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {/* 🎯 Filters */}
-      <div style={styles.filters}>
-        <select onChange={(e) => setBrand(e.target.value)} style={styles.select}>
-          <option>All</option>
-          <option>Amaron</option>
-          <option>Exide</option>
-          <option>Luminous</option>
-        </select>
+      {/* 🎯 BRAND FILTER */}
+      <select
+        style={styles.select}
+        onChange={(e) => setBrandId(e.target.value)}
+      >
+        <option value={1}>Brand 1</option>
+        <option value={2}>Brand 2</option>
+        <option value={3}>Brand 3</option>
+      </select>
 
-        <select onChange={(e) => setCategory(e.target.value)} style={styles.select}>
-          <option>All</option>
-          <option>Battery</option>
-          <option>Inverter</option>
-          <option>Solar</option>
-        </select>
-      </div>
-
-      {/* 📦 Product List */}
+      {/* 📦 LIST */}
       <div style={styles.list}>
         {filtered.map((item) => (
           <div key={item.id} style={styles.card}>
             <div>
               <strong>{item.name}</strong>
               <div style={styles.sub}>
-                {item.brand} • {item.category}
+                PCS: {item.pcs_per_box}
               </div>
             </div>
 
-            <div style={styles.price}>₹ {item.price}</div>
+            <div style={styles.price}>
+              ₹ {item.dp_per_pcs}
+            </div>
           </div>
         ))}
       </div>
@@ -75,6 +81,8 @@ export default function PriceList() {
   );
 }
 
+
+// 🎨 STYLES
 const styles = {
   container: {
     padding: 15,
@@ -93,17 +101,12 @@ const styles = {
     marginBottom: 10
   },
 
-  filters: {
-    display: "flex",
-    gap: 10,
-    marginBottom: 10
-  },
-
   select: {
-    flex: 1,
+    width: "100%",
     padding: 10,
     borderRadius: 10,
-    border: "1px solid #ddd"
+    border: "1px solid #ddd",
+    marginBottom: 10
   },
 
   list: {
