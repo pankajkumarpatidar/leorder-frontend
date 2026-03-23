@@ -11,14 +11,29 @@ export default function BottomNav() {
     { name: "Profile", path: "/profile", icon: "👤" }
   ];
 
+  const handleNav = (path) => {
+    // 🔥 FIX 1: blur input (remove keyboard + google popup)
+    if (document.activeElement) {
+      document.activeElement.blur();
+    }
+
+    // 🔥 FIX 2: body focus
+    document.body.focus();
+
+    // 🔥 FIX 3: scroll top
+    window.scrollTo(0, 0);
+
+    navigate(path);
+  };
+
   return (
     <>
-      {/* 🔥 Floating Glass Nav */}
+      {/* 🧊 Glass Floating Nav */}
       <div style={styles.container}>
         {items.map((item, i) => (
           <div
             key={i}
-            onClick={() => navigate(item.path)}
+            onClick={() => handleNav(item.path)}
             style={{
               ...styles.item,
               ...(location.pathname === item.path && styles.active)
@@ -30,8 +45,8 @@ export default function BottomNav() {
         ))}
       </div>
 
-      {/* 🔥 Floating + Button */}
-      <div style={styles.fab} onClick={() => navigate("/order")}>
+      {/* ➕ Floating Button */}
+      <div style={styles.fab} onClick={() => handleNav("/order")}>
         +
       </div>
     </>
@@ -52,7 +67,6 @@ const styles = {
     justifyContent: "space-around",
     alignItems: "center",
 
-    // 🧊 Glass Effect
     background: "rgba(255,255,255,0.6)",
     backdropFilter: "blur(15px)",
     boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
