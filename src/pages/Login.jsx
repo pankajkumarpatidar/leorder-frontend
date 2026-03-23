@@ -18,8 +18,11 @@ export default function Login() {
       const res = await axios.post(`${API}/api/auth/login`, form);
 
       if (res.data.success) {
+        // 🔥 IMPORTANT (Profile ke liye)
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("role", res.data.user.role);
+        localStorage.setItem("name", res.data.user.name);
+        localStorage.setItem("email", res.data.user.email);
 
         alert("Login Success ✅");
         window.location.href = "/dashboard";
@@ -74,7 +77,7 @@ export default function Login() {
 };
 
 
-// 🎨 SAME STYLE (reuse)
+// 🎨 STYLE SAME
 const styles = {
   container: {
     height: "100vh",

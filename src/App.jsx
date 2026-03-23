@@ -6,7 +6,8 @@ import Dashboard from "./pages/Dashboard";
 import OrderCreate from "./pages/OrderCreate";
 import OrderList from "./pages/OrderList";
 import OrderDetail from "./pages/OrderDetail";
-import PriceList from "./pages/PriceList"; // ✅ IMPORTANT
+import PriceList from "./pages/PriceList";
+import Profile from "./pages/Profile"; // ✅ NEW
 
 import BottomNav from "./components/BottomNav";
 
@@ -33,7 +34,6 @@ const Layout = ({ children }) => {
     <>
       {children}
 
-      {/* hide nav on auth pages */}
       {location.pathname !== "/login" &&
         location.pathname !== "/signup" && <BottomNav />}
     </>
@@ -59,9 +59,10 @@ function App() {
           <Route path="/orders" element={<PrivateRoute><OrderList /></PrivateRoute>} />
           <Route path="/order" element={<PrivateRoute><OrderCreate /></PrivateRoute>} />
           <Route path="/order/:id" element={<PrivateRoute><OrderDetail /></PrivateRoute>} />
-
-          {/* 🔥 PRICE LIST FIX */}
           <Route path="/price" element={<PrivateRoute><PriceList /></PrivateRoute>} />
+
+          {/* 🔥 PROFILE ADD */}
+          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
 
           {/* fallback */}
           <Route path="*" element={<Navigate to="/dashboard" />} />
