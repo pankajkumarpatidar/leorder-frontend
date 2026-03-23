@@ -17,22 +17,22 @@ export default function Profile() {
     <div style={styles.container}>
       <div style={styles.card}>
 
-        {/* 👤 USER INFO */}
+        {/* 👤 Avatar */}
         <div style={styles.avatar}>
           {name.charAt(0).toUpperCase()}
         </div>
 
-        <h2>{name}</h2>
+        <h2 style={styles.name}>{name}</h2>
         <p style={styles.email}>{email}</p>
 
         <div style={styles.role}>
           Role: <strong>{role}</strong>
         </div>
 
-        {/* 🔥 ACTIONS */}
+        {/* 🔥 ACTION BUTTONS */}
         <div style={styles.actions}>
 
-          {/* ✅ ADMIN ONLY */}
+          {/* ADMIN ONLY */}
           {role === "admin" && (
             <>
               <button style={styles.btn} onClick={() => navigate("/add-product")}>
@@ -45,7 +45,7 @@ export default function Profile() {
             </>
           )}
 
-          {/* ✅ ADMIN + STAFF */}
+          {/* ADMIN + STAFF */}
           {(role === "admin" || role === "staff") && (
             <button style={styles.btn} onClick={() => navigate("/add-retailer")}>
               🏪 Add Retailer
@@ -65,18 +65,21 @@ export default function Profile() {
 }
 
 
-// 🎨 STYLES
+// 🎨 FINAL RESPONSIVE STYLES
 const styles = {
   container: {
-    padding: 20,
-    paddingTop: 60
+    minHeight: "100vh",
+    padding: "20px 12px 90px", // 👈 bottom nav space
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    boxSizing: "border-box"
   },
 
   card: {
     width: "100%",
-    maxWidth: 400,
-    margin: "auto",
-    padding: 25,
+    maxWidth: 380,
+    padding: 20,
     borderRadius: 20,
     background: "rgba(255,255,255,0.6)",
     backdropFilter: "blur(15px)",
@@ -85,33 +88,40 @@ const styles = {
   },
 
   avatar: {
-    width: 70,
-    height: 70,
+    width: 60,
+    height: 60,
     borderRadius: "50%",
     background: "#2563eb",
     color: "#fff",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    fontSize: 28,
+    fontSize: 24,
     margin: "0 auto 10px"
   },
 
+  name: {
+    margin: 0,
+    fontSize: 22
+  },
+
   email: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#666",
-    marginBottom: 10
+    marginBottom: 8,
+    wordBreak: "break-all"
   },
 
   role: {
-    marginBottom: 20
+    marginBottom: 15,
+    fontSize: 14
   },
 
   actions: {
     display: "flex",
     flexDirection: "column",
     gap: 10,
-    marginBottom: 20
+    marginBottom: 15
   },
 
   btn: {
@@ -121,7 +131,8 @@ const styles = {
     background: "#2563eb",
     color: "#fff",
     fontWeight: "bold",
-    cursor: "pointer"
+    cursor: "pointer",
+    fontSize: 14
   },
 
   logout: {

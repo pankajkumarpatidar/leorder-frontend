@@ -1,26 +1,65 @@
-body {
+/* 🔥 RESET + BASE */
+* {
   margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background: #f5f6fa;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* smooth tap feel */
+/* 🔥 HTML FIX (ZOOM ISSUE FIX) */
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* 🔥 BODY */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f5f6fa;
+  user-select: none;
+  overflow-x: hidden;
+}
+
+/* 🔥 BUTTON SMOOTH FEEL */
 button {
   transition: all 0.2s ease;
+  border: none;
+  outline: none;
+  cursor: pointer;
 }
 
 button:active {
   transform: scale(0.96);
 }
 
-input, textarea {
+/* 🔥 INPUT FIX */
+input,
+textarea,
+select {
   outline: none;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
 }
 
-* {
-  -webkit-tap-highlight-color: transparent;
+/* 🔥 SCROLL SMOOTH */
+html {
+  scroll-behavior: smooth;
 }
 
-body {
-  user-select: none;
+/* 🔥 IMAGE SAFE */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* 🔥 LINKS */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 🔥 MOBILE SAFE AREA */
+#root {
+  min-height: 100vh;
 }
