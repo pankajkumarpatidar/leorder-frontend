@@ -6,19 +6,11 @@ export default function BottomNav() {
   const location = useLocation();
 
   const handleNav = (path) => {
-    // 🔥 FORCE REMOVE ALL INPUT FOCUS (Google popup fix)
-    if (document.activeElement) {
-      document.activeElement.blur();
-    }
+    if (document.activeElement) document.activeElement.blur();
 
-    // 🔥 HARD FIX (mobile keyboards)
-    const inputs = document.querySelectorAll("input, textarea");
-    inputs.forEach((el) => el.blur());
+    document.querySelectorAll("input, textarea").forEach(el => el.blur());
 
-    // 🔥 REMOVE SELECTION
     window.getSelection()?.removeAllRanges();
-
-    // 🔥 scroll reset
     window.scrollTo(0, 0);
 
     navigate(path);
@@ -26,7 +18,6 @@ export default function BottomNav() {
 
   return (
     <>
-      {/* 🧊 Floating Glass Nav */}
       <div style={styles.nav}>
         
         <div
@@ -43,11 +34,12 @@ export default function BottomNav() {
           <Package size={22} />
         </div>
 
-        {/* ⭕ Empty space for FAB */}
+        {/* center gap */}
         <div style={{ width: 60 }} />
 
+        {/* ✅ FIXED PRICE ICON */}
         <div
-          style={styles.iconBox(location.pathname === "/PriceList")}
+          style={styles.iconBox(location.pathname === "/price")}
           onClick={() => handleNav("/price")}
         >
           <IndianRupee size={22} />
@@ -61,7 +53,7 @@ export default function BottomNav() {
         </div>
       </div>
 
-      {/* 🔥 CENTER FAB (PERFECT ALIGN) */}
+      {/* FAB */}
       <div style={styles.fab} onClick={() => handleNav("/order")}>
         <Plus size={26} />
       </div>
@@ -70,7 +62,6 @@ export default function BottomNav() {
 }
 
 
-// 🎨 STYLES
 const styles = {
   nav: {
     position: "fixed",
@@ -84,7 +75,6 @@ const styles = {
     display: "flex",
     justifyContent: "space-around",
     alignItems: "center",
-
     background: "rgba(255,255,255,0.6)",
     backdropFilter: "blur(18px)",
     boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
@@ -100,8 +90,7 @@ const styles = {
     alignItems: "center",
     cursor: "pointer",
     color: active ? "#2563eb" : "#666",
-    background: active ? "rgba(37,99,235,0.1)" : "transparent",
-    transition: "0.2s"
+    background: active ? "rgba(37,99,235,0.1)" : "transparent"
   }),
 
   fab: {

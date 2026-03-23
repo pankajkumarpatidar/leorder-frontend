@@ -1,13 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import Login from "./pages/Login";
-import Signup from "./pages/Signup"; // ✅ ADD THIS
+import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import OrderCreate from "./pages/OrderCreate";
 import OrderList from "./pages/OrderList";
 import OrderDetail from "./pages/OrderDetail";
+import PriceList from "./pages/PriceList"; // ✅ IMPORTANT
 
 import BottomNav from "./components/BottomNav";
+
 
 // 🔒 Private Route
 const PrivateRoute = ({ children }) => {
@@ -15,13 +17,15 @@ const PrivateRoute = ({ children }) => {
   return token ? children : <Navigate to="/login" />;
 };
 
-// 🔓 Public Route (login/signup block if already logged in)
+
+// 🔓 Public Route
 const PublicRoute = ({ children }) => {
   const token = localStorage.getItem("token");
   return token ? <Navigate to="/dashboard" /> : children;
 };
 
-// 🔥 Layout (Bottom nav control)
+
+// 🔥 Layout
 const Layout = ({ children }) => {
   const location = useLocation();
 
@@ -29,13 +33,13 @@ const Layout = ({ children }) => {
     <>
       {children}
 
-      {/* Login + Signup pe nav hide */}
-      {location.pathname !== "/login" && location.pathname !== "/signup" && (
-        <BottomNav />
-      )}
+      {/* hide nav on auth pages */}
+      {location.pathname !== "/login" &&
+        location.pathname !== "/signup" && <BottomNav />}
     </>
   );
 };
+
 
 function App() {
   return (
@@ -43,66 +47,23 @@ function App() {
       <Layout>
         <Routes>
 
-          {/* 🔓 Public */}
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
+          {/* Public */}
+          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
 
-          <Route
-            path="/signup"
-            element={
-              <PublicRoute>
-                <Signup />
-              </PublicRoute>
-            }
-          />
-
-          {/* Default redirect */}
+          {/* Default */}
           <Route path="/" element={<Navigate to="/login" />} />
 
-          {/* 🔒 Protected */}
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
+          {/* Protected */}
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/orders" element={<PrivateRoute><OrderList /></PrivateRoute>} />
+          <Route path="/order" element={<PrivateRoute><OrderCreate /></PrivateRoute>} />
+          <Route path="/order/:id" element={<PrivateRoute><OrderDetail /></PrivateRoute>} />
 
-          <Route
-            path="/order"
-            element={
-              <PrivateRoute>
-                <OrderCreate />
-              </PrivateRoute>
-            }
-          />
+          {/* 🔥 PRICE LIST FIX */}
+          <Route path="/price" element={<PrivateRoute><PriceList /></PrivateRoute>} />
 
-          <Route
-            path="/orders"
-            element={
-              <PrivateRoute>
-                <OrderList />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/order/:id"
-            element={
-              <PrivateRoute>
-                <OrderDetail />
-              </PrivateRoute>
-            }
-          />
-
-          {/* 🔁 fallback */}
+          {/* fallback */}
           <Route path="*" element={<Navigate to="/dashboard" />} />
 
         </Routes>
