@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
+  const navigate = useNavigate();
+
   const name = localStorage.getItem("name") || "User";
   const role = localStorage.getItem("role") || "user";
   const email = localStorage.getItem("email") || "example@gmail.com";
@@ -14,6 +17,7 @@ export default function Profile() {
     <div style={styles.container}>
       <div style={styles.card}>
 
+        {/* 👤 USER INFO */}
         <div style={styles.avatar}>
           {name.charAt(0).toUpperCase()}
         </div>
@@ -21,11 +25,36 @@ export default function Profile() {
         <h2>{name}</h2>
         <p style={styles.email}>{email}</p>
 
-        <div style={styles.info}>
-          <span>Role:</span>
-          <strong>{role}</strong>
+        <div style={styles.role}>
+          Role: <strong>{role}</strong>
         </div>
 
+        {/* 🔥 ACTIONS */}
+        <div style={styles.actions}>
+
+          {/* ✅ ADMIN ONLY */}
+          {role === "admin" && (
+            <>
+              <button style={styles.btn} onClick={() => navigate("/add-product")}>
+                ➕ Add Product
+              </button>
+
+              <button style={styles.btn} onClick={() => navigate("/add-user")}>
+                👥 Add User
+              </button>
+            </>
+          )}
+
+          {/* ✅ ADMIN + STAFF */}
+          {(role === "admin" || role === "staff") && (
+            <button style={styles.btn} onClick={() => navigate("/add-retailer")}>
+              🏪 Add Retailer
+            </button>
+          )}
+
+        </div>
+
+        {/* 🚪 LOGOUT */}
         <button style={styles.logout} onClick={handleLogout}>
           Logout
         </button>
@@ -39,16 +68,14 @@ export default function Profile() {
 // 🎨 STYLES
 const styles = {
   container: {
-    height: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20
+    padding: 20,
+    paddingTop: 60
   },
 
   card: {
     width: "100%",
-    maxWidth: 350,
+    maxWidth: 400,
+    margin: "auto",
     padding: 25,
     borderRadius: 20,
     background: "rgba(255,255,255,0.6)",
@@ -73,11 +100,28 @@ const styles = {
   email: {
     fontSize: 14,
     color: "#666",
-    marginBottom: 15
+    marginBottom: 10
   },
 
-  info: {
+  role: {
     marginBottom: 20
+  },
+
+  actions: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+    marginBottom: 20
+  },
+
+  btn: {
+    padding: 12,
+    borderRadius: 12,
+    border: "none",
+    background: "#2563eb",
+    color: "#fff",
+    fontWeight: "bold",
+    cursor: "pointer"
   },
 
   logout: {
