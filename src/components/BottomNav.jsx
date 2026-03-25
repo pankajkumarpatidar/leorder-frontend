@@ -14,7 +14,7 @@ export default function BottomNav() {
 
   return (
     <>
-      {/* 🔥 NAV */}
+      {/* 🔥 NAV BAR */}
       <div style={styles.nav}>
 
         <div style={styles.icon(location.pathname === "/dashboard")} onClick={() => handleNav("/dashboard")}>
@@ -39,7 +39,7 @@ export default function BottomNav() {
 
       </div>
 
-      {/* 🔥 DYNAMIC FAB */}
+      {/* 🔥 DYNAMIC FLOATING BUTTON */}
       {location.pathname === "/orders" && (
         <div style={styles.fab} onClick={() => handleNav("/order")}>
           <Plus size={26} />
@@ -77,7 +77,6 @@ const styles = {
     display: "flex",
     justifyContent: "space-around",
     alignItems: "center",
-
     background: "rgba(255,255,255,0.7)",
     backdropFilter: "blur(20px)",
     boxShadow: "0 8px 25px rgba(0,0,0,0.1)",
