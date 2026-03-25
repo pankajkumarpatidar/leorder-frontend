@@ -1,79 +1,111 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function PriceList() {
-  const API = import.meta.env.VITE_API_URL;
-
+  const [brands, setBrands] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState("");
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
-  const [brandId, setBrandId] = useState(1); // 🔥 default brand
 
-  // 🔥 FETCH PRICE LIST (YOUR API)
+  const API = import.meta.env.VITE_API_URL;
+
+  // 🔥 LOAD BRANDS
+  const fetchBrands = async () => {
+    try {
+      const res = await axios.get(`${API}/api/brand/list`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setBrands(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // 🔥 LOAD PRODUCTS BY BRAND
+  const fetchProducts = async (brandId) => {
+    try {
+      const res = await axios.get(
+        `${API}/api/product/price-list/${brandId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setProducts(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get(
-          `${API}/api/product/price-list/${brandId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`
-            }
-          }
-        );
+    fetchBrands();
+  }, []);
 
-        setProducts(res.data);
+  useEffect(() => {
+    if (selectedBrand) fetchProducts(selectedBrand);
+  }, [selectedBrand]);
 
-      } catch (err) {
-        console.error("PRICE LIST ERROR ❌", err);
-      }
-    };
-
-    fetchData();
-  }, [brandId]);
-
-  // 🔍 SEARCH FILTER
-  const filtered = useMemo(() => {
-    return products.filter((p) =>
-      p.name.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [search, products]);
+  // 🔍 FILTER PRODUCTS
+  const filteredProducts = products.filter((p) =>
+    p.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Price List 💰</h2>
+    <div style={styles.page}>
+      <h2 style={styles.title}>Price List</h2>
 
-      {/* 🔍 SEARCH */}
+      {/* 🔍 BRAND SEARCH + SELECT */}
       <input
-        placeholder="Search product..."
-        autoComplete="off"
-        style={styles.search}
+        placeholder="Search Brand..."
+        style={styles.input}
+        onChange={(e) => {
+          const val = e.target.value.toLowerCase();
+          const found = brands.find((b) =>
+            b.name.toLowerCase().includes(val)
+          );
+          if (found) setSelectedBrand(found.id);
+        }}
+      />
+
+      <select
+        style={styles.input}
+        onChange={(e) => setSelectedBrand(e.target.value)}
+      >
+        <option value="">Select Brand</option>
+        {brands.map((b) => (
+          <option key={b.id} value={b.id}>
+            {b.name} {/* 🔥 NAME SHOW */}
+          </option>
+        ))}
+      </select>
+
+      {/* 🔍 PRODUCT SEARCH */}
+      <input
+        placeholder="Search Product..."
+        style={styles.input}
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {/* 🎯 BRAND FILTER */}
-      <select
-        style={styles.select}
-        onChange={(e) => setBrandId(e.target.value)}
-      >
-        <option value={1}>Brand 1</option>
-        <option value={2}>Brand 2</option>
-        <option value={3}>Brand 3</option>
-      </select>
+      {/* 📊 PRODUCT TABLE */}
+      <div style={styles.table}>
+        <div style={styles.headerRow}>
+          <span>Name</span>
+          <span>Category</span>
+          <span>Unit</span>
+          <span>MRP</span>
+          <span>DP</span>
+        </div>
 
-      {/* 📦 LIST */}
-      <div style={styles.list}>
-        {filtered.map((item) => (
-          <div key={item.id} style={styles.card}>
-            <div>
-              <strong>{item.name}</strong>
-              <div style={styles.sub}>
-                PCS: {item.pcs_per_box}
-              </div>
-            </div>
-
-            <div style={styles.price}>
-              ₹ {item.dp_per_pcs}
-            </div>
+        {filteredProducts.map((p) => (
+          <div key={p.id} style={styles.row}>
+            <span>{p.name}</span>
+            <span>{p.category || "-"}</span>
+            <span>{p.pcs_per_box} pcs</span>
+            <span>₹{p.mrp_per_pcs}</span>
+            <span>₹{p.dp_per_pcs}</span>
           </div>
         ))}
       </div>
@@ -84,54 +116,44 @@ export default function PriceList() {
 
 // 🎨 STYLES
 const styles = {
-  container: {
+  page: {
+    height: "100vh",
+    overflowY: "auto",
     padding: 15,
     paddingBottom: 100
   },
 
   title: {
-    marginBottom: 10
+    textAlign: "center",
+    marginBottom: 15
   },
 
-  search: {
+  input: {
     width: "100%",
     padding: 12,
-    borderRadius: 12,
-    border: "1px solid #ddd",
-    marginBottom: 10
-  },
-
-  select: {
-    width: "100%",
-    padding: 10,
+    marginBottom: 10,
     borderRadius: 10,
-    border: "1px solid #ddd",
-    marginBottom: 10
+    border: "1px solid #ddd"
   },
 
-  list: {
-    maxHeight: "70vh",
-    overflowY: "auto"
+  table: {
+    marginTop: 10
   },
 
-  card: {
-    display: "flex",
-    justifyContent: "space-between",
-    padding: 12,
-    borderRadius: 12,
-    marginBottom: 8,
-    background: "rgba(255,255,255,0.7)",
-    backdropFilter: "blur(10px)",
-    boxShadow: "0 5px 15px rgba(0,0,0,0.08)"
-  },
-
-  sub: {
-    fontSize: 12,
-    color: "#666"
-  },
-
-  price: {
+  headerRow: {
+    display: "grid",
+    gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr",
     fontWeight: "bold",
-    color: "#2563eb"
+    padding: 10,
+    background: "#eee",
+    borderRadius: 10
+  },
+
+  row: {
+    display: "grid",
+    gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr",
+    padding: 10,
+    borderBottom: "1px solid #eee",
+    fontSize: 14
   }
 };
