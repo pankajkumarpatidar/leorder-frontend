@@ -7,40 +7,39 @@ export default function Login() {
     password: ""
   });
 
+  const API = import.meta.env.VITE_API_URL;
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const API = import.meta.env.VITE_API_URL || "https://leorder-api.onrender.com";
-
-  const handleSubmit = async () => {
+  const handleLogin = async () => {
     try {
       const res = await axios.post(`${API}/api/auth/login`, form);
 
       if (res.data.success) {
-        // 🔥 IMPORTANT (Profile ke liye)
+        // 🔥 clear old session
+        localStorage.clear();
+
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("role", res.data.user.role);
-        localStorage.setItem("name", res.data.user.name);
-        localStorage.setItem("email", res.data.user.email);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
 
-        alert("Login Success ✅");
         window.location.href = "/dashboard";
       } else {
         alert(res.data.message);
       }
 
     } catch (err) {
-      console.error("ERROR 👉", err);
-      alert(err.response?.data?.message || "Server Error ❌");
+      alert(err.response?.data?.message || "Login failed ❌");
     }
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        
-        <h2 style={styles.title}>Welcome Back</h2>
+
+        <h2 style={styles.title}>Login</h2>
 
         <input
           name="email"
@@ -57,85 +56,62 @@ export default function Login() {
           onChange={handleChange}
         />
 
-        <button style={styles.button} onClick={handleSubmit}>
+        <button style={styles.button} onClick={handleLogin}>
           Login
         </button>
 
-        <p style={styles.toggle}>
-          New here?
-          <span
-            style={styles.link}
-            onClick={() => (window.location.href = "/signup")}
-          >
-            Create Account
+        <p style={styles.linkText}>
+          New user?{" "}
+          <span onClick={() => (window.location.href = "/signup")}>
+            Register
           </span>
         </p>
 
       </div>
     </div>
   );
-};
+}
 
-
-// 🎨 STYLE SAME
 const styles = {
   container: {
     height: "100vh",
-    background: "linear-gradient(135deg, #3b82f6, #6366f1)",
     display: "flex",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    background: "linear-gradient(135deg,#3b82f6,#6366f1)"
   },
-
   card: {
     width: "90%",
-    maxWidth: 380,
+    maxWidth: 400,
     padding: 25,
     borderRadius: 20,
     background: "rgba(255,255,255,0.15)",
-    backdropFilter: "blur(15px)",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
-    display: "flex",
-    flexDirection: "column"
+    backdropFilter: "blur(15px)"
   },
-
   title: {
     textAlign: "center",
     color: "#fff",
     marginBottom: 20
   },
-
   input: {
+    width: "100%",
     padding: 12,
     marginBottom: 12,
     borderRadius: 10,
-    border: "none",
-    outline: "none",
-    fontSize: 14
+    border: "none"
   },
-
   button: {
+    width: "100%",
     padding: 12,
     borderRadius: 10,
     border: "none",
     background: "#fff",
-    color: "#333",
-    fontWeight: "bold",
-    cursor: "pointer",
-    marginTop: 10
+    fontWeight: "bold"
   },
-
-  toggle: {
+  linkText: {
     marginTop: 15,
     textAlign: "center",
     color: "#fff",
-    fontSize: 14
-  },
-
-  link: {
-    marginLeft: 5,
-    fontWeight: "bold",
-    cursor: "pointer",
-    color: "#fff"
+    cursor: "pointer"
   }
 };
