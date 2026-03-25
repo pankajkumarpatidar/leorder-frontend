@@ -7,7 +7,7 @@ export default function Login() {
     password: ""
   });
 
-  const API = import.meta.env.VITE_API_URL;
+  const API = "https://leorder-api.onrender.com";
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
