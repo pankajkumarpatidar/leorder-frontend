@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, Package, IndianRupee, User, Plus } from "lucide-react";
+import { Home, Package, IndianRupee, Users, ClipboardList, Plus } from "lucide-react";
 
 export default function BottomNav() {
   const navigate = useNavigate();
@@ -7,108 +7,111 @@ export default function BottomNav() {
 
   const handleNav = (path) => {
     if (document.activeElement) document.activeElement.blur();
-
-    document.querySelectorAll("input, textarea").forEach(el => el.blur());
-
     window.getSelection()?.removeAllRanges();
     window.scrollTo(0, 0);
-
     navigate(path);
   };
 
   return (
     <>
+      {/* 🔥 NAV */}
       <div style={styles.nav}>
-        
-        <div
-          style={styles.iconBox(location.pathname === "/dashboard")}
-          onClick={() => handleNav("/dashboard")}
-        >
+
+        <div style={styles.icon(location.pathname === "/dashboard")} onClick={() => handleNav("/dashboard")}>
           <Home size={22} />
         </div>
 
-        <div
-          style={styles.iconBox(location.pathname === "/orders")}
-          onClick={() => handleNav("/orders")}
-        >
+        <div style={styles.icon(location.pathname === "/orders")} onClick={() => handleNav("/orders")}>
           <Package size={22} />
         </div>
 
-        {/* center gap */}
-        <div style={{ width: 60 }} />
-
-        {/* ✅ FIXED PRICE ICON */}
-        <div
-          style={styles.iconBox(location.pathname === "/price")}
-          onClick={() => handleNav("/price")}
-        >
+        <div style={styles.icon(location.pathname === "/price")} onClick={() => handleNav("/price")}>
           <IndianRupee size={22} />
         </div>
 
-        <div
-          style={styles.iconBox(location.pathname === "/profile")}
-          onClick={() => handleNav("/profile")}
-        >
-          <User size={22} />
+        <div style={styles.icon(location.pathname === "/leads")} onClick={() => handleNav("/leads")}>
+          <Users size={22} />
         </div>
+
+        <div style={styles.icon(location.pathname === "/worksheet")} onClick={() => handleNav("/worksheet")}>
+          <ClipboardList size={22} />
+        </div>
+
       </div>
 
-      {/* FAB */}
-      <div style={styles.fab} onClick={() => handleNav("/order")}>
-        <Plus size={26} />
-      </div>
+      {/* 🔥 DYNAMIC FAB */}
+      {location.pathname === "/orders" && (
+        <div style={styles.fab} onClick={() => handleNav("/order")}>
+          <Plus size={26} />
+        </div>
+      )}
+
+      {location.pathname === "/price" && (
+        <div style={styles.fab} onClick={() => handleNav("/add-product")}>
+          <Plus size={26} />
+        </div>
+      )}
+
+      {location.pathname === "/worksheet" && (
+        <div style={styles.fab} onClick={() => handleNav("/add-worksheet")}>
+          <Plus size={26} />
+        </div>
+      )}
+
     </>
   );
 }
 
 
+// 🎨 STYLES
 const styles = {
   nav: {
     position: "fixed",
-    bottom: 20,
+    bottom: 10,
     left: "50%",
     transform: "translateX(-50%)",
-    width: "85%",
-    maxWidth: 420,
+    width: "95%",
+    maxWidth: 450,
     height: 65,
-    borderRadius: 40,
+    borderRadius: 20,
     display: "flex",
     justifyContent: "space-around",
     alignItems: "center",
-    background: "rgba(255,255,255,0.6)",
-    backdropFilter: "blur(18px)",
-    boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
+
+    background: "rgba(255,255,255,0.7)",
+    backdropFilter: "blur(20px)",
+    boxShadow: "0 8px 25px rgba(0,0,0,0.1)",
     zIndex: 100
   },
 
-  iconBox: (active) => ({
+  icon: (active) => ({
     width: 45,
     height: 45,
-    borderRadius: 14,
+    borderRadius: 12,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     cursor: "pointer",
     color: active ? "#2563eb" : "#666",
-    background: active ? "rgba(37,99,235,0.1)" : "transparent"
+    background: active ? "rgba(37,99,235,0.1)" : "transparent",
+    WebkitTapHighlightColor: "transparent"
   }),
 
   fab: {
     position: "fixed",
-    bottom: 45,
-    left: "50%",
-    transform: "translateX(-50%)",
-    width: 65,
-    height: 65,
+    bottom: 80,
+    right: 20,
+    width: 60,
+    height: 60,
     borderRadius: "50%",
     background: "linear-gradient(135deg,#2563eb,#4f46e5)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    boxShadow: "0 15px 35px rgba(0,0,0,0.3)",
     color: "#fff",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
     cursor: "pointer",
     zIndex: 200,
-    border: "4px solid white"
+    WebkitTapHighlightColor: "transparent"
   }
 };
