@@ -12,10 +12,15 @@ import OrderDetail from "./pages/OrderDetail";
 import PriceList from "./pages/PriceList";
 import Profile from "./pages/Profile";
 
-// 🔥 Admin Pages
+// 🔥 NEW CORE PAGES
+import Leads from "./pages/Leads";
+import Worksheet from "./pages/Worksheet";
+
+// 🔥 Admin / Actions
 import AddProduct from "./pages/AddProduct";
 import AddUser from "./pages/AddUser";
 import AddRetailer from "./pages/AddRetailer";
+import AddWorksheet from "./pages/AddWorksheet"; // 🔥 NEW
 
 // 🔥 UI
 import BottomNav from "./components/BottomNav";
@@ -67,18 +72,26 @@ function App() {
           {/* DEFAULT */}
           <Route path="/" element={<Navigate to="/login" />} />
 
-          {/* 🔒 PROTECTED */}
+          {/* 🔒 MAIN FLOW */}
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/orders" element={<PrivateRoute><OrderList /></PrivateRoute>} />
           <Route path="/order" element={<PrivateRoute><OrderCreate /></PrivateRoute>} />
           <Route path="/order/:id" element={<PrivateRoute><OrderDetail /></PrivateRoute>} />
+
           <Route path="/price" element={<PrivateRoute><PriceList /></PrivateRoute>} />
+
+          {/* 🔥 NEW FLOW */}
+          <Route path="/leads" element={<PrivateRoute><Leads /></PrivateRoute>} />
+          <Route path="/worksheet" element={<PrivateRoute><Worksheet /></PrivateRoute>} />
+
+          {/* 🔥 PROFILE */}
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
 
-          {/* 🔥 ADMIN / CONTROL PANEL */}
+          {/* 🔥 ACTION PAGES */}
           <Route path="/add-product" element={<PrivateRoute><AddProduct /></PrivateRoute>} />
           <Route path="/add-user" element={<PrivateRoute><AddUser /></PrivateRoute>} />
           <Route path="/add-retailer" element={<PrivateRoute><AddRetailer /></PrivateRoute>} />
+          <Route path="/add-worksheet" element={<PrivateRoute><AddWorksheet /></PrivateRoute>} />
 
           {/* 🔁 FALLBACK */}
           <Route path="*" element={<Navigate to="/dashboard" />} />
