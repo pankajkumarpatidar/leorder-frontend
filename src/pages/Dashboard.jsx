@@ -8,31 +8,43 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { User, LogOut } from "lucide-react";
 
 function Dashboard() {
   const [orders, setOrders] = useState([]);
 
   const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
     fetchOrders();
   }, []);
 
   const fetchOrders = async () => {
-    const res = await axios.get(
-      "http://localhost:5000/api/order/list",
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    setOrders(res.data);
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/order/list`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setOrders(res.data.data || res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // 🔥 LOGOUT
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = "/login";
   };
 
   // 🔥 CALCULATIONS
   const totalOrders = orders.length;
 
   const totalSales = orders.reduce(
-    (sum, o) => sum + Number(o.total_amount),
+    (sum, o) => sum + Number(o.total_amount || 0),
     0
   );
 
@@ -47,7 +59,21 @@ function Dashboard() {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Dashboard</h2>
+      
+      {/* 🔥 HEADER */}
+      <div style={styles.header}>
+        <div>
+          <h2 style={{ margin: 0 }}>Dashboard</h2>
+          <p style={{ fontSize: 12, color: "#666" }}>
+            {user?.business_name || user?.email}
+          </p>
+        </div>
+
+        <div style={styles.profileBox}>
+          <User size={20} />
+          <LogOut size={20} onClick={handleLogout} />
+        </div>
+      </div>
 
       {/* 🔥 CARDS */}
       <div style={styles.grid}>
@@ -98,15 +124,31 @@ const styles = {
     minHeight: "100vh",
     fontFamily: "Poppins",
   },
-  title: {
-    textAlign: "center",
+
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 15,
   },
+
+  profileBox: {
+    display: "flex",
+    gap: 10,
+    background: "#fff",
+    padding: "8px 12px",
+    borderRadius: 20,
+    boxShadow: "0 5px 15px rgba(0,0,0,0.05)",
+    alignItems: "center",
+    cursor: "pointer",
+  },
+
   grid: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
     gap: 10,
   },
+
   card: {
     background: "#fff",
     borderRadius: 20,
@@ -114,6 +156,7 @@ const styles = {
     boxShadow: "0 8px 20px rgba(0,0,0,0.05)",
     textAlign: "center",
   },
+
   chartBox: {
     background: "#fff",
     borderRadius: 20,
