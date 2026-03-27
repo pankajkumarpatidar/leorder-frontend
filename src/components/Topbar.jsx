@@ -3,20 +3,18 @@ export default function Topbar({ setOpen }) {
 
   return (
     <div className="topbar">
-
-      <button className="menuBtn" onClick={()=>setOpen(true)}>
+      
+      {/* 🔥 MENU BUTTON */}
+      <button className="menuBtn" onClick={() => setOpen(true)}>
         ☰
       </button>
 
-      <div className="welcome">
-        👋 {name}
-      </div>
+      <div>👋 {name}</div>
 
       <button
-        className="logout"
-        onClick={()=>{
+        onClick={() => {
           localStorage.clear();
-          window.location.href="/login";
+          window.location.href = "/login";
         }}
       >
         Logout
