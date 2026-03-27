@@ -16,7 +16,6 @@ export default function BottomNav() {
     <>
       {/* 🔥 NAV BAR */}
       <div style={styles.nav}>
-
         <div style={styles.icon(location.pathname === "/dashboard")} onClick={() => handleNav("/dashboard")}>
           <Home size={22} />
         </div>
@@ -36,10 +35,10 @@ export default function BottomNav() {
         <div style={styles.icon(location.pathname === "/worksheet")} onClick={() => handleNav("/worksheet")}>
           <ClipboardList size={22} />
         </div>
-
       </div>
 
-      {/* 🔥 DYNAMIC FLOATING BUTTON */}
+      {/* 🔥 FLOATING BUTTONS */}
+
       {location.pathname === "/orders" && (
         <div style={styles.fab} onClick={() => handleNav("/order")}>
           <Plus size={26} />
@@ -52,18 +51,21 @@ export default function BottomNav() {
         </div>
       )}
 
+      {location.pathname === "/leads" && (
+        <div style={styles.fab} onClick={() => handleNav("/add-lead")}>
+          <Plus size={26} />
+        </div>
+      )}
+
       {location.pathname === "/worksheet" && (
         <div style={styles.fab} onClick={() => handleNav("/add-worksheet")}>
           <Plus size={26} />
         </div>
       )}
-
     </>
   );
 }
 
-
-// 🎨 STYLES
 const styles = {
   nav: {
     position: "fixed",
@@ -93,6 +95,7 @@ const styles = {
     cursor: "pointer",
     color: active ? "#2563eb" : "#666",
     background: active ? "rgba(37,99,235,0.1)" : "transparent",
+    outline: "none",
     WebkitTapHighlightColor: "transparent"
   }),
 
