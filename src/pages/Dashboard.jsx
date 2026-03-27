@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import TopNav from "../components/TopNav";
 
-<TopNav />
 import {
   LineChart,
   Line,
@@ -43,7 +42,7 @@ function Dashboard() {
     window.location.href = "/login";
   };
 
-  // 🔥 CALCULATIONS
+  // 🔥 DATA
   const totalOrders = orders.length;
 
   const totalSales = orders.reduce(
@@ -54,79 +53,80 @@ function Dashboard() {
   const pending = orders.filter((o) => o.status === "pending").length;
   const approved = orders.filter((o) => o.status === "approved").length;
 
-  // 🔥 CHART DATA
   const chartData = orders.map((o) => ({
     name: `#${o.id}`,
     amount: o.total_amount,
   }));
 
   return (
-    <div style={styles.container}>
+    <div style={styles.wrapper}>
       
-      {/* 🔥 HEADER */}
-      <div style={styles.header}>
-        <div>
-          <h2 style={{ margin: 0 }}>Dashboard</h2>
-          <p style={{ fontSize: 12, color: "#666" }}>
-            {user?.business_name || user?.email}
-          </p>
+      {/* 🔥 TOP NAV */}
+      <TopNav />
+
+      <div style={styles.container}>
+        
+        {/* 🔥 HEADER */}
+        <div style={styles.header}>
+          <div>
+            <h2 style={{ margin: 0 }}>Dashboard</h2>
+            <p style={styles.subText}>
+              {user?.business_name || user?.email}
+            </p>
+          </div>
+
+          <div style={styles.profileBox}>
+            <User size={18} />
+            <LogOut size={18} onClick={handleLogout} />
+          </div>
         </div>
 
-        <div style={styles.profileBox}>
-          <User size={20} />
-          <LogOut size={20} onClick={handleLogout} />
-        </div>
-      </div>
-
-      {/* 🔥 CARDS */}
-      <div style={styles.grid}>
-        <div style={styles.card}>
-          <p>Total Orders</p>
-          <h3>{totalOrders}</h3>
+        {/* 🔥 GRID */}
+        <div style={styles.grid}>
+          <Card title="Total Orders" value={totalOrders} />
+          <Card title="Total Sales" value={`₹ ${totalSales}`} />
+          <Card title="Pending" value={pending} />
+          <Card title="Approved" value={approved} />
         </div>
 
-        <div style={styles.card}>
-          <p>Total Sales</p>
-          <h3>₹ {totalSales}</h3>
+        {/* 🔥 CHART */}
+        <div style={styles.chartBox}>
+          <h4>Sales Trend</h4>
+
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={chartData}>
+              <XAxis dataKey="name" hide />
+              <YAxis hide />
+              <Tooltip />
+              <Line type="monotone" dataKey="amount" />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
 
-        <div style={styles.card}>
-          <p>Pending</p>
-          <h3>{pending}</h3>
-        </div>
-
-        <div style={styles.card}>
-          <p>Approved</p>
-          <h3>{approved}</h3>
-        </div>
-      </div>
-
-      {/* 🔥 CHART */}
-      <div style={styles.chartBox}>
-        <h4>Sales Trend</h4>
-
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={chartData}>
-            <XAxis dataKey="name" hide />
-            <YAxis hide />
-            <Tooltip />
-            <Line type="monotone" dataKey="amount" />
-          </LineChart>
-        </ResponsiveContainer>
       </div>
     </div>
   );
 }
 
-// 🎨 PREMIUM UI
+// 🔥 CARD COMPONENT
+const Card = ({ title, value }) => (
+  <div style={styles.card}>
+    <p style={styles.cardTitle}>{title}</p>
+    <h3>{value}</h3>
+  </div>
+);
+
+// 🎨 STYLES (FULL RESPONSIVE)
 const styles = {
-  container: {
-    padding: 15,
-    padding: 70,
-    paddingBottom: 80,
-    background: "#f5f6fa",
+  wrapper: {
     minHeight: "100vh",
-    fontFamily: "Poppins",
+    background: "#f5f6fa",
+  },
+
+  container: {
+    padding: "70px 12px 90px", // 🔥 auto top + bottom nav space
+    maxWidth: 500,
+    margin: "0 auto",
   },
 
   header: {
@@ -136,11 +136,16 @@ const styles = {
     marginBottom: 15,
   },
 
+  subText: {
+    fontSize: 12,
+    color: "#666",
+  },
+
   profileBox: {
     display: "flex",
     gap: 10,
     background: "#fff",
-    padding: "8px 12px",
+    padding: "6px 10px",
     borderRadius: 20,
     boxShadow: "0 5px 15px rgba(0,0,0,0.05)",
     alignItems: "center",
@@ -149,24 +154,30 @@ const styles = {
 
   grid: {
     display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: 10,
+    gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+    gap: 12,
   },
 
   card: {
     background: "#fff",
-    borderRadius: 20,
+    borderRadius: 18,
     padding: 15,
-    boxShadow: "0 8px 20px rgba(0,0,0,0.05)",
     textAlign: "center",
+    boxShadow: "0 6px 15px rgba(0,0,0,0.05)",
+  },
+
+  cardTitle: {
+    fontSize: 14,
+    color: "#555",
+    marginBottom: 5,
   },
 
   chartBox: {
     background: "#fff",
-    borderRadius: 20,
+    borderRadius: 18,
     padding: 15,
     marginTop: 15,
-    boxShadow: "0 8px 20px rgba(0,0,0,0.05)",
+    boxShadow: "0 6px 15px rgba(0,0,0,0.05)",
   },
 };
 
