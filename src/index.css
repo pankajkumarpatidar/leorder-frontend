@@ -1,4 +1,4 @@
-/* 🔥 RESET + BASE */
+/* 🔥 RESET */
 * {
   margin: 0;
   padding: 0;
@@ -6,21 +6,23 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* 🔥 HTML FIX (ZOOM ISSUE FIX) */
+/* 🔥 HTML FIX (ZOOM CONTROL) */
 html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  touch-action: manipulation; /* 🔥 zoom reduce */
 }
 
 /* 🔥 BODY */
 body {
   font-family: 'Poppins', sans-serif;
   background: #f5f6fa;
-  user-select: none;
   overflow-x: hidden;
+  user-select: none;
 }
 
-/* 🔥 BUTTON SMOOTH FEEL */
+/* 🔥 BUTTON */
 button {
   transition: all 0.2s ease;
   border: none;
@@ -32,7 +34,7 @@ button:active {
   transform: scale(0.96);
 }
 
-/* 🔥 INPUT FIX */
+/* 🔥 INPUT */
 input,
 textarea,
 select {
@@ -42,24 +44,21 @@ select {
   font-size: 14px;
 }
 
-/* 🔥 SCROLL SMOOTH */
-html {
-  scroll-behavior: smooth;
-}
-
-/* 🔥 IMAGE SAFE */
+/* 🔥 IMAGE */
 img {
   max-width: 100%;
   display: block;
 }
 
-/* 🔥 LINKS */
+/* 🔥 LINK */
 a {
   text-decoration: none;
   color: inherit;
 }
 
-/* 🔥 MOBILE SAFE AREA */
+/* 🔥 ROOT */
 #root {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }

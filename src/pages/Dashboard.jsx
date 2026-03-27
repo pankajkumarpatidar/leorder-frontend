@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import TopNav from "../components/TopNav";
 
 import {
   LineChart,
@@ -36,7 +35,6 @@ function Dashboard() {
     }
   };
 
-  // 🔥 LOGOUT
   const handleLogout = () => {
     localStorage.clear();
     window.location.href = "/login";
@@ -44,7 +42,6 @@ function Dashboard() {
 
   // 🔥 DATA
   const totalOrders = orders.length;
-
   const totalSales = orders.reduce(
     (sum, o) => sum + Number(o.total_amount || 0),
     0
@@ -60,16 +57,12 @@ function Dashboard() {
 
   return (
     <div style={styles.wrapper}>
-      
-      {/* 🔥 TOP NAV */}
-      <TopNav />
-
       <div style={styles.container}>
-        
+
         {/* 🔥 HEADER */}
         <div style={styles.header}>
           <div>
-            <h2 style={{ margin: 0 }}>Dashboard</h2>
+            <h2 style={styles.title}>Dashboard</h2>
             <p style={styles.subText}>
               {user?.business_name || user?.email}
             </p>
@@ -108,7 +101,7 @@ function Dashboard() {
   );
 }
 
-// 🔥 CARD COMPONENT
+// 🔥 CARD
 const Card = ({ title, value }) => (
   <div style={styles.card}>
     <p style={styles.cardTitle}>{title}</p>
@@ -116,7 +109,7 @@ const Card = ({ title, value }) => (
   </div>
 );
 
-// 🎨 STYLES (FULL RESPONSIVE)
+// 🎨 STYLES
 const styles = {
   wrapper: {
     minHeight: "100vh",
@@ -124,7 +117,7 @@ const styles = {
   },
 
   container: {
-    padding: "70px 12px 90px", // 🔥 auto top + bottom nav space
+    padding: "70px 12px 90px", // 🔥 auto nav spacing
     maxWidth: 500,
     margin: "0 auto",
   },
@@ -134,6 +127,10 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 15,
+  },
+
+  title: {
+    margin: 0,
   },
 
   subText: {
