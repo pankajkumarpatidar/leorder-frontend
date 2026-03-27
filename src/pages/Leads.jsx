@@ -1,74 +1,212 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import Layout from "../components/Layout";
+import api from "../utils/api";
 
 export default function Leads() {
-  const [leads, setLeads] = useState([]);
 
-  const token = localStorage.getItem("token");
-  const API = import.meta.env.VITE_API_URL;
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [filter, setFilter] = useState("all");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetchLeads();
+    fetchData();
   }, []);
 
-  const fetchLeads = async () => {
-    const res = await axios.get(`${API}/api/lead/list`, {
-      headers: { Authorization: `Bearer ${token}` },
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/api/lead/list");
+      setData(res.data.data || []);
+    } catch (err) {
+      console.error(err);
+      alert("Error loading leads");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔄 STATUS UPDATE
+  const updateStatus = async (id, status) => {
+    await api.put("/api/lead/status", {
+      lead_id: id,
+      status
+    });
+    fetchData();
+  };
+
+  // 🔥 CONVERT
+  const convertLead = async (id) => {
+    const business_name = prompt("Business Name");
+
+    if (!business_name) return;
+
+    await api.post("/api/lead/convert", {
+      lead_id: id,
+      business_name
     });
 
-    setLeads(res.data.data || res.data);
+    fetchData();
   };
 
-  const updateStatus = async (id, status) => {
-    await axios.put(
-      `${API}/api/lead/status/${id}`,
-      { status },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+  // 🎯 FILTER + SEARCH
+  const filteredData = data.filter(l => {
 
-    fetchLeads();
-  };
+    const matchStatus =
+      filter === "all" || l.status === filter;
+
+    const matchSearch =
+      l.mobile?.includes(search);
+
+    return matchStatus && matchSearch;
+  });
+
+  // 📊 ANALYTICS
+  const total = data.length;
+  const approved = data.filter(l=>l.status==="approved").length;
+  const rejected = data.filter(l=>l.status==="rejected").length;
+  const converted = data.filter(l=>l.status==="converted").length;
 
   return (
-    <div style={styles.container}>
+    <Layout>
+
       <h2>Leads</h2>
 
-      {leads.map((l) => (
-        <div key={l.id} style={styles.card}>
-          <h4>{l.name}</h4>
-          <p>{l.mobile}</p>
-          <p>Status: {l.status}</p>
+      {/* 📊 ANALYTICS */}
+      <div className="grid">
+        <div className="card">Total: {total}</div>
+        <div className="card">Approved: {approved}</div>
+        <div className="card">Rejected: {rejected}</div>
+        <div className="card">Converted: {converted}</div>
+      </div>
 
-          {l.status === "pending" && (
-            <div style={styles.btnRow}>
-              <button onClick={() => updateStatus(l.id, "approved")}>
-                Approve
-              </button>
-              <button onClick={() => updateStatus(l.id, "rejected")}>
-                Reject
-              </button>
-            </div>
-          )}
+      {/* 🔍 SEARCH + FILTER */}
+      <div style={{ display:"flex", gap:10, margin:"15px 0" }}>
+
+        <input
+          placeholder="Search mobile..."
+          value={search}
+          onChange={(e)=>setSearch(e.target.value)}
+        />
+
+        <select onChange={(e)=>setFilter(e.target.value)}>
+          <option value="all">All</option>
+          <option value="new">New</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+          <option value="converted">Converted</option>
+        </select>
+
+      </div>
+
+      {/* LOADING */}
+      {loading && <p>Loading...</p>}
+
+      {/* EMPTY */}
+      {!loading && filteredData.length === 0 && (
+        <p>No leads found</p>
+      )}
+
+      {/* 📋 DESKTOP TABLE */}
+      {!loading && filteredData.length > 0 && (
+        <div className="card">
+
+          <table>
+            <thead>
+              <tr>
+                <th>Mobile</th>
+                <th>Brand</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              {filteredData.map(l => (
+                <tr key={l.id}>
+
+                  <td>{l.mobile}</td>
+                  <td>{l.brand_name || "-"}</td>
+
+                  <td>
+                    <span className={`badge ${l.status}`}>
+                      {l.status}
+                    </span>
+                  </td>
+
+                  <td>
+
+                    {l.status === "new" && (
+                      <>
+                        <button onClick={()=>updateStatus(l.id,"approved")}>
+                          ✔
+                        </button>
+
+                        <button onClick={()=>updateStatus(l.id,"rejected")}>
+                          ✖
+                        </button>
+                      </>
+                    )}
+
+                    {l.status === "approved" && (
+                      <button onClick={()=>convertLead(l.id)}>
+                        Convert
+                      </button>
+                    )}
+
+                  </td>
+
+                </tr>
+              ))}
+
+            </tbody>
+          </table>
+
         </div>
-      ))}
-    </div>
+      )}
+
+      {/* 📱 MOBILE VIEW */}
+      <div className="mobile-list">
+
+        {filteredData.map(l => (
+          <div key={l.id} className="card">
+
+            <h3>{l.mobile}</h3>
+            <p>{l.brand_name}</p>
+
+            <span className={`badge ${l.status}`}>
+              {l.status}
+            </span>
+
+            <div style={{marginTop:10}}>
+
+              {l.status === "new" && (
+                <>
+                  <button onClick={()=>updateStatus(l.id,"approved")}>
+                    Approve
+                  </button>
+
+                  <button onClick={()=>updateStatus(l.id,"rejected")}>
+                    Reject
+                  </button>
+                </>
+              )}
+
+              {l.status === "approved" && (
+                <button onClick={()=>convertLead(l.id)}>
+                  Convert
+                </button>
+              )}
+
+            </div>
+
+          </div>
+        ))}
+
+      </div>
+
+    </Layout>
   );
 }
-
-const styles = {
-  container: {
-    padding: 15,
-    padding: 70,
-    paddingBottom: 80,
-  },
-  card: {
-    background: "#fff",
-    padding: 15,
-    borderRadius: 15,
-    marginBottom: 10,
-  },
-  btnRow: {
-    display: "flex",
-    gap: 10,
-  },
-};
