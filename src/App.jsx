@@ -24,7 +24,7 @@ import AddWorksheet from "./pages/AddWorksheet"; // 🔥 NEW
 
 // 🔥 UI
 import BottomNav from "./components/BottomNav";
-
+import TopNav from "./components/TopNav";
 
 // 🔒 PRIVATE ROUTE
 const PrivateRoute = ({ children }) => {
@@ -44,15 +44,17 @@ const PublicRoute = ({ children }) => {
 const Layout = ({ children }) => {
   const location = useLocation();
 
+  const hideNav =
+    location.pathname === "/login" ||
+    location.pathname === "/signup";
+
   return (
     <>
+      {!hideNav && <TopNav />}   {/* 🔥 ADD THIS */}
+
       {children}
 
-      {/* hide nav on auth pages */}
-      {location.pathname !== "/login" &&
-        location.pathname !== "/signup" && (
-          <BottomNav />
-        )}
+      {!hideNav && <BottomNav />}
     </>
   );
 };
