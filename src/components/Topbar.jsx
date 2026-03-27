@@ -1,11 +1,19 @@
-export default function Topbar() {
+export default function Topbar({ setOpen }) {
   const name = localStorage.getItem("name");
 
   return (
     <div className="topbar">
-      <div>👋 Welcome, {name}</div>
+
+      <button className="menuBtn" onClick={()=>setOpen(true)}>
+        ☰
+      </button>
+
+      <div className="welcome">
+        👋 {name}
+      </div>
 
       <button
+        className="logout"
         onClick={()=>{
           localStorage.clear();
           window.location.href="/login";
@@ -13,6 +21,7 @@ export default function Topbar() {
       >
         Logout
       </button>
+
     </div>
   );
 }
