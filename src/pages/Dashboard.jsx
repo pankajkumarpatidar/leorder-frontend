@@ -122,6 +122,7 @@ function Dashboard() {
 const styles = {
   container: {
     padding: 15,
+    padding: 70,
     paddingBottom: 80,
     background: "#f5f6fa",
     minHeight: "100vh",
