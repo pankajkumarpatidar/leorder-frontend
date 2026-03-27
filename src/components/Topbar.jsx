@@ -1,10 +1,13 @@
-export default function Topbar({ setOpen }) {
+export default function Topbar({ setOpen, isMobile }) {
   return (
     <div className="topbar">
 
-      <button className="menuBtn" onClick={() => setOpen(true)}>
-        ☰
-      </button>
+      {/* 🔥 ONLY MOBILE */}
+      {isMobile && (
+        <button className="menuBtn" onClick={() => setOpen(true)}>
+          ☰
+        </button>
+      )}
 
       <div>👋 Welcome</div>
 

@@ -1,11 +1,16 @@
 import { Link } from "react-router-dom";
 
-export default function Sidebar({ open, setOpen }) {
+export default function Sidebar({ open, setOpen, isMobile }) {
+
   return (
     <>
-      {open && <div className="overlay" onClick={() => setOpen(false)} />}
+      {/* overlay only mobile */}
+      {isMobile && open && (
+        <div className="overlay" onClick={() => setOpen(false)} />
+      )}
 
-      <div className={`sidebar ${open ? "open" : ""}`}>
+      <div className={`sidebar ${isMobile ? (open ? "open" : "") : "desktop"}`}>
+
         <h2>⚡ LeadPro</h2>
 
         <nav>
@@ -17,6 +22,7 @@ export default function Sidebar({ open, setOpen }) {
           <Link to="/worksheet">Worksheet</Link>
           <Link to="/users">Users</Link>
         </nav>
+
       </div>
     </>
   );
