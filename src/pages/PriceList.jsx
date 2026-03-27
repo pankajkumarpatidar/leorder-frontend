@@ -120,11 +120,12 @@ const styles = {
     height: "100vh",
     overflowY: "auto",
     padding: 15,
-    paddingBottom: 100
+    padding: 70,
+    paddingBottom: 100,
   },
 
   title: {
-    textAlign: "center",
+    textAlign: "center",padding: 15,
     marginBottom: 15
   },
 

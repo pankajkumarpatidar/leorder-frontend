@@ -58,6 +58,7 @@ export default function Leads() {
 const styles = {
   container: {
     padding: 15,
+    padding: 70,
     paddingBottom: 80,
   },
   card: {

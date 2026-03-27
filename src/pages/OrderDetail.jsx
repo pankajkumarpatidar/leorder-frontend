@@ -169,6 +169,7 @@ Total: ₹${order.total_amount}`;
 const styles = {
   container: {
     padding: 15,
+    padding: 70,
     paddingBottom: 80,
     minHeight: "100vh",
     background: "#f5f6fa",
