@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import TopNav from "../components/TopNav";
+
+<TopNav />
 import {
   LineChart,
   Line,
