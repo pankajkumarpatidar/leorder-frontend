@@ -19,7 +19,7 @@ export default function Leads() {
     mobile: "",
     brand_id: "",
     retailer_id: "",
-    status: "new",
+    status: "pending",
   });
 
   // ===== FETCH =====
@@ -62,7 +62,7 @@ export default function Leads() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 🔥 mobile validation only on create
+    // ✅ mobile validation only on create
     if (!editId && !/^[0-9]{10}$/.test(form.mobile)) {
       return showToast("Invalid mobile");
     }
@@ -71,7 +71,7 @@ export default function Leads() {
       let res;
 
       if (editId) {
-        // ✅ UPDATE (STATUS ONLY)
+        // ✅ UPDATE STATUS ONLY
         res = await fetch(`${BASE_URL}/leads/update-status`, {
           method: "PUT",
           headers: {
@@ -84,7 +84,7 @@ export default function Leads() {
           }),
         });
       } else {
-        // ✅ CREATE
+        // ✅ CREATE (NO STATUS SENT)
         res = await fetch(`${BASE_URL}/leads`, {
           method: "POST",
           headers: {
@@ -109,7 +109,7 @@ export default function Leads() {
           mobile: "",
           brand_id: "",
           retailer_id: "",
-          status: "new",
+          status: "pending",
         });
         fetchData();
       } else {
@@ -141,17 +141,20 @@ export default function Leads() {
     filtered = filtered.filter((l) => l.status === filter);
   }
 
-  const order = { new: 1, followup: 2, closed: 3 };
+  // ===== SORT (pending top) =====
+  const order = { pending: 1, approved: 2, rejected: 3 };
   filtered.sort((a, b) => order[a.status] - order[b.status]);
 
   return (
     <div className="appContainer">
 
+      {/* HEADER */}
       <div className="header">
         <h3>Leads</h3>
         <p>{filtered.length}</p>
       </div>
 
+      {/* SEARCH */}
       <input
         className="searchBox"
         placeholder="Search mobile..."
@@ -159,8 +162,9 @@ export default function Leads() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
+      {/* FILTER */}
       <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-        {["all", "new", "followup", "closed"].map((f) => (
+        {["all", "pending", "approved", "rejected"].map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
@@ -177,28 +181,38 @@ export default function Leads() {
         ))}
       </div>
 
+      {/* LIST */}
       {filtered.length === 0 ? (
         <p style={{ marginTop: 20 }}>No leads</p>
       ) : (
         filtered.map((l) => (
           <div key={l.id} className="userCard">
+
             <div>
               <h4>{l.mobile}</h4>
+
               <p>
                 {brands.find(b => b.id === l.brand_id)?.name || "-"}
               </p>
+
               <span className="roleTag">{l.status}</span>
             </div>
 
             <div className="actionBtns">
               <button onClick={() => handleEdit(l)}>Edit</button>
             </div>
+
           </div>
         ))
       )}
 
-      <button className="fabBtn" onClick={() => setShow(true)}>+</button>
+      {/* FAB */}
+      <button className="fabBtn" onClick={() => {
+        setEditId(null);
+        setShow(true);
+      }}>+</button>
 
+      {/* MODAL */}
       {show && (
         <div className="modal">
           <div className="modalBox">
@@ -207,50 +221,58 @@ export default function Leads() {
 
             <form onSubmit={handleSubmit}>
 
-              <input
-                placeholder="Mobile"
-                value={form.mobile}
-                onChange={(e) =>
-                  setForm({ ...form, mobile: e.target.value })
-                }
-              />
+              {/* CREATE ONLY */}
+              {!editId && (
+                <>
+                  <input
+                    placeholder="Mobile"
+                    value={form.mobile}
+                    onChange={(e) =>
+                      setForm({ ...form, mobile: e.target.value })
+                    }
+                  />
 
-              <select
-                value={form.brand_id}
-                onChange={(e) =>
-                  setForm({ ...form, brand_id: e.target.value })
-                }
-              >
-                <option value="">Brand</option>
-                {brands.map((b) => (
-                  <option key={b.id} value={b.id}>{b.name}</option>
-                ))}
-              </select>
+                  <select
+                    value={form.brand_id}
+                    onChange={(e) =>
+                      setForm({ ...form, brand_id: e.target.value })
+                    }
+                  >
+                    <option value="">Brand</option>
+                    {brands.map((b) => (
+                      <option key={b.id} value={b.id}>{b.name}</option>
+                    ))}
+                  </select>
 
-              <select
-                value={form.retailer_id}
-                onChange={(e) =>
-                  setForm({ ...form, retailer_id: e.target.value })
-                }
-              >
-                <option value="">Retailer</option>
-                {retailers.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.business_name}
-                  </option>
-                ))}
-              </select>
+                  <select
+                    value={form.retailer_id}
+                    onChange={(e) =>
+                      setForm({ ...form, retailer_id: e.target.value })
+                    }
+                  >
+                    <option value="">Retailer</option>
+                    {retailers.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.business_name}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
 
-              <select
-                value={form.status}
-                onChange={(e) =>
-                  setForm({ ...form, status: e.target.value })
-                }
-              >
-                <option value="new">New</option>
-                <option value="followup">Followup</option>
-                <option value="closed">Closed</option>
-              </select>
+              {/* EDIT ONLY */}
+              {editId && (
+                <select
+                  value={form.status}
+                  onChange={(e) =>
+                    setForm({ ...form, status: e.target.value })
+                  }
+                >
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              )}
 
               <button type="submit">
                 {editId ? "Update" : "Create"}
@@ -269,7 +291,9 @@ export default function Leads() {
         </div>
       )}
 
+      {/* TOAST */}
       {toast && <div className="toast">{toast}</div>}
+
     </div>
   );
 }
