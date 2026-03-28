@@ -46,6 +46,7 @@ body {
   align-items: center;
   justify-content: center;
   font-weight: 600;
+  cursor: pointer;
 }
 
 /* ===== MAIN CARD ===== */
@@ -107,13 +108,6 @@ body {
   padding: 20px;
 }
 
-.authContainer form {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
 .authContainer input {
   padding: 14px;
   border-radius: 14px;
@@ -135,27 +129,18 @@ body {
   position: fixed;
   bottom: 95px;
   right: 18px;
-
   width: 58px;
   height: 58px;
-
   border-radius: 50%;
   border: none;
-
   background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
   font-size: 28px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   box-shadow: 0 15px 30px rgba(37, 99, 235, 0.45);
   z-index: 1000;
-}
-
-.fabBtn:active {
-  transform: scale(0.92);
 }
 
 /* ===== BOTTOM NAV ===== */
@@ -165,16 +150,12 @@ body {
   left: 14px;
   right: 14px;
   height: 74px;
-
   background: rgba(255,255,255,0.85);
   backdrop-filter: blur(20px);
-
   border-radius: 28px;
-
   display: flex;
   justify-content: space-around;
   align-items: center;
-
   box-shadow: 0 18px 45px rgba(0,0,0,0.18);
   z-index: 999;
 }
@@ -182,34 +163,18 @@ body {
 .navItem {
   text-decoration: none;
   color: #888;
-
   display: flex;
   flex-direction: column;
   align-items: center;
-
   font-size: 11px;
   padding: 8px 12px;
   border-radius: 16px;
-
-  transition: all 0.25s ease;
-}
-
-.navItem svg {
-  width: 22px;
-  height: 22px;
-  stroke-width: 2.2;
 }
 
 .navItem.active {
   background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
-
-  transform: translateY(-8px) scale(1.05);
-  box-shadow: 0 12px 25px rgba(37, 99, 235, 0.4);
-}
-
-.navItem:active {
-  transform: scale(0.92);
+  transform: translateY(-8px);
 }
 
 /* ===== USER CARD ===== */
@@ -218,52 +183,21 @@ body {
   padding: 16px;
   border-radius: 18px;
   margin-top: 12px;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   box-shadow: 0 8px 20px rgba(0,0,0,0.06);
 }
 
-.userCard h4 {
-  font-size: 15px;
-}
-
-.userCard p {
-  font-size: 12px;
-  color: #777;
-}
-
-/* ROLE */
-.roleTag {
-  font-size: 11px;
-  background: #dbeafe;
-  padding: 4px 10px;
-  border-radius: 12px;
-}
-
-/* DELETE */
-.deleteBtn {
-  border: none;
-  background: #fee2e2;
-  color: #b91c1c;
-  padding: 8px 12px;
-  border-radius: 10px;
-}
-
-/* ===== MODAL (IMPROVED) ===== */
+/* ===== MODAL ===== */
 .modal {
   position: fixed;
   inset: 0;
-
   background: rgba(0,0,0,0.45);
   backdrop-filter: blur(6px);
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   z-index: 2000;
 }
 
@@ -273,72 +207,85 @@ body {
   border-radius: 22px;
   width: 90%;
   max-width: 380px;
-
-  animation: pop 0.25s ease;
 }
 
-@keyframes pop {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+/* ===== PROFILE HEADER (NEW) ===== */
+.profileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
 }
 
-.modalBox form {
+/* BACK BUTTON */
+.backBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.backBtn:hover {
+  background: #f1f5f9;
+}
+
+.backBtn:active {
+  transform: scale(0.9);
+}
+
+/* ===== PROFILE ===== */
+.profileCard {
+  margin-top: 10px;
+  background: white;
+  border-radius: 22px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+.profileAvatar {
+  width: 90px;
+  height: 90px;
+  margin: auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: white;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.profileActions {
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.modalBox input,
-.modalBox select {
-  padding: 14px;
-  border-radius: 14px;
-  border: none;
-  background: #eef2f7;
-}
-
-.modalBox button {
-  padding: 14px;
-  border: none;
+.primaryBtn {
+  padding: 13px;
   border-radius: 14px;
   background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
+  border: none;
+  font-weight: bold;
 }
 
-.closeBtn {
-  margin-top: 10px;
-  background: #eee !important;
-  color: black !important;
-}
-
-/* ===== SEARCH ===== */
-.searchBox {
-  margin-top: 14px;
-  width: 100%;
-  padding: 14px;
+.logoutBtn {
+  padding: 13px;
   border-radius: 14px;
-  border: none;
-  background: #eef2f7;
-}
-
-/* ===== ACTION ===== */
-.actionBtns {
-  display: flex;
-  gap: 6px;
-}
-
-.actionBtns button {
-  border: none;
-  padding: 6px 10px;
-  border-radius: 8px;
-}
-
-.actionBtns button:first-child {
-  background: #dbeafe;
-}
-
-.actionBtns button:last-child {
   background: #fee2e2;
   color: #b91c1c;
+  border: none;
+  font-weight: bold;
 }
 
 /* ===== TOAST ===== */
@@ -356,11 +303,9 @@ body {
 
 /* ===== DESKTOP ===== */
 @media(min-width:768px){
-
   .appContainer {
     max-width: 900px;
     margin: auto;
-    padding-bottom: 40px;
   }
 
   .bottomNav {
@@ -369,62 +314,4 @@ body {
     left: 0;
     right: 0;
   }
-}
-
-/* ===== PROFILE ===== */
-.profileCard {
-  margin-top: 20px;
-  background: white;
-  border-radius: 20px;
-  padding: 25px;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-}
-
-.profileAvatar {
-  width: 80px;
-  height: 80px;
-  margin: auto;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
-  color: white;
-  font-size: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-
-.profileCard h2 {
-  margin: 5px 0;
-}
-
-.profileCard p {
-  color: #666;
-  font-size: 14px;
-}
-
-.profileActions {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.primaryBtn {
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
-  color: white;
-  font-weight: bold;
-}
-
-.logoutBtn {
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  background: #fee2e2;
-  color: #b91c1c;
-  font-weight: bold;
 }
