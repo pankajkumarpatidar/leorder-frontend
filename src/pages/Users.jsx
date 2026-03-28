@@ -21,7 +21,7 @@ export default function Users() {
 
   // 🔥 FETCH
   const fetchUsers = async () => {
-    const res = await fetch("http://localhost:5000/api/users", {
+    const res = await fetch("http://localhost:5000/api/auth/users", {
       headers: { Authorization: "Bearer " + token }
     });
     const data = await res.json();
