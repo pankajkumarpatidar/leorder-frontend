@@ -9,7 +9,7 @@ body {
 /* ===== APP CONTAINER ===== */
 .appContainer {
   padding: 16px;
-  padding-bottom: 100px; /* nav space */
+  padding-bottom: 110px; /* 🔥 थोड़ा extra space nav के लिए */
 }
 
 /* ===== HEADER ===== */
@@ -128,7 +128,7 @@ body {
   cursor: pointer;
 }
 
-/* ===== BOTTOM NAV (FINAL PREMIUM) ===== */
+/* ===== BOTTOM NAV (FINAL FIXED) ===== */
 .bottomNav {
   position: fixed;
   bottom: 12px;
@@ -136,18 +136,18 @@ body {
   right: 12px;
   height: 70px;
 
-  background: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.95);
   backdrop-filter: blur(18px);
 
   border-radius: 25px;
 
-  display: flex;
+  display: flex !important; /* 🔥 FORCE SHOW */
   justify-content: space-around;
   align-items: center;
 
   box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 
-  z-index: 999;
+  z-index: 9999; /* 🔥 ऊपर लाया */
 }
 
 /* NAV ITEM */
@@ -167,14 +167,14 @@ body {
   transition: all 0.25s ease;
 }
 
-/* ICON (LUCIDE FIX) */
+/* ICON FIX */
 .navItem svg {
   width: 22px;
   height: 22px;
   stroke-width: 2.2;
 }
 
-/* ACTIVE TAB */
+/* ACTIVE */
 .navItem.active {
   background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
@@ -188,14 +188,9 @@ body {
 
 /* ===== DESKTOP ===== */
 @media(min-width:768px){
-
   .appContainer {
     max-width: 900px;
     margin: auto;
-    padding-bottom: 30px;
-  }
-
-  .bottomNav {
-    display: none;
+    padding-bottom: 40px;
   }
 }

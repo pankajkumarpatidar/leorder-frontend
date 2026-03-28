@@ -8,28 +8,37 @@ import {
 } from "lucide-react";
 
 export default function BottomNav() {
-  const { pathname } = useLocation();
+  const location = useLocation();
 
   const nav = [
-    { path: "/", icon: <Home size={20} />, label: "Home" },
-    { path: "/leads", icon: <BarChart3 size={20} />, label: "Leads" },
-    { path: "/orders", icon: <Package size={20} />, label: "Orders" },
-    { path: "/products", icon: <ShoppingBag size={20} />, label: "Products" },
-    { path: "/users", icon: <User size={20} />, label: "Users" },
+    { path: "/", icon: Home, label: "Home" },
+    { path: "/leads", icon: BarChart3, label: "Leads" },
+    { path: "/orders", icon: Package, label: "Orders" },
+    { path: "/products", icon: ShoppingBag, label: "Products" },
+    { path: "/users", icon: User, label: "Users" },
   ];
 
   return (
     <div className="bottomNav">
-      {nav.map((item) => (
-        <Link
-          key={item.path}
-          to={item.path}
-          className={pathname === item.path ? "navItem active" : "navItem"}
-        >
-          {item.icon}
-          <p>{item.label}</p>
-        </Link>
-      ))}
+      {nav.map((item) => {
+        const Icon = item.icon;
+
+        // 🔥 ACTIVE FIX (sub routes bhi match kare)
+        const isActive =
+          location.pathname === item.path ||
+          location.pathname.startsWith(item.path + "/");
+
+        return (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`navItem ${isActive ? "active" : ""}`}
+          >
+            <Icon size={22} />
+            <p>{item.label}</p>
+          </Link>
+        );
+      })}
     </div>
   );
 }
