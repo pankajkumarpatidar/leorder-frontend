@@ -1,15 +1,28 @@
+import { useNavigate } from "react-router-dom";
+
 export default function Dashboard() {
+  const navigate = useNavigate();
+
+  const name = localStorage.getItem("name") || "User";
+
   return (
     <div className="appContainer">
 
       {/* HEADER */}
       <div className="header">
         <div>
-          <h3>Hello, Pankaj 👋</h3>
+          <h3>Hello, {name} 👋</h3>
           <p>Welcome back</p>
         </div>
 
-        <div className="avatar">P</div>
+        {/* 🔥 CLICKABLE AVATAR */}
+        <div
+          className="avatar"
+          onClick={() => navigate("/profile")}
+          style={{ cursor: "pointer" }}
+        >
+          {name.charAt(0).toUpperCase()}
+        </div>
       </div>
 
       {/* MAIN CARD */}

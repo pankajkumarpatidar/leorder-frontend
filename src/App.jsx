@@ -11,6 +11,7 @@ import Orders from "./pages/Orders";
 import Products from "./pages/Products";
 import Users from "./pages/Users";
 import Worksheet from "./pages/Worksheet";
+import Profile from "./pages/Profile";
 
 // LAYOUT
 import Layout from "./components/Layout";
@@ -79,6 +80,8 @@ export default function App() {
             </Layout>
           </Private>
         } />
+
+        <Route path="/profile" element={<Private><Profile /></Private>} />
 
         {/* ===== FALLBACK ===== */}
         <Route path="*" element={<Navigate to="/" replace />} />
