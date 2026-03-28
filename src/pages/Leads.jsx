@@ -41,10 +41,6 @@ export default function Leads() {
       const b = await brandRes.json();
       const r = await retailerRes.json();
 
-      console.log("Leads:", l);
-      console.log("Brands:", b);
-      console.log("Retailers:", r);
-
       setLeads(l.data || []);
       setBrands(b.data || []);
       setRetailers(r.data || []);
@@ -55,9 +51,10 @@ export default function Leads() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (token) fetchData();
+  }, [token]);
 
+  // ===== TOAST =====
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2000);
@@ -78,20 +75,23 @@ export default function Leads() {
     try {
       let res;
 
+      // ===== UPDATE =====
       if (editId) {
-        // ✅ UPDATE STATUS ONLY
-        res = await fetch(`${BASE_URL}/leads/${editId}`, {
+        res = await fetch(`${BASE_URL}/leads/status`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
+            id: editId,
             status: form.status,
           }),
         });
-      } else {
-        // ✅ CREATE
+      }
+
+      // ===== CREATE =====
+      else {
         res = await fetch(`${BASE_URL}/leads`, {
           method: "POST",
           headers: {
@@ -100,9 +100,7 @@ export default function Leads() {
           },
           body: JSON.stringify({
             mobile: form.mobile,
-            brand_id: form.brand_id
-              ? Number(form.brand_id)
-              : null,
+            brand_id: form.brand_id ? Number(form.brand_id) : null,
             retailer_id: form.retailer_id
               ? Number(form.retailer_id)
               : null,
@@ -111,7 +109,6 @@ export default function Leads() {
       }
 
       const data = await res.json();
-      console.log("API RESPONSE:", data);
 
       if (data.success) {
         showToast(editId ? "Updated" : "Created");
@@ -150,7 +147,7 @@ export default function Leads() {
 
   // ===== FILTER =====
   let filtered = leads.filter((l) =>
-    l.mobile.toLowerCase().includes(search.toLowerCase())
+    l.mobile?.toLowerCase().includes(search.toLowerCase())
   );
 
   if (filter !== "all") {
@@ -206,7 +203,7 @@ export default function Leads() {
               <h4>{l.mobile}</h4>
 
               <p>
-                {brands.find(b => b.id === l.brand_id)?.name || "-"}
+                {brands.find((b) => b.id === l.brand_id)?.name || "-"}
               </p>
 
               <span className="roleTag">{l.status}</span>
@@ -239,7 +236,6 @@ export default function Leads() {
 
             <form onSubmit={handleSubmit}>
 
-              {/* CREATE FIELDS */}
               {!editId && (
                 <>
                   <input
@@ -280,7 +276,6 @@ export default function Leads() {
                 </>
               )}
 
-              {/* UPDATE STATUS */}
               {editId && (
                 <select
                   value={form.status}
