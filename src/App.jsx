@@ -1,19 +1,25 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
+// AUTH
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+
+// PAGES
 import Dashboard from "./pages/Dashboard";
 import Leads from "./pages/Leads";
 import Orders from "./pages/Orders";
 import Products from "./pages/Products";
 import Users from "./pages/Users";
+import Worksheet from "./pages/Worksheet";
 
+// LAYOUT
 import Layout from "./components/Layout";
 
+// 🔒 PRIVATE ROUTE
 const Private = ({ children }) => {
-  return localStorage.getItem("token")
-    ? children
-    : <Navigate to="/login" />;
+  const token = localStorage.getItem("token");
+
+  return token ? children : <Navigate to="/login" replace />;
 };
 
 export default function App() {
@@ -21,11 +27,11 @@ export default function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* AUTH */}
+        {/* ===== AUTH ===== */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* APP WITH LAYOUT */}
+        {/* ===== MAIN APP ===== */}
         <Route path="/" element={
           <Private>
             <Layout>
@@ -66,8 +72,16 @@ export default function App() {
           </Private>
         } />
 
-        {/* FALLBACK */}
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/worksheet" element={
+          <Private>
+            <Layout>
+              <Worksheet />
+            </Layout>
+          </Private>
+        } />
+
+        {/* ===== FALLBACK ===== */}
+        <Route path="*" element={<Navigate to="/" replace />} />
 
       </Routes>
     </BrowserRouter>
