@@ -30,10 +30,11 @@ export default function Dashboard() {
             fetch(`${BASE_URL}/products`, { headers }),
           ]);
 
-        const leads = await leadsRes.json();
-        const orders = await ordersRes.json();
-        const retailers = await retailersRes.json();
-        const products = await productsRes.json();
+        // 🔥 SAFE JSON PARSE
+        const leads = leadsRes.ok ? await leadsRes.json() : { data: [] };
+        const orders = ordersRes.ok ? await ordersRes.json() : { data: [] };
+        const retailers = retailersRes.ok ? await retailersRes.json() : { data: [] };
+        const products = productsRes.ok ? await productsRes.json() : { data: [] };
 
         setStats({
           leads: leads.data?.length || 0,
@@ -47,8 +48,8 @@ export default function Dashboard() {
       }
     };
 
-    fetchData();
-  }, []);
+    if (token) fetchData();
+  }, [token]);
 
   return (
     <div className="appContainer">
@@ -63,7 +64,6 @@ export default function Dashboard() {
         <div
           className="avatar"
           onClick={() => navigate("/profile")}
-          style={{ cursor: "pointer" }}
         >
           {name.charAt(0).toUpperCase()}
         </div>
