@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const BASE_URL = "http://localhost:5000/api"; // बाद में live URL लगाना
+const BASE_URL = "http://localhost:5000/api";
 
 export default function Users() {
   const token = localStorage.getItem("token");
@@ -25,11 +25,8 @@ export default function Users() {
     setLoading(true);
     try {
       const res = await fetch(`${BASE_URL}/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       const data = await res.json();
       setUsers(data.data || []);
     } catch {
@@ -52,15 +49,14 @@ export default function Users() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // mobile validation
     if (!/^[0-9]{10}$/.test(form.mobile)) {
-      return showToast("Enter valid mobile number");
+      return showToast("Invalid mobile");
     }
 
     try {
       const url = editId
         ? `${BASE_URL}/users/${editId}`
-        : `${BASE_URL}/users`;
+        : `${BASE_URL}/auth/create-user`;
 
       const method = editId ? "PUT" : "POST";
 
@@ -76,7 +72,7 @@ export default function Users() {
       const data = await res.json();
 
       if (data.success) {
-        showToast(editId ? "User updated" : "User created");
+        showToast(editId ? "Updated" : "User created");
         setShow(false);
         setEditId(null);
         setForm({
@@ -97,20 +93,17 @@ export default function Users() {
 
   // ===== DELETE =====
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete user?")) return;
+    if (!window.confirm("Delete this user?")) return;
 
     try {
       await fetch(`${BASE_URL}/users/${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      showToast("User deleted");
+      showToast("Deleted");
       fetchUsers();
     } catch {
-      showToast("Error deleting");
+      showToast("Delete error");
     }
   };
 
@@ -129,7 +122,9 @@ export default function Users() {
 
   // ===== FILTER =====
   const filtered = users.filter((u) =>
-    u.name.toLowerCase().includes(search.toLowerCase())
+    `${u.name} ${u.email} ${u.mobile}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
   );
 
   return (
@@ -144,7 +139,7 @@ export default function Users() {
       {/* SEARCH */}
       <input
         className="searchBox"
-        placeholder="Search user..."
+        placeholder="Search name, email, mobile..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
@@ -153,21 +148,36 @@ export default function Users() {
       {loading ? (
         <p style={{ marginTop: 20 }}>Loading...</p>
       ) : filtered.length === 0 ? (
-        <p style={{ marginTop: 20 }}>No users found</p>
+        <p style={{ marginTop: 20 }}>No users</p>
       ) : (
         filtered.map((u) => (
           <div key={u.id} className="userCard">
+
             <div>
               <h4>{u.name}</h4>
               <p>{u.email}</p>
               <p>{u.mobile}</p>
-              <span className="roleTag">{u.role}</span>
+
+              <span
+                className="roleTag"
+                style={{
+                  background:
+                    u.role === "admin"
+                      ? "#fee2e2"
+                      : u.role === "staff"
+                      ? "#dbeafe"
+                      : "#dcfce7",
+                }}
+              >
+                {u.role}
+              </span>
             </div>
 
             <div className="actionBtns">
               <button onClick={() => handleEdit(u)}>Edit</button>
               <button onClick={() => handleDelete(u.id)}>Delete</button>
             </div>
+
           </div>
         ))
       )}
@@ -209,7 +219,7 @@ export default function Users() {
               />
 
               <input
-                placeholder="Mobile Number"
+                placeholder="Mobile"
                 value={form.mobile}
                 onChange={(e) =>
                   setForm({ ...form, mobile: e.target.value })
