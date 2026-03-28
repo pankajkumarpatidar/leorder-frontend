@@ -6,7 +6,7 @@ export default function Dashboard() {
       <div className="header">
         <div>
           <h3>Hello, Pankaj 👋</h3>
-          <p>Check your business report</p>
+          <p>Welcome back</p>
         </div>
 
         <div className="avatar">P</div>
@@ -14,8 +14,9 @@ export default function Dashboard() {
 
       {/* MAIN CARD */}
       <div className="highlightCard">
-        <p>Total Sales</p>
-        <h2>₹2.4L</h2>
+        <p>Total Business</p>
+        <h2>₹ 1,25,000</h2>
+        <span>+12% this month</span>
       </div>
 
       {/* SMALL CARDS */}
@@ -33,12 +34,12 @@ export default function Dashboard() {
 
         <div className="cardItem yellow">
           <p>Retailers</p>
-          <h3>32</h3>
+          <h3>30</h3>
         </div>
 
         <div className="cardItem blue">
-          <p>Users</p>
-          <h3>8</h3>
+          <p>Products</p>
+          <h3>80</h3>
         </div>
 
       </div>

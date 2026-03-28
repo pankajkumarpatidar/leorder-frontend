@@ -1,126 +1,18 @@
-/* RESET */
+/* ===== RESET ===== */
 body {
   margin: 0;
   font-family: "Inter", sans-serif;
   background: #f5f7fb;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ===== SIDEBAR ===== */
-.sidebar {
-  width: 250px;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: -250px;
-
-  background: rgba(30, 41, 59, 0.9);
-  backdrop-filter: blur(15px);
-
-  padding: 20px;
-  color: white;
-  transition: 0.3s;
-  z-index: 100;
-}
-
-.sidebar.open {
-  left: 0;
-}
-
-/* desktop */
-.sidebar.desktop {
-  left: 0;
-}
-
-.sidebar h2 {
-  margin-bottom: 20px;
-}
-
-.sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.sidebar nav a {
-  color: #cbd5e1;
-  text-decoration: none;
-  padding: 10px;
-  border-radius: 10px;
-  transition: 0.2s;
-}
-
-.sidebar nav a:hover {
-  background: rgba(255,255,255,0.1);
-  color: white;
-}
-
-/* ===== OVERLAY ===== */
-.overlay {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.4);
-  z-index: 90;
-}
-
-/* ===== TOPBAR ===== */
-.topbar {
-  height: 60px;
-  position: fixed;
-  width: 100%;
-
-  background: rgba(255,255,255,0.7);
-  backdrop-filter: blur(10px);
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  padding: 0 15px;
-  z-index: 80;
-}
-
-.menuBtn {
-  font-size: 22px;
-  background: none;
-  border: none;
-}
-
-/* ===== MAIN ===== */
-.main {
-  padding-top: 70px;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-/* desktop spacing */
-@media(min-width:768px){
-  .main {
-    margin-left: 250px;
-  }
-}
-
-/* ===== CONTENT ===== */
-.content {
-  max-width: 1100px;
-  margin: auto;
-}
-
-/* ===== GLASS CARD ===== */
-.card {
-  background: rgba(255,255,255,0.8);
-  backdrop-filter: blur(12px);
-  border-radius: 18px;
-  padding: 18px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-}
-
-/* ===== DASHBOARD APP UI ===== */
+/* ===== APP CONTAINER ===== */
 .appContainer {
-  padding: 10px;
+  padding: 16px;
+  padding-bottom: 100px; /* nav space */
 }
 
-/* HEADER */
+/* ===== HEADER ===== */
 .header {
   display: flex;
   justify-content: space-between;
@@ -129,6 +21,7 @@ body {
 
 .header h3 {
   margin: 0;
+  font-size: 18px;
 }
 
 .header p {
@@ -137,115 +30,172 @@ body {
   color: #666;
 }
 
-/* AVATAR */
+/* ===== AVATAR ===== */
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: #2563eb;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: bold;
 }
 
-/* MAIN BLACK CARD */
+/* ===== MAIN CARD ===== */
 .highlightCard {
-  margin-top: 15px;
-  padding: 18px;
-  border-radius: 18px;
-  background: #111;
+  margin-top: 16px;
+  padding: 20px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #111, #333);
   color: white;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
-/* GRID */
+.highlightCard h2 {
+  margin: 6px 0;
+}
+
+/* ===== GRID ===== */
 .cards {
-  margin-top: 15px;
+  margin-top: 16px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-/* SMALL CARD */
+/* ===== SMALL CARD ===== */
 .cardItem {
-  padding: 15px;
-  border-radius: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  transition: 0.2s;
 }
 
-/* COLORS */
+.cardItem:active {
+  transform: scale(0.96);
+}
+
+.cardItem p {
+  margin: 0;
+  font-size: 13px;
+  color: #555;
+}
+
+.cardItem h3 {
+  margin-top: 6px;
+  font-size: 18px;
+}
+
+/* ===== COLORS ===== */
 .purple { background: #e9d5ff; }
 .green { background: #d1fae5; }
 .yellow { background: #fef3c7; }
 .blue { background: #dbeafe; }
 
-/* ===== BOTTOM NAV ===== */
+/* ===== AUTH ===== */
+.authContainer {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+}
+
+.authContainer form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.authContainer input {
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: #f1f5f9;
+  font-size: 14px;
+  outline: none;
+}
+
+.authContainer button {
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ===== BOTTOM NAV (FINAL PREMIUM) ===== */
 .bottomNav {
   position: fixed;
   bottom: 12px;
   left: 12px;
   right: 12px;
-  height: 65px;
+  height: 70px;
 
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(18px);
 
-  border-radius: 20px;
+  border-radius: 25px;
 
   display: flex;
   justify-content: space-around;
   align-items: center;
 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 
-  z-index: 200;
+  z-index: 999;
 }
 
-.bottomNav a {
+/* NAV ITEM */
+.navItem {
   text-decoration: none;
-  color: #666;
+  color: #888;
+
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+
   font-size: 11px;
+  padding: 8px 12px;
+  border-radius: 14px;
+
+  transition: all 0.25s ease;
 }
 
-.bottomNav span {
-  font-size: 18px;
+/* ICON (LUCIDE FIX) */
+.navItem svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2.2;
 }
 
-/* ACTIVE */
-.bottomNav a.active {
-  color: #2563eb;
-  transform: translateY(-3px);
+/* ACTIVE TAB */
+.navItem.active {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: white;
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
 }
 
-.bottomNav a.active::after {
-  content: "";
-  width: 5px;
-  height: 5px;
-  background: #2563eb;
-  border-radius: 50%;
-  margin-top: 3px;
-}
-
-/* ===== MOBILE ===== */
-@media(max-width:768px){
-
-  .main {
-    margin-left: 0;
-    padding-bottom: 80px;
-  }
-
+.navItem.active svg {
+  color: white;
 }
 
 /* ===== DESKTOP ===== */
 @media(min-width:768px){
 
-  .bottomNav {
-    display: none;
+  .appContainer {
+    max-width: 900px;
+    margin: auto;
+    padding-bottom: 30px;
   }
 
-  .menuBtn {
+  .bottomNav {
     display: none;
   }
 }

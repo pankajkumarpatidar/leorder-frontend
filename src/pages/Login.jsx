@@ -1,33 +1,23 @@
 import { useState } from "react";
-import api from "../utils/api";
 
 export default function Login() {
-  const [form, setForm] = useState({ email:"", password:"" });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const login = async () => {
-    const res = await api.post("/api/auth/login", form);
-
-    if (res.data.success) {
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("name", res.data.user.name);
-      window.location.href = "/";
-    }
+  const handleLogin = (e) => {
+    e.preventDefault();
+    localStorage.setItem("token", "demo");
+    window.location.href = "/";
   };
 
   return (
-    <div style={{padding:50}}>
+    <div className="authContainer">
       <h2>Login</h2>
-
-      <input placeholder="Email"
-        onChange={e=>setForm({...form,email:e.target.value})}
-      />
-
-      <input type="password"
-        placeholder="Password"
-        onChange={e=>setForm({...form,password:e.target.value})}
-      />
-
-      <button onClick={login}>Login</button>
+      <form onSubmit={handleLogin}>
+        <input placeholder="Email" onChange={e=>setEmail(e.target.value)} />
+        <input placeholder="Password" type="password" onChange={e=>setPassword(e.target.value)} />
+        <button>Login</button>
+      </form>
     </div>
   );
 }
