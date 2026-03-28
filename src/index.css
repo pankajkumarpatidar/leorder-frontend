@@ -3,8 +3,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-
-  /* REMOVE TAP BLUE */
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -17,7 +15,7 @@ body {
 /* ===== APP CONTAINER ===== */
 .appContainer {
   padding: 16px;
-  padding-bottom: 120px; /* nav + fab space */
+  padding-bottom: 120px;
 }
 
 /* ===== HEADER ===== */
@@ -94,7 +92,7 @@ body {
   font-size: 20px;
 }
 
-/* ===== COLORS ===== */
+/* COLORS */
 .purple { background: #e9d5ff; }
 .green { background: #d1fae5; }
 .yellow { background: #fef3c7; }
@@ -109,16 +107,6 @@ body {
   padding: 20px;
 }
 
-.authContainer h2 {
-  margin-bottom: 6px;
-}
-
-.authContainer p {
-  font-size: 13px;
-  color: #777;
-}
-
-/* FORM */
 .authContainer form {
   margin-top: 20px;
   display: flex;
@@ -126,17 +114,13 @@ body {
   gap: 14px;
 }
 
-/* INPUT */
 .authContainer input {
   padding: 14px;
   border-radius: 14px;
   border: none;
   background: #f1f5f9;
-  font-size: 14px;
-  outline: none;
 }
 
-/* BUTTON */
 .authContainer button {
   padding: 14px;
   border-radius: 14px;
@@ -144,15 +128,8 @@ body {
   background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
   font-weight: bold;
-  cursor: pointer;
-  transition: 0.25s;
 }
 
-.authContainer button:active {
-  transform: scale(0.96);
-}
-
-/* SWITCH */
 .switch {
   margin-top: 16px;
   text-align: center;
@@ -161,10 +138,9 @@ body {
 .switch a {
   color: #2563eb;
   text-decoration: none;
-  font-weight: 500;
 }
 
-/* ===== FLOATING BUTTON ===== */
+/* ===== FAB BUTTON ===== */
 .fabBtn {
   position: fixed;
   bottom: 95px;
@@ -187,7 +163,6 @@ body {
   box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4);
 
   z-index: 1000;
-  cursor: pointer;
 }
 
 .fabBtn:active {
@@ -216,7 +191,6 @@ body {
   z-index: 999;
 }
 
-/* NAV ITEM */
 .navItem {
   text-decoration: none;
   color: #888;
@@ -233,14 +207,12 @@ body {
   transition: all 0.3s ease;
 }
 
-/* ICON */
 .navItem svg {
   width: 22px;
   height: 22px;
   stroke-width: 2.2;
 }
 
-/* ACTIVE TAB */
 .navItem.active {
   background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
@@ -250,13 +222,97 @@ body {
   box-shadow: 0 12px 25px rgba(37, 99, 235, 0.4);
 }
 
-.navItem.active svg {
+.navItem:active {
+  transform: scale(0.9);
+}
+
+/* ===== USER CARD ===== */
+.userCard {
+  background: white;
+  padding: 14px;
+  border-radius: 16px;
+  margin-top: 10px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.userCard p {
+  font-size: 13px;
+  color: #666;
+}
+
+/* ROLE */
+.roleTag {
+  font-size: 11px;
+  background: #dbeafe;
+  padding: 4px 8px;
+  border-radius: 10px;
+}
+
+/* DELETE */
+.deleteBtn {
+  border: none;
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+/* ===== MODAL ===== */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background: rgba(0,0,0,0.4);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 2000;
+}
+
+.modalBox {
+  background: white;
+  padding: 20px;
+  border-radius: 18px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.modalBox form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modalBox input,
+.modalBox select {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #f1f5f9;
+}
+
+.modalBox button {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
   color: white;
 }
 
-/* PRESS EFFECT */
-.navItem:active {
-  transform: scale(0.9);
+.closeBtn {
+  margin-top: 10px;
+  background: #eee !important;
+  color: black !important;
 }
 
 /* ===== DESKTOP ===== */
