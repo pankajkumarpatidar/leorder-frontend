@@ -6,6 +6,9 @@ export default function Leads() {
   const token = localStorage.getItem("token");
 
   const [leads, setLeads] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [retailers, setRetailers] = useState([]);
+
   const [show, setShow] = useState(false);
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(false);
@@ -13,25 +16,42 @@ export default function Leads() {
   const [form, setForm] = useState({
     mobile: "",
     brand_id: "",
+    retailer_id: "",
+    status: "new",
   });
 
-  // ===== FETCH LEADS =====
-  const fetchLeads = async () => {
+  // ===== FETCH ALL =====
+  const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/leads`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      setLeads(data.data || []);
+      const [leadRes, brandRes, retailerRes] = await Promise.all([
+        fetch(`${BASE_URL}/leads`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${BASE_URL}/brands`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${BASE_URL}/retailers`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+
+      const leadsData = await leadRes.json();
+      const brandData = await brandRes.json();
+      const retailerData = await retailerRes.json();
+
+      setLeads(leadsData.data || []);
+      setBrands(brandData.data || []);
+      setRetailers(retailerData.data || []);
+
     } catch {
-      showToast("Error fetching leads");
+      showToast("Error loading data");
     }
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchLeads();
+    fetchData();
   }, []);
 
   // ===== TOAST =====
@@ -40,7 +60,7 @@ export default function Leads() {
     setTimeout(() => setToast(""), 2000);
   };
 
-  // ===== CREATE LEAD =====
+  // ===== CREATE =====
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -61,15 +81,20 @@ export default function Leads() {
       const data = await res.json();
 
       if (data.success) {
-        showToast("Lead added");
+        showToast("Lead created");
         setShow(false);
-        setForm({ mobile: "", brand_id: "" });
-        fetchLeads();
+        setForm({
+          mobile: "",
+          brand_id: "",
+          retailer_id: "",
+          status: "new",
+        });
+        fetchData();
       } else {
         showToast(data.message);
       }
     } catch {
-      showToast("Error creating lead");
+      showToast("Error");
     }
   };
 
@@ -79,27 +104,36 @@ export default function Leads() {
       {/* HEADER */}
       <div className="header">
         <h3>Leads</h3>
-        <p>Total: {leads.length}</p>
+        <p>{leads.length}</p>
       </div>
 
       {/* LIST */}
       {loading ? (
         <p style={{ marginTop: 20 }}>Loading...</p>
       ) : leads.length === 0 ? (
-        <p style={{ marginTop: 20 }}>No leads found</p>
+        <p style={{ marginTop: 20 }}>No leads</p>
       ) : (
         leads.map((l) => (
           <div key={l.id} className="userCard">
+
             <div>
               <h4>{l.mobile}</h4>
-              <p>Status: {l.status}</p>
+              <p>
+                Brand: {brands.find(b => b.id === l.brand_id)?.name || "-"}
+              </p>
+              <p>
+                Retailer: {retailers.find(r => r.id === l.retailer_id)?.business_name || "-"}
+              </p>
+
+              <span className="roleTag">{l.status}</span>
             </div>
+
           </div>
         ))
       )}
 
       {/* FAB */}
-      <Fab onClick={() => setShow(true)} />
+      <button className="fabBtn" onClick={() => setShow(true)}>+</button>
 
       {/* MODAL */}
       {show && (
@@ -111,20 +145,54 @@ export default function Leads() {
             <form onSubmit={handleSubmit}>
 
               <input
-                placeholder="Mobile Number"
+                placeholder="Mobile"
                 value={form.mobile}
                 onChange={(e) =>
                   setForm({ ...form, mobile: e.target.value })
                 }
               />
 
-              <input
-                placeholder="Brand ID"
+              {/* BRAND */}
+              <select
                 value={form.brand_id}
                 onChange={(e) =>
                   setForm({ ...form, brand_id: e.target.value })
                 }
-              />
+              >
+                <option value="">Select Brand</option>
+                {brands.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+
+              {/* RETAILER */}
+              <select
+                value={form.retailer_id}
+                onChange={(e) =>
+                  setForm({ ...form, retailer_id: e.target.value })
+                }
+              >
+                <option value="">Select Retailer (optional)</option>
+                {retailers.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.business_name}
+                  </option>
+                ))}
+              </select>
+
+              {/* STATUS */}
+              <select
+                value={form.status}
+                onChange={(e) =>
+                  setForm({ ...form, status: e.target.value })
+                }
+              >
+                <option value="new">New</option>
+                <option value="followup">Followup</option>
+                <option value="closed">Closed</option>
+              </select>
 
               <button type="submit">Create Lead</button>
 
