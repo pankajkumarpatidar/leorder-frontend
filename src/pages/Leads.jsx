@@ -44,7 +44,8 @@ export default function Leads() {
       setLeads(l.data || []);
       setBrands(b.data || []);
       setRetailers(r.data || []);
-    } catch {
+    } catch (err) {
+      console.log(err);
       showToast("Error loading");
     }
   };
@@ -62,7 +63,6 @@ export default function Leads() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ mobile validation only on create
     if (!editId && !/^[0-9]{10}$/.test(form.mobile)) {
       return showToast("Invalid mobile");
     }
@@ -71,7 +71,7 @@ export default function Leads() {
       let res;
 
       if (editId) {
-        // ✅ UPDATE STATUS ONLY
+        // ✅ UPDATE STATUS
         res = await fetch(`${BASE_URL}/leads/update-status`, {
           method: "PUT",
           headers: {
@@ -84,7 +84,7 @@ export default function Leads() {
           }),
         });
       } else {
-        // ✅ CREATE (NO STATUS SENT)
+        // ✅ CREATE
         res = await fetch(`${BASE_URL}/leads`, {
           method: "POST",
           headers: {
@@ -93,8 +93,10 @@ export default function Leads() {
           },
           body: JSON.stringify({
             mobile: form.mobile,
-            brand_id: form.brand_id,
-            retailer_id: form.retailer_id || null,
+            brand_id: Number(form.brand_id),
+            retailer_id: form.retailer_id
+              ? Number(form.retailer_id)
+              : null,
           }),
         });
       }
@@ -113,9 +115,10 @@ export default function Leads() {
         });
         fetchData();
       } else {
-        showToast(data.message);
+        showToast(data.message || "Failed");
       }
-    } catch {
+    } catch (err) {
+      console.log(err);
       showToast("Error");
     }
   };
@@ -132,29 +135,26 @@ export default function Leads() {
     setShow(true);
   };
 
-  // ===== FILTER + SEARCH =====
+  // ===== FILTER =====
   let filtered = leads.filter((l) =>
-    `${l.mobile}`.toLowerCase().includes(search.toLowerCase())
+    l.mobile.toLowerCase().includes(search.toLowerCase())
   );
 
   if (filter !== "all") {
     filtered = filtered.filter((l) => l.status === filter);
   }
 
-  // ===== SORT (pending top) =====
   const order = { pending: 1, approved: 2, rejected: 3 };
   filtered.sort((a, b) => order[a.status] - order[b.status]);
 
   return (
     <div className="appContainer">
 
-      {/* HEADER */}
       <div className="header">
         <h3>Leads</h3>
         <p>{filtered.length}</p>
       </div>
 
-      {/* SEARCH */}
       <input
         className="searchBox"
         placeholder="Search mobile..."
@@ -162,7 +162,6 @@ export default function Leads() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {/* FILTER */}
       <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
         {["all", "pending", "approved", "rejected"].map((f) => (
           <button
@@ -181,38 +180,31 @@ export default function Leads() {
         ))}
       </div>
 
-      {/* LIST */}
       {filtered.length === 0 ? (
         <p style={{ marginTop: 20 }}>No leads</p>
       ) : (
         filtered.map((l) => (
           <div key={l.id} className="userCard">
-
             <div>
               <h4>{l.mobile}</h4>
-
               <p>
                 {brands.find(b => b.id === l.brand_id)?.name || "-"}
               </p>
-
               <span className="roleTag">{l.status}</span>
             </div>
 
             <div className="actionBtns">
               <button onClick={() => handleEdit(l)}>Edit</button>
             </div>
-
           </div>
         ))
       )}
 
-      {/* FAB */}
       <button className="fabBtn" onClick={() => {
         setEditId(null);
         setShow(true);
       }}>+</button>
 
-      {/* MODAL */}
       {show && (
         <div className="modal">
           <div className="modalBox">
@@ -221,7 +213,6 @@ export default function Leads() {
 
             <form onSubmit={handleSubmit}>
 
-              {/* CREATE ONLY */}
               {!editId && (
                 <>
                   <input
@@ -260,7 +251,6 @@ export default function Leads() {
                 </>
               )}
 
-              {/* EDIT ONLY */}
               {editId && (
                 <select
                   value={form.status}
@@ -291,7 +281,6 @@ export default function Leads() {
         </div>
       )}
 
-      {/* TOAST */}
       {toast && <div className="toast">{toast}</div>}
 
     </div>
