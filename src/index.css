@@ -150,7 +150,7 @@ body {
   z-index: 1000;
 }
 
-/* ===== SEARCH FIX ===== */
+/* ===== SEARCH ===== */
 .searchBox {
   margin-top: 14px;
   width: 100%;
@@ -191,6 +191,7 @@ body {
   gap: 6px;
 }
 
+/* ROLE */
 .roleTag {
   font-size: 11px;
   background: #dbeafe;
@@ -198,6 +199,7 @@ body {
   border-radius: 12px;
 }
 
+/* DELETE */
 .deleteBtn {
   border: none;
   background: #fee2e2;
@@ -350,4 +352,29 @@ body {
     left: 0;
     right: 0;
   }
+}
+
+/* ===== EDIT BUTTON ===== */
+.editBtn {
+  border: none;
+  padding: 7px 14px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: white;
+
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+  transition: all 0.2s ease;
+}
+
+.editBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4);
+}
+
+.editBtn:active {
+  transform: scale(0.92);
 }

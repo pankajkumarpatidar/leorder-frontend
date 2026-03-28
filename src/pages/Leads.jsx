@@ -54,7 +54,6 @@ export default function Leads() {
     if (token) fetchData();
   }, [token]);
 
-  // ===== TOAST =====
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2000);
@@ -75,7 +74,6 @@ export default function Leads() {
     try {
       let res;
 
-      // ===== UPDATE =====
       if (editId) {
         res = await fetch(`${BASE_URL}/leads/status`, {
           method: "PUT",
@@ -88,10 +86,7 @@ export default function Leads() {
             status: form.status,
           }),
         });
-      }
-
-      // ===== CREATE =====
-      else {
+      } else {
         res = await fetch(`${BASE_URL}/leads`, {
           method: "POST",
           headers: {
@@ -206,11 +201,18 @@ export default function Leads() {
                 {brands.find((b) => b.id === l.brand_id)?.name || "-"}
               </p>
 
+              {/* 🔥 RETAILER NAME */}
+              <p style={{ fontSize: 12, color: "#888" }}>
+                {retailers.find((r) => r.id === l.retailer_id)?.business_name || ""}
+              </p>
+
               <span className="roleTag">{l.status}</span>
             </div>
 
             <div className="actionBtns">
-              <button onClick={() => handleEdit(l)}>Edit</button>
+              <button className="editBtn" onClick={() => handleEdit(l)}>
+                Edit
+              </button>
             </div>
           </div>
         ))
