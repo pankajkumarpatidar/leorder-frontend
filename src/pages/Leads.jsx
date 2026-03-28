@@ -41,12 +41,16 @@ export default function Leads() {
       const b = await brandRes.json();
       const r = await retailerRes.json();
 
+      console.log("Leads:", l);
+      console.log("Brands:", b);
+      console.log("Retailers:", r);
+
       setLeads(l.data || []);
       setBrands(b.data || []);
       setRetailers(r.data || []);
     } catch (err) {
       console.log(err);
-      showToast("Error loading");
+      showToast("Error loading data");
     }
   };
 
@@ -67,19 +71,22 @@ export default function Leads() {
       return showToast("Invalid mobile");
     }
 
+    if (!editId && !form.brand_id) {
+      return showToast("Select brand");
+    }
+
     try {
       let res;
 
       if (editId) {
-        // ✅ UPDATE STATUS
-        res = await fetch(`${BASE_URL}/leads/update-status`, {
+        // ✅ UPDATE STATUS ONLY
+        res = await fetch(`${BASE_URL}/leads/${editId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            id: editId,
             status: form.status,
           }),
         });
@@ -93,7 +100,9 @@ export default function Leads() {
           },
           body: JSON.stringify({
             mobile: form.mobile,
-            brand_id: Number(form.brand_id),
+            brand_id: form.brand_id
+              ? Number(form.brand_id)
+              : null,
             retailer_id: form.retailer_id
               ? Number(form.retailer_id)
               : null,
@@ -102,24 +111,28 @@ export default function Leads() {
       }
 
       const data = await res.json();
+      console.log("API RESPONSE:", data);
 
       if (data.success) {
         showToast(editId ? "Updated" : "Created");
+
         setShow(false);
         setEditId(null);
+
         setForm({
           mobile: "",
           brand_id: "",
           retailer_id: "",
           status: "pending",
         });
+
         fetchData();
       } else {
         showToast(data.message || "Failed");
       }
     } catch (err) {
       console.log(err);
-      showToast("Error");
+      showToast("Server error");
     }
   };
 
@@ -150,11 +163,13 @@ export default function Leads() {
   return (
     <div className="appContainer">
 
+      {/* HEADER */}
       <div className="header">
         <h3>Leads</h3>
         <p>{filtered.length}</p>
       </div>
 
+      {/* SEARCH */}
       <input
         className="searchBox"
         placeholder="Search mobile..."
@@ -162,6 +177,7 @@ export default function Leads() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
+      {/* FILTER */}
       <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
         {["all", "pending", "approved", "rejected"].map((f) => (
           <button
@@ -180,6 +196,7 @@ export default function Leads() {
         ))}
       </div>
 
+      {/* LIST */}
       {filtered.length === 0 ? (
         <p style={{ marginTop: 20 }}>No leads</p>
       ) : (
@@ -187,9 +204,11 @@ export default function Leads() {
           <div key={l.id} className="userCard">
             <div>
               <h4>{l.mobile}</h4>
+
               <p>
                 {brands.find(b => b.id === l.brand_id)?.name || "-"}
               </p>
+
               <span className="roleTag">{l.status}</span>
             </div>
 
@@ -200,11 +219,18 @@ export default function Leads() {
         ))
       )}
 
-      <button className="fabBtn" onClick={() => {
-        setEditId(null);
-        setShow(true);
-      }}>+</button>
+      {/* FAB */}
+      <button
+        className="fabBtn"
+        onClick={() => {
+          setEditId(null);
+          setShow(true);
+        }}
+      >
+        +
+      </button>
 
+      {/* MODAL */}
       {show && (
         <div className="modal">
           <div className="modalBox">
@@ -213,6 +239,7 @@ export default function Leads() {
 
             <form onSubmit={handleSubmit}>
 
+              {/* CREATE FIELDS */}
               {!editId && (
                 <>
                   <input
@@ -231,7 +258,9 @@ export default function Leads() {
                   >
                     <option value="">Brand</option>
                     {brands.map((b) => (
-                      <option key={b.id} value={b.id}>{b.name}</option>
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
                     ))}
                   </select>
 
@@ -251,6 +280,7 @@ export default function Leads() {
                 </>
               )}
 
+              {/* UPDATE STATUS */}
               {editId && (
                 <select
                   value={form.status}
@@ -270,10 +300,13 @@ export default function Leads() {
 
             </form>
 
-            <button className="closeBtn" onClick={() => {
-              setShow(false);
-              setEditId(null);
-            }}>
+            <button
+              className="closeBtn"
+              onClick={() => {
+                setShow(false);
+                setEditId(null);
+              }}
+            >
               Close
             </button>
 
@@ -281,6 +314,7 @@ export default function Leads() {
         </div>
       )}
 
+      {/* TOAST */}
       {toast && <div className="toast">{toast}</div>}
 
     </div>
