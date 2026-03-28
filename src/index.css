@@ -35,18 +35,25 @@ body {
   color: #777;
 }
 
-/* ===== AVATAR ===== */
+/* ===== AVATAR (FIXED) ===== */
 .avatar {
   width: 46px;
   height: 46px;
+  min-width: 46px;     /* ✅ FIX */
+  min-height: 46px;    /* ✅ FIX */
+
   border-radius: 50%;
   background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   font-weight: 600;
   cursor: pointer;
+
+  flex-shrink: 0;      /* ✅ MOST IMPORTANT FIX */
 }
 
 /* ===== MAIN CARD ===== */
