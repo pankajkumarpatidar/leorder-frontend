@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = "https://leorder-api.onrender.com/api";
 
 export default function Users() {
   const token = localStorage.getItem("token");
@@ -20,7 +20,6 @@ export default function Users() {
     mobile: "",
   });
 
-  // ===== FETCH USERS =====
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -39,13 +38,11 @@ export default function Users() {
     fetchUsers();
   }, []);
 
-  // ===== TOAST =====
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2000);
   };
 
-  // ===== SUBMIT =====
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -91,7 +88,6 @@ export default function Users() {
     }
   };
 
-  // ===== DELETE =====
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this user?")) return;
 
@@ -107,7 +103,6 @@ export default function Users() {
     }
   };
 
-  // ===== EDIT =====
   const handleEdit = (u) => {
     setForm({
       name: u.name,
@@ -120,7 +115,6 @@ export default function Users() {
     setShow(true);
   };
 
-  // ===== FILTER =====
   const filtered = users.filter((u) =>
     `${u.name} ${u.email} ${u.mobile}`
       .toLowerCase()
@@ -130,13 +124,11 @@ export default function Users() {
   return (
     <div className="appContainer">
 
-      {/* HEADER */}
       <div className="header">
         <h3>Users 👥</h3>
         <p>{users.length}</p>
       </div>
 
-      {/* SEARCH */}
       <input
         className="searchBox"
         placeholder="Search name, email, mobile..."
@@ -144,7 +136,6 @@ export default function Users() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {/* LIST */}
       {loading ? (
         <p style={{ marginTop: 20 }}>Loading...</p>
       ) : filtered.length === 0 ? (
@@ -152,7 +143,6 @@ export default function Users() {
       ) : (
         filtered.map((u) => (
           <div key={u.id} className="userCard">
-
             <div>
               <h4>{u.name}</h4>
               <p>{u.email}</p>
@@ -177,15 +167,12 @@ export default function Users() {
               <button onClick={() => handleEdit(u)}>Edit</button>
               <button onClick={() => handleDelete(u.id)}>Delete</button>
             </div>
-
           </div>
         ))
       )}
 
-      {/* FAB */}
       <button className="fabBtn" onClick={() => setShow(true)}>+</button>
 
-      {/* MODAL */}
       {show && (
         <div className="modal">
           <div className="modalBox">
@@ -193,45 +180,21 @@ export default function Users() {
             <h3>{editId ? "Edit User" : "Add User"}</h3>
 
             <form onSubmit={handleSubmit}>
-              <input
-                placeholder="Name"
-                value={form.name}
-                onChange={(e) =>
-                  setForm({ ...form, name: e.target.value })
-                }
-              />
+              <input placeholder="Name" value={form.name}
+                onChange={(e)=>setForm({...form,name:e.target.value})}/>
 
-              <input
-                placeholder="Email"
-                value={form.email}
-                onChange={(e) =>
-                  setForm({ ...form, email: e.target.value })
-                }
-              />
+              <input placeholder="Email" value={form.email}
+                onChange={(e)=>setForm({...form,email:e.target.value})}/>
 
-              <input
-                type="password"
-                placeholder="Password"
+              <input type="password" placeholder="Password"
                 value={form.password}
-                onChange={(e) =>
-                  setForm({ ...form, password: e.target.value })
-                }
-              />
+                onChange={(e)=>setForm({...form,password:e.target.value})}/>
 
-              <input
-                placeholder="Mobile"
-                value={form.mobile}
-                onChange={(e) =>
-                  setForm({ ...form, mobile: e.target.value })
-                }
-              />
+              <input placeholder="Mobile" value={form.mobile}
+                onChange={(e)=>setForm({...form,mobile:e.target.value})}/>
 
-              <select
-                value={form.role}
-                onChange={(e) =>
-                  setForm({ ...form, role: e.target.value })
-                }
-              >
+              <select value={form.role}
+                onChange={(e)=>setForm({...form,role:e.target.value})}>
                 <option value="staff">Staff</option>
                 <option value="salesman">Salesman</option>
               </select>
@@ -241,13 +204,8 @@ export default function Users() {
               </button>
             </form>
 
-            <button
-              className="closeBtn"
-              onClick={() => {
-                setShow(false);
-                setEditId(null);
-              }}
-            >
+            <button className="closeBtn"
+              onClick={()=>{setShow(false);setEditId(null);}}>
               Close
             </button>
 
@@ -255,9 +213,7 @@ export default function Users() {
         </div>
       )}
 
-      {/* TOAST */}
       {toast && <div className="toast">{toast}</div>}
-
     </div>
   );
 }
