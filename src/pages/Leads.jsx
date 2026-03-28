@@ -19,9 +19,8 @@ export default function Leads() {
     mobile: "",
     brand_id: "",
     retailer_id: "",
+    status: "new",
   });
-
-  const [statusOnly, setStatusOnly] = useState("new");
 
   // ===== FETCH =====
   const fetchData = async () => {
@@ -59,51 +58,59 @@ export default function Leads() {
     setTimeout(() => setToast(""), 2000);
   };
 
-  // ===== CREATE =====
-  const createLead = async () => {
-    const res = await fetch(`${BASE_URL}/leads`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(form),
-    });
-
-    return res.json();
-  };
-
-  // ===== UPDATE STATUS =====
-  const updateLead = async () => {
-    const res = await fetch(`${BASE_URL}/leads/${editId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status: statusOnly }),
-    });
-
-    return res.json();
-  };
-
   // ===== SUBMIT =====
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!/^[0-9]{10}$/.test(form.mobile)) {
+    // 🔥 mobile validation only on create
+    if (!editId && !/^[0-9]{10}$/.test(form.mobile)) {
       return showToast("Invalid mobile");
     }
 
     try {
-      const data = editId ? await updateLead() : await createLead();
+      let res;
+
+      if (editId) {
+        // ✅ UPDATE (STATUS ONLY)
+        res = await fetch(`${BASE_URL}/leads/update-status`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            id: editId,
+            status: form.status,
+          }),
+        });
+      } else {
+        // ✅ CREATE
+        res = await fetch(`${BASE_URL}/leads`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            mobile: form.mobile,
+            brand_id: form.brand_id,
+            retailer_id: form.retailer_id || null,
+          }),
+        });
+      }
+
+      const data = await res.json();
 
       if (data.success) {
-        showToast(editId ? "Status updated" : "Lead created");
+        showToast(editId ? "Updated" : "Created");
         setShow(false);
         setEditId(null);
-        setForm({ mobile: "", brand_id: "", retailer_id: "" });
-        setStatusOnly("new");
+        setForm({
+          mobile: "",
+          brand_id: "",
+          retailer_id: "",
+          status: "new",
+        });
         fetchData();
       } else {
         showToast(data.message);
@@ -115,21 +122,25 @@ export default function Leads() {
 
   // ===== EDIT =====
   const handleEdit = (l) => {
+    setForm({
+      mobile: l.mobile,
+      brand_id: l.brand_id || "",
+      retailer_id: l.retailer_id || "",
+      status: l.status,
+    });
     setEditId(l.id);
-    setStatusOnly(l.status);
     setShow(true);
   };
 
-  // ===== FILTER =====
+  // ===== FILTER + SEARCH =====
   let filtered = leads.filter((l) =>
-    l.mobile.includes(search)
+    `${l.mobile}`.toLowerCase().includes(search.toLowerCase())
   );
 
   if (filter !== "all") {
     filtered = filtered.filter((l) => l.status === filter);
   }
 
-  // SORT
   const order = { new: 1, followup: 2, closed: 3 };
   filtered.sort((a, b) => order[a.status] - order[b.status]);
 
@@ -141,7 +152,6 @@ export default function Leads() {
         <p>{filtered.length}</p>
       </div>
 
-      {/* SEARCH */}
       <input
         className="searchBox"
         placeholder="Search mobile..."
@@ -149,81 +159,93 @@ export default function Leads() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {/* FILTER */}
       <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
         {["all", "new", "followup", "closed"].map((f) => (
-          <button key={f} onClick={() => setFilter(f)}>
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            style={{
+              padding: "6px 10px",
+              borderRadius: 10,
+              border: "none",
+              background: filter === f ? "#2563eb" : "#eee",
+              color: filter === f ? "white" : "black",
+            }}
+          >
             {f}
           </button>
         ))}
       </div>
 
-      {/* LIST */}
-      {filtered.map((l) => (
-        <div key={l.id} className="userCard">
-          <div>
-            <h4>{l.mobile}</h4>
-            <p>{brands.find(b => b.id === l.brand_id)?.name}</p>
-            <span className="roleTag">{l.status}</span>
+      {filtered.length === 0 ? (
+        <p style={{ marginTop: 20 }}>No leads</p>
+      ) : (
+        filtered.map((l) => (
+          <div key={l.id} className="userCard">
+            <div>
+              <h4>{l.mobile}</h4>
+              <p>
+                {brands.find(b => b.id === l.brand_id)?.name || "-"}
+              </p>
+              <span className="roleTag">{l.status}</span>
+            </div>
+
+            <div className="actionBtns">
+              <button onClick={() => handleEdit(l)}>Edit</button>
+            </div>
           </div>
+        ))
+      )}
 
-          <div className="actionBtns">
-            <button onClick={() => handleEdit(l)}>Update</button>
-          </div>
-        </div>
-      ))}
+      <button className="fabBtn" onClick={() => setShow(true)}>+</button>
 
-      {/* FAB */}
-      <button className="fabBtn" onClick={() => {
-        setEditId(null);
-        setShow(true);
-      }}>+</button>
-
-      {/* MODAL */}
       {show && (
         <div className="modal">
           <div className="modalBox">
 
-            <h3>{editId ? "Update Status" : "Add Lead"}</h3>
+            <h3>{editId ? "Edit Lead" : "Add Lead"}</h3>
 
             <form onSubmit={handleSubmit}>
 
-              {!editId && (
-                <>
-                  <input
-                    placeholder="Mobile"
-                    value={form.mobile}
-                    onChange={(e)=>setForm({...form,mobile:e.target.value})}
-                  />
+              <input
+                placeholder="Mobile"
+                value={form.mobile}
+                onChange={(e) =>
+                  setForm({ ...form, mobile: e.target.value })
+                }
+              />
 
-                  <select
-                    value={form.brand_id}
-                    onChange={(e)=>setForm({...form,brand_id:e.target.value})}
-                  >
-                    <option value="">Brand</option>
-                    {brands.map(b=>(
-                      <option key={b.id} value={b.id}>{b.name}</option>
-                    ))}
-                  </select>
-
-                  <select
-                    value={form.retailer_id}
-                    onChange={(e)=>setForm({...form,retailer_id:e.target.value})}
-                  >
-                    <option value="">Retailer</option>
-                    {retailers.map(r=>(
-                      <option key={r.id} value={r.id}>
-                        {r.business_name}
-                      </option>
-                    ))}
-                  </select>
-                </>
-              )}
-
-              {/* STATUS */}
               <select
-                value={editId ? statusOnly : "new"}
-                onChange={(e)=>setStatusOnly(e.target.value)}
+                value={form.brand_id}
+                onChange={(e) =>
+                  setForm({ ...form, brand_id: e.target.value })
+                }
+              >
+                <option value="">Brand</option>
+                {brands.map((b) => (
+                  <option key={b.id} value={b.id}>{b.name}</option>
+                ))}
+              </select>
+
+              <select
+                value={form.retailer_id}
+                onChange={(e) =>
+                  setForm({ ...form, retailer_id: e.target.value })
+                }
+              >
+                <option value="">Retailer</option>
+                {retailers.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.business_name}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={form.status}
+                onChange={(e) =>
+                  setForm({ ...form, status: e.target.value })
+                }
               >
                 <option value="new">New</option>
                 <option value="followup">Followup</option>
@@ -236,7 +258,7 @@ export default function Leads() {
 
             </form>
 
-            <button className="closeBtn" onClick={()=>{
+            <button className="closeBtn" onClick={() => {
               setShow(false);
               setEditId(null);
             }}>
@@ -248,7 +270,6 @@ export default function Leads() {
       )}
 
       {toast && <div className="toast">{toast}</div>}
-
     </div>
   );
 }
