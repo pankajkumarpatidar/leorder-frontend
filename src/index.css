@@ -376,10 +376,3 @@ body {
   border-radius: 10px;
   z-index: 3000;
 }
-
-select {
-  padding: 14px;
-  border-radius: 14px;
-  border: none;
-  background: #f1f5f9;
-}
