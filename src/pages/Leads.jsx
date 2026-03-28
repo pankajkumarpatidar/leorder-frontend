@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Fab from "../components/Fab";
 import BASE_URL from "../api";
 
 export default function Leads() {
@@ -9,9 +8,12 @@ export default function Leads() {
   const [brands, setBrands] = useState([]);
   const [retailers, setRetailers] = useState([]);
 
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
+
   const [show, setShow] = useState(false);
+  const [editId, setEditId] = useState(null);
   const [toast, setToast] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     mobile: "",
@@ -20,9 +22,8 @@ export default function Leads() {
     status: "new",
   });
 
-  // ===== FETCH ALL =====
+  // ===== FETCH =====
   const fetchData = async () => {
-    setLoading(true);
     try {
       const [leadRes, brandRes, retailerRes] = await Promise.all([
         fetch(`${BASE_URL}/leads`, {
@@ -36,31 +37,28 @@ export default function Leads() {
         }),
       ]);
 
-      const leadsData = await leadRes.json();
-      const brandData = await brandRes.json();
-      const retailerData = await retailerRes.json();
+      const l = await leadRes.json();
+      const b = await brandRes.json();
+      const r = await retailerRes.json();
 
-      setLeads(leadsData.data || []);
-      setBrands(brandData.data || []);
-      setRetailers(retailerData.data || []);
-
+      setLeads(l.data || []);
+      setBrands(b.data || []);
+      setRetailers(r.data || []);
     } catch {
-      showToast("Error loading data");
+      showToast("Error loading");
     }
-    setLoading(false);
   };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  // ===== TOAST =====
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2000);
   };
 
-  // ===== CREATE =====
+  // ===== CREATE / UPDATE =====
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -69,8 +67,14 @@ export default function Leads() {
     }
 
     try {
-      const res = await fetch(`${BASE_URL}/leads`, {
-        method: "POST",
+      const url = editId
+        ? `${BASE_URL}/leads/${editId}`
+        : `${BASE_URL}/leads`;
+
+      const method = editId ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -81,8 +85,9 @@ export default function Leads() {
       const data = await res.json();
 
       if (data.success) {
-        showToast("Lead created");
+        showToast(editId ? "Updated" : "Created");
         setShow(false);
+        setEditId(null);
         setForm({
           mobile: "",
           brand_id: "",
@@ -98,34 +103,89 @@ export default function Leads() {
     }
   };
 
+  // ===== EDIT =====
+  const handleEdit = (l) => {
+    setForm({
+      mobile: l.mobile,
+      brand_id: l.brand_id || "",
+      retailer_id: l.retailer_id || "",
+      status: l.status,
+    });
+    setEditId(l.id);
+    setShow(true);
+  };
+
+  // ===== FILTER + SEARCH =====
+  let filtered = leads.filter((l) =>
+    `${l.mobile}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
+  if (filter !== "all") {
+    filtered = filtered.filter((l) => l.status === filter);
+  }
+
+  // ===== SORT (pending/top) =====
+  const order = { new: 1, followup: 2, closed: 3 };
+
+  filtered.sort((a, b) => order[a.status] - order[b.status]);
+
   return (
     <div className="appContainer">
 
       {/* HEADER */}
       <div className="header">
         <h3>Leads</h3>
-        <p>{leads.length}</p>
+        <p>{filtered.length}</p>
+      </div>
+
+      {/* SEARCH */}
+      <input
+        className="searchBox"
+        placeholder="Search mobile..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      {/* FILTER */}
+      <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+        {["all", "new", "followup", "closed"].map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            style={{
+              padding: "6px 10px",
+              borderRadius: 10,
+              border: "none",
+              background: filter === f ? "#2563eb" : "#eee",
+              color: filter === f ? "white" : "black",
+            }}
+          >
+            {f}
+          </button>
+        ))}
       </div>
 
       {/* LIST */}
-      {loading ? (
-        <p style={{ marginTop: 20 }}>Loading...</p>
-      ) : leads.length === 0 ? (
+      {filtered.length === 0 ? (
         <p style={{ marginTop: 20 }}>No leads</p>
       ) : (
-        leads.map((l) => (
+        filtered.map((l) => (
           <div key={l.id} className="userCard">
 
             <div>
               <h4>{l.mobile}</h4>
+
               <p>
-                Brand: {brands.find(b => b.id === l.brand_id)?.name || "-"}
-              </p>
-              <p>
-                Retailer: {retailers.find(r => r.id === l.retailer_id)?.business_name || "-"}
+                {brands.find(b => b.id === l.brand_id)?.name || "-"}
               </p>
 
               <span className="roleTag">{l.status}</span>
+            </div>
+
+            <div className="actionBtns">
+              <button onClick={() => handleEdit(l)}>Edit</button>
             </div>
 
           </div>
@@ -140,7 +200,7 @@ export default function Leads() {
         <div className="modal">
           <div className="modalBox">
 
-            <h3>Add Lead</h3>
+            <h3>{editId ? "Edit Lead" : "Add Lead"}</h3>
 
             <form onSubmit={handleSubmit}>
 
@@ -152,29 +212,25 @@ export default function Leads() {
                 }
               />
 
-              {/* BRAND */}
               <select
                 value={form.brand_id}
                 onChange={(e) =>
                   setForm({ ...form, brand_id: e.target.value })
                 }
               >
-                <option value="">Select Brand</option>
+                <option value="">Brand</option>
                 {brands.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
+                  <option key={b.id} value={b.id}>{b.name}</option>
                 ))}
               </select>
 
-              {/* RETAILER */}
               <select
                 value={form.retailer_id}
                 onChange={(e) =>
                   setForm({ ...form, retailer_id: e.target.value })
                 }
               >
-                <option value="">Select Retailer (optional)</option>
+                <option value="">Retailer</option>
                 {retailers.map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.business_name}
@@ -182,7 +238,6 @@ export default function Leads() {
                 ))}
               </select>
 
-              {/* STATUS */}
               <select
                 value={form.status}
                 onChange={(e) =>
@@ -194,11 +249,16 @@ export default function Leads() {
                 <option value="closed">Closed</option>
               </select>
 
-              <button type="submit">Create Lead</button>
+              <button type="submit">
+                {editId ? "Update" : "Create"}
+              </button>
 
             </form>
 
-            <button className="closeBtn" onClick={() => setShow(false)}>
+            <button className="closeBtn" onClick={() => {
+              setShow(false);
+              setEditId(null);
+            }}>
               Close
             </button>
 
