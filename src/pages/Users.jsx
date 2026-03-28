@@ -3,7 +3,12 @@ import Fab from "../components/Fab";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
+  const [search, setSearch] = useState("");
+
   const [showForm, setShowForm] = useState(false);
+  const [editId, setEditId] = useState(null);
+
+  const [toast, setToast] = useState("");
 
   const [form, setForm] = useState({
     name: "",
@@ -14,54 +19,51 @@ export default function Users() {
 
   const token = localStorage.getItem("token");
 
-  // 🔥 FETCH USERS
+  // 🔥 FETCH
   const fetchUsers = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/users", {
-        headers: {
-          Authorization: "Bearer " + token
-        }
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        setUsers(data.data);
-      }
-    } catch (err) {
-      console.error(err);
-    }
+    const res = await fetch("http://localhost:5000/api/users", {
+      headers: { Authorization: "Bearer " + token }
+    });
+    const data = await res.json();
+    if (data.success) setUsers(data.data);
   };
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  // 🔥 CREATE USER
+  // 🔥 CREATE / UPDATE
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const res = await fetch("http://localhost:5000/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token
-        },
-        body: JSON.stringify(form)
-      });
+    const url = editId
+      ? `http://localhost:5000/api/users/${editId}`
+      : "http://localhost:5000/api/users";
 
-      const data = await res.json();
+    const method = editId ? "PUT" : "POST";
 
-      if (data.success) {
-        setShowForm(false);
-        setForm({ name: "", email: "", password: "", role: "staff" });
-        fetchUsers();
-      } else {
-        alert(data.message);
-      }
-    } catch (err) {
-      console.error(err);
+    const res = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify(form)
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      setToast(editId ? "User updated" : "User created");
+      setShowForm(false);
+      setEditId(null);
+      setForm({ name: "", email: "", password: "", role: "staff" });
+      fetchUsers();
+    } else {
+      setToast(data.message);
     }
+
+    setTimeout(() => setToast(""), 2000);
   };
 
   // 🔥 DELETE
@@ -70,13 +72,30 @@ export default function Users() {
 
     await fetch(`http://localhost:5000/api/users/${id}`, {
       method: "DELETE",
-      headers: {
-        Authorization: "Bearer " + token
-      }
+      headers: { Authorization: "Bearer " + token }
     });
 
+    setToast("User deleted");
     fetchUsers();
+    setTimeout(() => setToast(""), 2000);
   };
+
+  // 🔥 EDIT
+  const handleEdit = (u) => {
+    setForm({
+      name: u.name,
+      email: u.email,
+      password: "",
+      role: u.role
+    });
+    setEditId(u.id);
+    setShowForm(true);
+  };
+
+  // 🔥 FILTER
+  const filtered = users.filter((u) =>
+    u.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div>
@@ -84,86 +103,84 @@ export default function Users() {
       {/* HEADER */}
       <div className="header">
         <h3>Users</h3>
-        <p>Total: {users.length}</p>
+        <p>{filtered.length}</p>
       </div>
+
+      {/* SEARCH */}
+      <input
+        className="searchBox"
+        placeholder="Search user..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
 
       {/* LIST */}
-      <div style={{ marginTop: 16 }}>
-        {users.map((u) => (
-          <div key={u.id} className="userCard">
-            <div>
-              <h4>{u.name}</h4>
-              <p>{u.email}</p>
-              <span className="roleTag">{u.role}</span>
-            </div>
-
-            <button
-              className="deleteBtn"
-              onClick={() => handleDelete(u.id)}
-            >
-              Delete
-            </button>
+      {filtered.map((u) => (
+        <div key={u.id} className="userCard">
+          <div>
+            <h4>{u.name}</h4>
+            <p>{u.email}</p>
+            <span className="roleTag">{u.role}</span>
           </div>
-        ))}
-      </div>
+
+          <div className="actionBtns">
+            <button onClick={() => handleEdit(u)}>Edit</button>
+            <button onClick={() => handleDelete(u.id)}>Delete</button>
+          </div>
+        </div>
+      ))}
 
       {/* FAB */}
-      <Fab onClick={() => setShowForm(true)} />
+      <Fab onClick={() => {
+        setShowForm(true);
+        setEditId(null);
+      }} />
 
       {/* MODAL */}
       {showForm && (
         <div className="modal">
           <div className="modalBox">
-            <h3>Add User</h3>
+            <h3>{editId ? "Edit User" : "Add User"}</h3>
 
             <form onSubmit={handleSubmit}>
               <input
                 placeholder="Name"
                 value={form.name}
-                onChange={(e) =>
-                  setForm({ ...form, name: e.target.value })
-                }
+                onChange={(e)=>setForm({...form, name:e.target.value})}
               />
-
               <input
                 placeholder="Email"
                 value={form.email}
-                onChange={(e) =>
-                  setForm({ ...form, email: e.target.value })
-                }
+                onChange={(e)=>setForm({...form, email:e.target.value})}
               />
-
-              <input
-                placeholder="Password"
-                type="password"
-                value={form.password}
-                onChange={(e) =>
-                  setForm({ ...form, password: e.target.value })
-                }
-              />
-
+              {!editId && (
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={form.password}
+                  onChange={(e)=>setForm({...form, password:e.target.value})}
+                />
+              )}
               <select
                 value={form.role}
-                onChange={(e) =>
-                  setForm({ ...form, role: e.target.value })
-                }
+                onChange={(e)=>setForm({...form, role:e.target.value})}
               >
                 <option value="staff">Staff</option>
                 <option value="salesman">Salesman</option>
               </select>
 
-              <button>Create</button>
+              <button>{editId ? "Update" : "Create"}</button>
             </form>
 
-            <button
-              className="closeBtn"
-              onClick={() => setShowForm(false)}
-            >
+            <button className="closeBtn" onClick={()=>setShowForm(false)}>
               Close
             </button>
           </div>
         </div>
       )}
+
+      {/* TOAST */}
+      {toast && <div className="toast">{toast}</div>}
 
     </div>
   );

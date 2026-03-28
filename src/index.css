@@ -331,3 +331,48 @@ body {
     right: 0;
   }
 }
+
+/* SEARCH */
+.searchBox {
+  margin-top: 12px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #eef2f7;
+}
+
+/* ACTION BUTTONS */
+.actionBtns {
+  display: flex;
+  gap: 6px;
+}
+
+.actionBtns button {
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.actionBtns button:first-child {
+  background: #dbeafe;
+}
+
+.actionBtns button:last-child {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  z-index: 3000;
+}
