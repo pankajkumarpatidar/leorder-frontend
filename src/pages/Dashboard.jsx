@@ -1,9 +1,54 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BASE_URL from "../api";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   const name = localStorage.getItem("name") || "User";
+
+  const [stats, setStats] = useState({
+    leads: 0,
+    orders: 0,
+    retailers: 0,
+    products: 0,
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+
+        const [leadsRes, ordersRes, retailersRes, productsRes] =
+          await Promise.all([
+            fetch(`${BASE_URL}/leads`, { headers }),
+            fetch(`${BASE_URL}/orders`, { headers }),
+            fetch(`${BASE_URL}/retailers`, { headers }),
+            fetch(`${BASE_URL}/products`, { headers }),
+          ]);
+
+        const leads = await leadsRes.json();
+        const orders = await ordersRes.json();
+        const retailers = await retailersRes.json();
+        const products = await productsRes.json();
+
+        setStats({
+          leads: leads.data?.length || 0,
+          orders: orders.data?.length || 0,
+          retailers: retailers.data?.length || 0,
+          products: products.data?.length || 0,
+        });
+
+      } catch (err) {
+        console.log("Dashboard error", err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="appContainer">
@@ -15,7 +60,6 @@ export default function Dashboard() {
           <p>Welcome back</p>
         </div>
 
-        {/* 🔥 CLICKABLE AVATAR */}
         <div
           className="avatar"
           onClick={() => navigate("/profile")}
@@ -37,22 +81,22 @@ export default function Dashboard() {
 
         <div className="cardItem purple">
           <p>Leads</p>
-          <h3>120</h3>
+          <h3>{stats.leads}</h3>
         </div>
 
         <div className="cardItem green">
           <p>Orders</p>
-          <h3>45</h3>
+          <h3>{stats.orders}</h3>
         </div>
 
         <div className="cardItem yellow">
           <p>Retailers</p>
-          <h3>30</h3>
+          <h3>{stats.retailers}</h3>
         </div>
 
         <div className="cardItem blue">
           <p>Products</p>
-          <h3>80</h3>
+          <h3>{stats.products}</h3>
         </div>
 
       </div>

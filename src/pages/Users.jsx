@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-
-const BASE_URL = "https://leorder-api.onrender.com/api";
+import BASE_URL from "../api";
 
 export default function Users() {
   const token = localStorage.getItem("token");
