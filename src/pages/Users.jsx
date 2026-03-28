@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -15,7 +15,6 @@ export default function Users() {
 
   // FETCH USERS
   const fetchUsers = async () => {
-    setLoading(true);
     try {
       const res = await fetch("http://localhost:5000/api/users", {
         headers: {
@@ -26,9 +25,8 @@ export default function Users() {
       const data = await res.json();
       setUsers(data.data || []);
     } catch (err) {
-      alert("Error fetching users");
+      console.log(err);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -52,7 +50,7 @@ export default function Users() {
       const data = await res.json();
 
       if (data.success) {
-        alert("User created");
+        setShowForm(false);
         setForm({ name: "", email: "", password: "", role: "staff" });
         fetchUsers();
       } else {
@@ -74,44 +72,64 @@ export default function Users() {
         </div>
       </div>
 
-      {/* ADD USER FORM */}
-      <form onSubmit={handleSubmit} style={{ marginTop: 20 }}>
-        <input
-          placeholder="Name"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-        />
+      {/* ADD BUTTON */}
+      <button
+        className="btnPrimary"
+        onClick={() => setShowForm(!showForm)}
+      >
+        {showForm ? "Close" : "+ Add User"}
+      </button>
 
-        <input
-          placeholder="Email"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-        />
+      {/* FORM (GLASS CARD) */}
+      {showForm && (
+        <div className="glassCard">
+          <form onSubmit={handleSubmit}>
+            <input
+              placeholder="Name"
+              value={form.name}
+              onChange={(e) =>
+                setForm({ ...form, name: e.target.value })
+              }
+            />
 
-        <input
-          placeholder="Password"
-          type="password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
+            <input
+              placeholder="Email"
+              value={form.email}
+              onChange={(e) =>
+                setForm({ ...form, email: e.target.value })
+              }
+            />
 
-        <select
-          value={form.role}
-          onChange={(e) => setForm({ ...form, role: e.target.value })}
-        >
-          <option value="staff">Staff</option>
-          <option value="salesman">Salesman</option>
-        </select>
+            <input
+              type="password"
+              placeholder="Password"
+              value={form.password}
+              onChange={(e) =>
+                setForm({ ...form, password: e.target.value })
+              }
+            />
 
-        <button type="submit">Add User</button>
-      </form>
+            <select
+              value={form.role}
+              onChange={(e) =>
+                setForm({ ...form, role: e.target.value })
+              }
+            >
+              <option value="staff">Staff</option>
+              <option value="salesman">Salesman</option>
+            </select>
 
-      {/* LIST */}
-      <div style={{ marginTop: 20 }}>
-        {loading ? (
-          <p>Loading...</p>
-        ) : users.length === 0 ? (
-          <p>No users found</p>
+            <button className="btnPrimary" type="submit">
+              Create User
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* USERS LIST */}
+      <div className="cards">
+        {users.length === 0 ? (
+          <p style={{ marginTop: 20 }}>No users found</p>
         ) : (
           users.map((u) => (
             <div key={u.id} className="cardItem blue">
@@ -122,6 +140,7 @@ export default function Users() {
           ))
         )}
       </div>
+
     </div>
   );
 }
