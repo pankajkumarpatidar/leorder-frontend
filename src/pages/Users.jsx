@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const BASE_URL = "http://localhost:5000/api"; // बाद में change करेंगे
+const BASE_URL = "http://localhost:5000/api"; // बाद में live URL लगाना
 
 export default function Users() {
   const token = localStorage.getItem("token");
@@ -17,6 +17,7 @@ export default function Users() {
     email: "",
     password: "",
     role: "staff",
+    mobile: "",
   });
 
   // ===== FETCH USERS =====
@@ -51,6 +52,11 @@ export default function Users() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // mobile validation
+    if (!/^[0-9]{10}$/.test(form.mobile)) {
+      return showToast("Enter valid mobile number");
+    }
+
     try {
       const url = editId
         ? `${BASE_URL}/users/${editId}`
@@ -73,7 +79,13 @@ export default function Users() {
         showToast(editId ? "User updated" : "User created");
         setShow(false);
         setEditId(null);
-        setForm({ name: "", email: "", password: "", role: "staff" });
+        setForm({
+          name: "",
+          email: "",
+          password: "",
+          role: "staff",
+          mobile: "",
+        });
         fetchUsers();
       } else {
         showToast(data.message);
@@ -109,6 +121,7 @@ export default function Users() {
       email: u.email,
       password: "",
       role: u.role,
+      mobile: u.mobile || "",
     });
     setEditId(u.id);
     setShow(true);
@@ -147,6 +160,7 @@ export default function Users() {
             <div>
               <h4>{u.name}</h4>
               <p>{u.email}</p>
+              <p>{u.mobile}</p>
               <span className="roleTag">{u.role}</span>
             </div>
 
@@ -191,6 +205,14 @@ export default function Users() {
                 value={form.password}
                 onChange={(e) =>
                   setForm({ ...form, password: e.target.value })
+                }
+              />
+
+              <input
+                placeholder="Mobile Number"
+                value={form.mobile}
+                onChange={(e) =>
+                  setForm({ ...form, mobile: e.target.value })
                 }
               />
 
