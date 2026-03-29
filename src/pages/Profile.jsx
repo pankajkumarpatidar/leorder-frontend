@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BASE_URL from "../api";
-import BottomNav from "../components/BottomNav"; // 🔥 ADD
+import BottomNav from "../components/BottomNav";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -16,7 +16,6 @@ export default function Profile() {
   const [showPass, setShowPass] = useState(false);
   const [password, setPassword] = useState("");
 
-  // ===== FETCH PROFILE =====
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -47,7 +46,6 @@ export default function Profile() {
     fetchProfile();
   }, []);
 
-  // ===== RESET PASSWORD =====
   const handleResetPassword = async () => {
     if (password.length < 4) {
       return alert("Password too short");
@@ -77,7 +75,6 @@ export default function Profile() {
     }
   };
 
-  // ===== LOGOUT =====
   const handleLogout = () => {
     localStorage.clear();
     window.location.href = "/login";
@@ -87,13 +84,17 @@ export default function Profile() {
     <>
       <div className="appContainer">
 
-        {/* HEADER */}
+        {/* HEADER FIX */}
         <div className="header">
 
-          {/* ✅ MENU FIX (GO TO /menu) */}
+          {/* MENU */}
           <div
             onClick={() => navigate("/menu")}
-            style={{ fontSize: 22, cursor: "pointer" }}
+            style={{
+              fontSize: 22,
+              cursor: "pointer",
+              marginRight: 10 // 🔥 spacing fix
+            }}
           >
             ☰
           </div>
@@ -111,7 +112,17 @@ export default function Profile() {
           </div>
 
           <h2>{user.name}</h2>
-          <p>{user.email}</p>
+
+          {/* 🔥 EMAIL FIX */}
+          <p
+            style={{
+              wordBreak: "break-all",
+              fontSize: "14px",
+              marginTop: "4px"
+            }}
+          >
+            {user.email}
+          </p>
 
           {/* ROLE */}
           {user.role && (
@@ -134,7 +145,6 @@ export default function Profile() {
 
           <div className="profileActions">
 
-            {/* RESET PASSWORD */}
             {!showPass ? (
               <button
                 className="primaryBtn"
@@ -160,7 +170,6 @@ export default function Profile() {
               </>
             )}
 
-            {/* LOGOUT */}
             <button className="logoutBtn" onClick={handleLogout}>
               Logout
             </button>
@@ -171,7 +180,6 @@ export default function Profile() {
 
       </div>
 
-      {/* 🔥 ALWAYS SHOW NAV */}
       <BottomNav />
     </>
   );
