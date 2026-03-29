@@ -22,6 +22,13 @@ export default function Leads() {
     status: "pending",
   });
 
+  // 🔥 FAST MAPS
+  const brandMap = {};
+  brands.forEach((b) => (brandMap[b.id] = b.name));
+
+  const retailerMap = {};
+  retailers.forEach((r) => (retailerMap[r.id] = r.business_name));
+
   // ===== FETCH =====
   const fetchData = async () => {
     try {
@@ -99,7 +106,7 @@ export default function Leads() {
           },
           body: JSON.stringify({
             mobile: form.mobile,
-            brand_id: Number(form.brand_id), // ✅ FIX
+            brand_id: Number(form.brand_id),
             retailer_id: form.retailer_id
               ? Number(form.retailer_id)
               : null,
@@ -156,8 +163,10 @@ export default function Leads() {
   }
 
   const order = { pending: 1, approved: 2, rejected: 3 };
+
   filtered.sort(
-    (a, b) => (order[a.status] || 0) - (order[b.status] || 0)
+    (a, b) =>
+      (order[a.status] || 0) - (order[b.status] || 0)
   );
 
   return (
@@ -201,15 +210,10 @@ export default function Leads() {
             <div>
               <h4>{l.mobile}</h4>
 
-              <p>
-                {brands.find((b) => b.id === l.brand_id)?.name || "-"}
-              </p>
+              <p>{brandMap[l.brand_id] || "-"}</p>
 
               <p style={{ fontSize: 12, color: "#888" }}>
-                {
-                  retailers.find((r) => r.id === l.retailer_id)
-                    ?.business_name || ""
-                }
+                {retailerMap[l.retailer_id] || ""}
               </p>
 
               <span className="roleTag">{l.status}</span>

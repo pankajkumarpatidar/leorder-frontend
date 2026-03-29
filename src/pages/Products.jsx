@@ -9,6 +9,12 @@ export default function Products() {
   const [brands, setBrands] = useState([]);
   const [search, setSearch] = useState("");
 
+  // 🔥 FAST LOOKUP
+  const brandMap = {};
+  brands.forEach((b) => {
+    brandMap[b.id] = b.name;
+  });
+
   // ===== FETCH =====
   const fetchData = async () => {
     try {
@@ -40,7 +46,7 @@ export default function Products() {
 
   // ===== FILTER =====
   const filtered = products.filter((p) =>
-    `${p.name}`
+    (p.name || "")
       .toLowerCase()
       .includes(search.toLowerCase())
   );
@@ -81,19 +87,17 @@ export default function Products() {
 
               {/* BRAND */}
               <p style={{ fontSize: 12, color: "#666" }}>
-                {
-                  brands.find((b) => b.id === p.brand_id)?.name || "-"
-                }
+                {brandMap[p.brand_id] || "-"}
               </p>
 
-              {/* UNIT + BOX */}
+              {/* UNIT + BOX (SAFE) */}
               <p style={{ fontSize: 12 }}>
-                {p.unit} • {p.pcs_per_box} pcs/box
+                {(p.unit || "-")} • {(p.pcs_per_box || 0)} pcs/box
               </p>
 
-              {/* PRICE */}
+              {/* PRICE (SAFE) */}
               <p style={{ fontSize: 12, color: "#444" }}>
-                DP: ₹{p.dp_per_pcs} | MRP: ₹{p.mrp_per_pcs}
+                DP: ₹{p.dp_per_pcs || 0} | MRP: ₹{p.mrp_per_pcs || 0}
               </p>
             </div>
 

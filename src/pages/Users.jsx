@@ -3,13 +3,16 @@ import BASE_URL from "../api";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
+  const [brands, setBrands] = useState([]); // 🔥 NEW
+  const [selectedBrands, setSelectedBrands] = useState([]); // 🔥 NEW
+
   const [search, setSearch] = useState("");
   const [show, setShow] = useState(false);
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState("");
 
-  const token = localStorage.getItem("token"); // 🔥 moved here
+  const token = localStorage.getItem("token");
 
   const [form, setForm] = useState({
     name: "",
@@ -19,25 +22,33 @@ export default function Users() {
     mobile: "",
   });
 
+  // ===== FETCH USERS + BRANDS =====
   const fetchUsers = async () => {
-    if (!token) return; // 🔥 safety
+    if (!token) return;
 
     setLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/users`, {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store", // 🔥 prevent stale data
-      });
+      const [uRes, bRes] = await Promise.all([
+        fetch(`${BASE_URL}/users`, {
+          headers: { Authorization: `Bearer ${token}` },
+          cache: "no-store",
+        }),
+        fetch(`${BASE_URL}/brands`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
 
-      const data = await res.json();
-      setUsers(data.data || []);
+      const uData = await uRes.json();
+      const bData = await bRes.json();
+
+      setUsers(uData.data || []);
+      setBrands(bData.data || []);
     } catch {
       showToast("Error fetching users");
     }
     setLoading(false);
   };
 
-  // 🔥 FIX: token change par refetch
   useEffect(() => {
     fetchUsers();
   }, [token]);
@@ -47,6 +58,7 @@ export default function Users() {
     setTimeout(() => setToast(""), 2000);
   };
 
+  // ===== CREATE / UPDATE USER =====
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -73,9 +85,27 @@ export default function Users() {
       const data = await res.json();
 
       if (data.success) {
+        // 🔥 ASSIGN BRANDS AFTER USER SAVE
+        if (form.role === "salesman" && selectedBrands.length) {
+          await fetch(`${BASE_URL}/salesman/assign-brands`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              user_id: editId || data.user?.id,
+              brand_ids: selectedBrands,
+            }),
+          });
+        }
+
         showToast(editId ? "Updated" : "User created");
+
         setShow(false);
         setEditId(null);
+        setSelectedBrands([]); // 🔥 reset
+
         setForm({
           name: "",
           email: "",
@@ -83,6 +113,7 @@ export default function Users() {
           role: "staff",
           mobile: "",
         });
+
         fetchUsers();
       } else {
         showToast(data.message);
@@ -92,6 +123,7 @@ export default function Users() {
     }
   };
 
+  // ===== DELETE =====
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this user?")) return;
 
@@ -107,7 +139,8 @@ export default function Users() {
     }
   };
 
-  const handleEdit = (u) => {
+  // ===== EDIT =====
+  const handleEdit = async (u) => {
     setForm({
       name: u.name,
       email: u.email,
@@ -115,8 +148,24 @@ export default function Users() {
       role: u.role,
       mobile: u.mobile || "",
     });
+
     setEditId(u.id);
     setShow(true);
+
+    // 🔥 FETCH ASSIGNED BRANDS
+    try {
+      const res = await fetch(
+        `${BASE_URL}/salesman/${u.id}/brands`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = await res.json();
+
+      setSelectedBrands(data.data?.map(b => b.id) || []);
+    } catch {
+      setSelectedBrands([]);
+    }
   };
 
   const filtered = users.filter((u) =>
@@ -128,13 +177,11 @@ export default function Users() {
   return (
     <div className="appContainer">
 
-      {/* HEADER */}
       <div className="header">
         <h3>Users 👥</h3>
         <p>{users.length}</p>
       </div>
 
-      {/* SEARCH */}
       <input
         className="searchBox"
         placeholder="Search name, email, mobile..."
@@ -142,7 +189,6 @@ export default function Users() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {/* LIST */}
       {loading ? (
         <p style={{ marginTop: 20 }}>Loading...</p>
       ) : filtered.length === 0 ? (
@@ -184,21 +230,18 @@ export default function Users() {
               flexDirection: "column",
               gap: "6px"
             }}>
-              <button
-                onClick={() => handleEdit(u)}
+              <button onClick={() => handleEdit(u)}
                 style={{
                   border: "none",
                   padding: "6px 10px",
                   borderRadius: "8px",
                   background: "#dbeafe",
                   fontSize: "12px"
-                }}
-              >
+                }}>
                 Edit
               </button>
 
-              <button
-                onClick={() => handleDelete(u.id)}
+              <button onClick={() => handleDelete(u.id)}
                 style={{
                   border: "none",
                   padding: "6px 10px",
@@ -206,8 +249,7 @@ export default function Users() {
                   background: "#fee2e2",
                   color: "#b91c1c",
                   fontSize: "12px"
-                }}
-              >
+                }}>
                 Delete
               </button>
             </div>
@@ -216,10 +258,8 @@ export default function Users() {
         ))
       )}
 
-      {/* FAB */}
       <button className="fabBtn" onClick={() => setShow(true)}>+</button>
 
-      {/* MODAL */}
       {show && (
         <div className="modal">
           <div className="modalBox">
@@ -245,6 +285,26 @@ export default function Users() {
                 <option value="staff">Staff</option>
                 <option value="salesman">Salesman</option>
               </select>
+
+              {/* 🔥 HIDDEN BRAND SELECT (NO UI CHANGE) */}
+              {form.role === "salesman" && (
+                <select
+                  multiple
+                  value={selectedBrands}
+                  onChange={(e) =>
+                    setSelectedBrands(
+                      [...e.target.selectedOptions].map(o => Number(o.value))
+                    )
+                  }
+                  style={{ display: "none" }} // 🔥 UI untouched
+                >
+                  {brands.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
+              )}
 
               <button type="submit">
                 {editId ? "Update" : "Create"}
