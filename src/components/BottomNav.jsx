@@ -1,10 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import {
   Home,
-  BarChart3,
+  Store,
   Package,
-  ShoppingBag,
-  User
+  ClipboardList,
+  User,
+  Plus
 } from "lucide-react";
 
 export default function BottomNav() {
@@ -12,10 +13,18 @@ export default function BottomNav() {
 
   const nav = [
     { path: "/", icon: Home, label: "Home" },
-    { path: "/leads", icon: BarChart3, label: "Leads" },
-    { path: "/orders", icon: Package, label: "Orders" },
-    { path: "/products", icon: ShoppingBag, label: "Products" },
-    { path: "/users", icon: User, label: "Users" },
+
+    // Retailers
+    { path: "/retailers", icon: Store, label: "Retailers", add: true },
+
+    // Orders
+    { path: "/orders", icon: Package, label: "Orders", add: true },
+
+    // Daily Work (Worksheet)
+    { path: "/worksheet", icon: ClipboardList, label: "Work", add: true },
+
+    // Profile
+    { path: "/profile", icon: User, label: "Profile" }
   ];
 
   return (
@@ -23,7 +32,6 @@ export default function BottomNav() {
       {nav.map((item) => {
         const Icon = item.icon;
 
-        // 🔥 ACTIVE FIX (sub routes bhi match kare)
         const isActive =
           location.pathname === item.path ||
           location.pathname.startsWith(item.path + "/");
@@ -33,9 +41,32 @@ export default function BottomNav() {
             key={item.path}
             to={item.path}
             className={`navItem ${isActive ? "active" : ""}`}
+            style={{ position: "relative" }}
           >
             <Icon size={22} />
             <p>{item.label}</p>
+
+            {/* 🔥 FLOATING ADD ICON */}
+            {item.add && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: -6,
+                  right: -6,
+                  background: "#2563eb",
+                  borderRadius: "50%",
+                  width: 16,
+                  height: 16,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "white",
+                  fontSize: 10
+                }}
+              >
+                <Plus size={10} />
+              </div>
+            )}
           </Link>
         );
       })}
