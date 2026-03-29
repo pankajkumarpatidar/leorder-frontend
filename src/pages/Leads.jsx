@@ -41,6 +41,10 @@ export default function Leads() {
       const b = await brandRes.json();
       const r = await retailerRes.json();
 
+      if (!l.success) throw new Error(l.message);
+      if (!b.success) throw new Error(b.message);
+      if (!r.success) throw new Error(r.message);
+
       setLeads(l.data || []);
       setBrands(b.data || []);
       setRetailers(r.data || []);
@@ -95,7 +99,7 @@ export default function Leads() {
           },
           body: JSON.stringify({
             mobile: form.mobile,
-            brand_id: form.brand_id ? Number(form.brand_id) : null,
+            brand_id: Number(form.brand_id), // ✅ FIX
             retailer_id: form.retailer_id
               ? Number(form.retailer_id)
               : null,
@@ -131,10 +135,10 @@ export default function Leads() {
   // ===== EDIT =====
   const handleEdit = (l) => {
     setForm({
-      mobile: l.mobile,
+      mobile: l.mobile || "",
       brand_id: l.brand_id || "",
       retailer_id: l.retailer_id || "",
-      status: l.status,
+      status: l.status || "pending",
     });
     setEditId(l.id);
     setShow(true);
@@ -142,7 +146,9 @@ export default function Leads() {
 
   // ===== FILTER =====
   let filtered = leads.filter((l) =>
-    l.mobile?.toLowerCase().includes(search.toLowerCase())
+    String(l.mobile || "")
+      .toLowerCase()
+      .includes(search.toLowerCase())
   );
 
   if (filter !== "all") {
@@ -150,18 +156,18 @@ export default function Leads() {
   }
 
   const order = { pending: 1, approved: 2, rejected: 3 };
-  filtered.sort((a, b) => order[a.status] - order[b.status]);
+  filtered.sort(
+    (a, b) => (order[a.status] || 0) - (order[b.status] || 0)
+  );
 
   return (
     <div className="appContainer">
 
-      {/* HEADER */}
       <div className="header">
         <h3>Leads</h3>
         <p>{filtered.length}</p>
       </div>
 
-      {/* SEARCH */}
       <input
         className="searchBox"
         placeholder="Search mobile..."
@@ -169,7 +175,6 @@ export default function Leads() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {/* FILTER */}
       <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
         {["all", "pending", "approved", "rejected"].map((f) => (
           <button
@@ -188,7 +193,6 @@ export default function Leads() {
         ))}
       </div>
 
-      {/* LIST */}
       {filtered.length === 0 ? (
         <p style={{ marginTop: 20 }}>No leads</p>
       ) : (
@@ -201,9 +205,11 @@ export default function Leads() {
                 {brands.find((b) => b.id === l.brand_id)?.name || "-"}
               </p>
 
-              {/* 🔥 RETAILER NAME */}
               <p style={{ fontSize: 12, color: "#888" }}>
-                {retailers.find((r) => r.id === l.retailer_id)?.business_name || ""}
+                {
+                  retailers.find((r) => r.id === l.retailer_id)
+                    ?.business_name || ""
+                }
               </p>
 
               <span className="roleTag">{l.status}</span>
@@ -218,7 +224,6 @@ export default function Leads() {
         ))
       )}
 
-      {/* FAB */}
       <button
         className="fabBtn"
         onClick={() => {
@@ -229,7 +234,6 @@ export default function Leads() {
         +
       </button>
 
-      {/* MODAL */}
       {show && (
         <div className="modal">
           <div className="modalBox">
@@ -311,9 +315,7 @@ export default function Leads() {
         </div>
       )}
 
-      {/* TOAST */}
       {toast && <div className="toast">{toast}</div>}
-
     </div>
   );
 }
