@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import {
   Home,
-  Store,
+  BarChart3,   // 🔥 Leads icon
   Package,
   ClipboardList,
   User
@@ -12,7 +12,7 @@ export default function BottomNav() {
 
   const nav = [
     { path: "/", icon: Home, label: "Home" },
-    { path: "/retailers", icon: Store, label: "Retailers" },
+    { path: "/leads", icon: BarChart3, label: "Leads" }, // ✅ CHANGED
     { path: "/orders", icon: Package, label: "Orders" },
     { path: "/worksheet", icon: ClipboardList, label: "Work" },
     { path: "/profile", icon: User, label: "Profile" }
@@ -33,12 +33,12 @@ export default function BottomNav() {
             to={item.path}
             className={`navItem ${isActive ? "active" : ""}`}
             style={{
-              flex: 1, // 🔥 equal spacing
+              flex: 1,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              gap: "4px" // 🔥 icon + text spacing
+              gap: "4px"
             }}
           >
             <Icon size={22} />

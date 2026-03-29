@@ -12,7 +12,8 @@ import Products from "./pages/Products";
 import Users from "./pages/Users";
 import Worksheet from "./pages/Worksheet";
 import Profile from "./pages/Profile";
-import Menu from "./pages/Menu"; // 🔥 ADD THIS
+import Menu from "./pages/Menu";
+import Retailers from "./pages/Retailers"; // 🔥 ADD THIS
 
 // LAYOUT
 import Layout from "./components/Layout";
@@ -45,6 +46,13 @@ export default function App() {
           </Private>
         } />
 
+        {/* 🔥 ADD THIS */}
+        <Route path="/retailers" element={
+          <Private>
+            <Layout><Retailers /></Layout>
+          </Private>
+        } />
+
         <Route path="/orders" element={
           <Private>
             <Layout><Orders /></Layout>
@@ -69,14 +77,12 @@ export default function App() {
           </Private>
         } />
 
-        {/* 🔥 FIXED PROFILE (with bottom nav) */}
         <Route path="/profile" element={
           <Private>
             <Layout><Profile /></Layout>
           </Private>
         } />
 
-        {/* 🔥 NEW MENU ROUTE */}
         <Route path="/menu" element={
           <Private>
             <Layout><Menu /></Layout>
