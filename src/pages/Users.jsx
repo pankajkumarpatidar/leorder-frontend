@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import BASE_URL from "../api";
 
 export default function Users() {
-  const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const [users, setUsers] = useState([]);
@@ -21,7 +19,6 @@ export default function Users() {
     mobile: "",
   });
 
-  // ===== FETCH USERS =====
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -40,13 +37,11 @@ export default function Users() {
     fetchUsers();
   }, []);
 
-  // ===== TOAST =====
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2000);
   };
 
-  // ===== CREATE / UPDATE =====
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -92,7 +87,6 @@ export default function Users() {
     }
   };
 
-  // ===== DELETE =====
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this user?")) return;
 
@@ -108,7 +102,6 @@ export default function Users() {
     }
   };
 
-  // ===== EDIT =====
   const handleEdit = (u) => {
     setForm({
       name: u.name,
@@ -121,7 +114,6 @@ export default function Users() {
     setShow(true);
   };
 
-  // ===== FILTER =====
   const filtered = users.filter((u) =>
     `${u.name} ${u.email} ${u.mobile}`
       .toLowerCase()
@@ -133,16 +125,7 @@ export default function Users() {
 
       {/* HEADER */}
       <div className="header">
-
-        {/* ☰ MENU */}
-        <div
-          onClick={() => navigate("/menu")}
-          style={{ fontSize: 22, cursor: "pointer" }}
-        >
-          ☰
-        </div>
-
-        <h3 style={{ flex: 1 }}>Users 👥</h3>
+        <h3>Users 👥</h3>
         <p>{users.length}</p>
       </div>
 
@@ -167,13 +150,12 @@ export default function Users() {
             <div style={{ maxWidth: "70%" }}>
               <h4>{u.name}</h4>
 
-              <p
-                style={{
-                  fontSize: "12px",
-                  color: "#666",
-                  wordBreak: "break-all",
-                }}
-              >
+              {/* EMAIL FIX */}
+              <p style={{
+                fontSize: "12px",
+                color: "#666",
+                wordBreak: "break-all"
+              }}>
                 {u.email}
               </p>
 
@@ -195,18 +177,19 @@ export default function Users() {
             </div>
 
             {/* RIGHT ACTIONS */}
-            <div className="actionBtns">
-
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "6px"
+            }}>
               <button
                 onClick={() => handleEdit(u)}
                 style={{
-                  background: "#2563eb",
-                  color: "white",
-                  padding: "6px 12px",
-                  borderRadius: "10px",
                   border: "none",
-                  fontSize: "12px",
-                  fontWeight: "500",
+                  padding: "6px 10px",
+                  borderRadius: "8px",
+                  background: "#dbeafe",
+                  fontSize: "12px"
                 }}
               >
                 Edit
@@ -215,18 +198,16 @@ export default function Users() {
               <button
                 onClick={() => handleDelete(u.id)}
                 style={{
+                  border: "none",
+                  padding: "6px 10px",
+                  borderRadius: "8px",
                   background: "#fee2e2",
                   color: "#b91c1c",
-                  padding: "6px 12px",
-                  borderRadius: "10px",
-                  border: "none",
-                  fontSize: "12px",
-                  fontWeight: "500",
+                  fontSize: "12px"
                 }}
               >
                 Delete
               </button>
-
             </div>
 
           </div>
@@ -234,9 +215,7 @@ export default function Users() {
       )}
 
       {/* FAB */}
-      <button className="fabBtn" onClick={() => setShow(true)}>
-        +
-      </button>
+      <button className="fabBtn" onClick={() => setShow(true)}>+</button>
 
       {/* MODAL */}
       {show && (
@@ -246,45 +225,21 @@ export default function Users() {
             <h3>{editId ? "Edit User" : "Add User"}</h3>
 
             <form onSubmit={handleSubmit}>
-              <input
-                placeholder="Name"
-                value={form.name}
-                onChange={(e) =>
-                  setForm({ ...form, name: e.target.value })
-                }
-              />
+              <input placeholder="Name" value={form.name}
+                onChange={(e)=>setForm({...form,name:e.target.value})}/>
 
-              <input
-                placeholder="Email"
-                value={form.email}
-                onChange={(e) =>
-                  setForm({ ...form, email: e.target.value })
-                }
-              />
+              <input placeholder="Email" value={form.email}
+                onChange={(e)=>setForm({...form,email:e.target.value})}/>
 
-              <input
-                type="password"
-                placeholder="Password"
+              <input type="password" placeholder="Password"
                 value={form.password}
-                onChange={(e) =>
-                  setForm({ ...form, password: e.target.value })
-                }
-              />
+                onChange={(e)=>setForm({...form,password:e.target.value})}/>
 
-              <input
-                placeholder="Mobile"
-                value={form.mobile}
-                onChange={(e) =>
-                  setForm({ ...form, mobile: e.target.value })
-                }
-              />
+              <input placeholder="Mobile" value={form.mobile}
+                onChange={(e)=>setForm({...form,mobile:e.target.value})}/>
 
-              <select
-                value={form.role}
-                onChange={(e) =>
-                  setForm({ ...form, role: e.target.value })
-                }
-              >
+              <select value={form.role}
+                onChange={(e)=>setForm({...form,role:e.target.value})}>
                 <option value="staff">Staff</option>
                 <option value="salesman">Salesman</option>
               </select>
@@ -294,13 +249,8 @@ export default function Users() {
               </button>
             </form>
 
-            <button
-              className="closeBtn"
-              onClick={() => {
-                setShow(false);
-                setEditId(null);
-              }}
-            >
+            <button className="closeBtn"
+              onClick={()=>{setShow(false);setEditId(null);}}>
               Close
             </button>
 
