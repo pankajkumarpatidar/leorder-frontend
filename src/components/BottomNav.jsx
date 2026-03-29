@@ -32,9 +32,17 @@ export default function BottomNav() {
             key={item.path}
             to={item.path}
             className={`navItem ${isActive ? "active" : ""}`}
+            style={{
+              flex: 1, // 🔥 equal spacing
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "4px" // 🔥 icon + text spacing
+            }}
           >
             <Icon size={22} />
-            <p>{item.label}</p>
+            <p style={{ margin: 0 }}>{item.label}</p>
           </Link>
         );
       })}
