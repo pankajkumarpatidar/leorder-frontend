@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BASE_URL from "../api";
+import BottomNav from "../components/BottomNav"; // 🔥 ADD
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -83,91 +84,95 @@ export default function Profile() {
   };
 
   return (
-    <div className="appContainer">
+    <>
+      <div className="appContainer">
 
-      {/* HEADER */}
-      <div className="header">
+        {/* HEADER */}
+        <div className="header">
 
-        {/* ☰ MENU */}
-        <div
-          onClick={() => navigate("/menu")}
-          style={{ fontSize: 22, cursor: "pointer" }}
-        >
-          ☰
-        </div>
-
-        <h3 style={{ flex: 1 }}>Profile</h3>
-
-        {/* EMPTY ALIGN */}
-        <div style={{ width: 22 }}></div>
-      </div>
-
-      {/* PROFILE CARD */}
-      <div className="profileCard">
-
-        <div className="profileAvatar">
-          {user.name.charAt(0).toUpperCase()}
-        </div>
-
-        <h2>{user.name}</h2>
-        <p>{user.email}</p>
-
-        {/* ROLE BADGE */}
-        {user.role && (
-          <span
-            className="roleTag"
-            style={{
-              marginTop: "6px",
-              display: "inline-block",
-              background:
-                user.role === "admin"
-                  ? "#fee2e2"
-                  : user.role === "staff"
-                  ? "#dbeafe"
-                  : "#dcfce7",
-            }}
+          {/* ✅ MENU FIX (GO TO /menu) */}
+          <div
+            onClick={() => navigate("/menu")}
+            style={{ fontSize: 22, cursor: "pointer" }}
           >
-            {user.role}
-          </span>
-        )}
+            ☰
+          </div>
 
-        <div className="profileActions">
+          <h3 style={{ flex: 1 }}>Profile</h3>
 
-          {/* RESET PASSWORD */}
-          {!showPass ? (
-            <button
-              className="primaryBtn"
-              onClick={() => setShowPass(true)}
+          <div style={{ width: 22 }}></div>
+        </div>
+
+        {/* PROFILE CARD */}
+        <div className="profileCard">
+
+          <div className="profileAvatar">
+            {user.name.charAt(0).toUpperCase()}
+          </div>
+
+          <h2>{user.name}</h2>
+          <p>{user.email}</p>
+
+          {/* ROLE */}
+          {user.role && (
+            <span
+              className="roleTag"
+              style={{
+                marginTop: "6px",
+                display: "inline-block",
+                background:
+                  user.role === "admin"
+                    ? "#fee2e2"
+                    : user.role === "staff"
+                    ? "#dbeafe"
+                    : "#dcfce7",
+              }}
             >
-              Reset Password
-            </button>
-          ) : (
-            <>
-              <input
-                placeholder="New Password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-
-              <button
-                className="primaryBtn"
-                onClick={handleResetPassword}
-              >
-                Save Password
-              </button>
-            </>
+              {user.role}
+            </span>
           )}
 
-          {/* LOGOUT */}
-          <button className="logoutBtn" onClick={handleLogout}>
-            Logout
-          </button>
+          <div className="profileActions">
+
+            {/* RESET PASSWORD */}
+            {!showPass ? (
+              <button
+                className="primaryBtn"
+                onClick={() => setShowPass(true)}
+              >
+                Reset Password
+              </button>
+            ) : (
+              <>
+                <input
+                  placeholder="New Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+
+                <button
+                  className="primaryBtn"
+                  onClick={handleResetPassword}
+                >
+                  Save Password
+                </button>
+              </>
+            )}
+
+            {/* LOGOUT */}
+            <button className="logoutBtn" onClick={handleLogout}>
+              Logout
+            </button>
+
+          </div>
 
         </div>
 
       </div>
 
-    </div>
+      {/* 🔥 ALWAYS SHOW NAV */}
+      <BottomNav />
+    </>
   );
 }
