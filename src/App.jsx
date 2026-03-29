@@ -12,6 +12,7 @@ import Products from "./pages/Products";
 import Users from "./pages/Users";
 import Worksheet from "./pages/Worksheet";
 import Profile from "./pages/Profile";
+import Menu from "./pages/Menu"; // 🔥 ADD THIS
 
 // LAYOUT
 import Layout from "./components/Layout";
@@ -19,7 +20,6 @@ import Layout from "./components/Layout";
 // 🔒 PRIVATE ROUTE
 const Private = ({ children }) => {
   const token = localStorage.getItem("token");
-
   return token ? children : <Navigate to="/login" replace />;
 };
 
@@ -35,53 +35,53 @@ export default function App() {
         {/* ===== MAIN APP ===== */}
         <Route path="/" element={
           <Private>
-            <Layout>
-              <Dashboard />
-            </Layout>
+            <Layout><Dashboard /></Layout>
           </Private>
         } />
 
         <Route path="/leads" element={
           <Private>
-            <Layout>
-              <Leads />
-            </Layout>
+            <Layout><Leads /></Layout>
           </Private>
         } />
 
         <Route path="/orders" element={
           <Private>
-            <Layout>
-              <Orders />
-            </Layout>
+            <Layout><Orders /></Layout>
           </Private>
         } />
 
         <Route path="/products" element={
           <Private>
-            <Layout>
-              <Products />
-            </Layout>
+            <Layout><Products /></Layout>
           </Private>
         } />
 
         <Route path="/users" element={
           <Private>
-            <Layout>
-              <Users />
-            </Layout>
+            <Layout><Users /></Layout>
           </Private>
         } />
 
         <Route path="/worksheet" element={
           <Private>
-            <Layout>
-              <Worksheet />
-            </Layout>
+            <Layout><Worksheet /></Layout>
           </Private>
         } />
 
-        <Route path="/profile" element={<Private><Profile /></Private>} />
+        {/* 🔥 FIXED PROFILE (with bottom nav) */}
+        <Route path="/profile" element={
+          <Private>
+            <Layout><Profile /></Layout>
+          </Private>
+        } />
+
+        {/* 🔥 NEW MENU ROUTE */}
+        <Route path="/menu" element={
+          <Private>
+            <Layout><Menu /></Layout>
+          </Private>
+        } />
 
         {/* ===== FALLBACK ===== */}
         <Route path="*" element={<Navigate to="/" replace />} />
