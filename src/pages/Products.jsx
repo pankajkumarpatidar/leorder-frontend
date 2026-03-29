@@ -4,39 +4,104 @@ import BASE_URL from "../api";
 
 export default function Products() {
   const token = localStorage.getItem("token");
-  const [count, setCount] = useState(0);
+
+  const [products, setProducts] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [search, setSearch] = useState("");
+
+  // ===== FETCH =====
+  const fetchData = async () => {
+    try {
+      const [prodRes, brandRes] = await Promise.all([
+        fetch(`${BASE_URL}/products`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${BASE_URL}/brands`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+
+      const p = await prodRes.json();
+      const b = await brandRes.json();
+
+      if (!p.success) throw new Error();
+      if (!b.success) throw new Error();
+
+      setProducts(p.data || []);
+      setBrands(b.data || []);
+    } catch (err) {
+      console.log("Products error", err);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch(`${BASE_URL}/products`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    if (token) fetchData();
+  }, [token]);
 
-        const data = await res.json();
-        setCount(data.data?.length || 0);
-      } catch (err) {
-        console.log("Products error", err);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  // ===== FILTER =====
+  const filtered = products.filter((p) =>
+    `${p.name}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
 
   return (
-    <div>
+    <div className="appContainer">
+
+      {/* HEADER */}
       <div className="header">
         <h3>Products</h3>
-        <p>Total: {count}</p>
+        <p>Total: {filtered.length}</p>
       </div>
 
+      {/* SEARCH */}
+      <input
+        className="searchBox"
+        placeholder="Search product..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      {/* CARD */}
       <div className="highlightCard">
         <p>Manage products</p>
-        <h2>{count}</h2>
+        <h2>{filtered.length}</h2>
       </div>
 
+      {/* LIST */}
+      {filtered.length === 0 ? (
+        <p style={{ marginTop: 20 }}>No products</p>
+      ) : (
+        filtered.map((p) => (
+          <div key={p.id} className="userCard">
+
+            {/* LEFT */}
+            <div style={{ maxWidth: "70%" }}>
+              <h4>{p.name}</h4>
+
+              {/* BRAND */}
+              <p style={{ fontSize: 12, color: "#666" }}>
+                {
+                  brands.find((b) => b.id === p.brand_id)?.name || "-"
+                }
+              </p>
+
+              {/* UNIT + BOX */}
+              <p style={{ fontSize: 12 }}>
+                {p.unit} • {p.pcs_per_box} pcs/box
+              </p>
+
+              {/* PRICE */}
+              <p style={{ fontSize: 12, color: "#444" }}>
+                DP: ₹{p.dp_per_pcs} | MRP: ₹{p.mrp_per_pcs}
+              </p>
+            </div>
+
+          </div>
+        ))
+      )}
+
+      {/* FAB */}
       <Fab onClick={() => alert("Add Product")} />
     </div>
   );
