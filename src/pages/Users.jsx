@@ -11,6 +11,9 @@ export default function Users() {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState("");
 
+  // 🔥 NEW (sidebar)
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -123,9 +126,59 @@ export default function Users() {
   return (
     <div className="appContainer">
 
+      {/* 🔥 SIDE MENU */}
+      {menuOpen && (
+        <>
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.3)",
+              zIndex: 1500,
+            }}
+            onClick={() => setMenuOpen(false)}
+          />
+
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "250px",
+              height: "100%",
+              background: "white",
+              padding: "20px",
+              zIndex: 2000,
+              boxShadow: "0 0 20px rgba(0,0,0,0.2)",
+            }}
+          >
+            <h3>Menu</h3>
+
+            <p style={{ marginTop: 20, cursor: "pointer" }}>Dashboard</p>
+            <p style={{ marginTop: 10, cursor: "pointer" }}>Leads</p>
+            <p style={{ marginTop: 10, cursor: "pointer" }}>Orders</p>
+            <p style={{ marginTop: 10, cursor: "pointer" }}>Products</p>
+            <p style={{ marginTop: 10, cursor: "pointer" }}>Users</p>
+          </div>
+        </>
+      )}
+
       {/* HEADER */}
       <div className="header">
-        <h3>Users 👥</h3>
+
+        {/* 🔥 MENU BUTTON */}
+        <div
+          onClick={() => setMenuOpen(true)}
+          style={{
+            fontSize: "22px",
+            cursor: "pointer",
+            marginRight: "10px",
+          }}
+        >
+          ☰
+        </div>
+
+        <h3 style={{ flex: 1 }}>Users 👥</h3>
         <p>{users.length}</p>
       </div>
 
@@ -146,11 +199,9 @@ export default function Users() {
         filtered.map((u) => (
           <div key={u.id} className="userCard">
 
-            {/* LEFT */}
             <div style={{ maxWidth: "70%" }}>
               <h4>{u.name}</h4>
 
-              {/* EMAIL FIX */}
               <p style={{
                 fontSize: "12px",
                 color: "#666",
@@ -161,53 +212,18 @@ export default function Users() {
 
               <p style={{ fontSize: "13px" }}>{u.mobile}</p>
 
-              <span
-                className="roleTag"
-                style={{
-                  background:
-                    u.role === "admin"
-                      ? "#fee2e2"
-                      : u.role === "staff"
-                      ? "#dbeafe"
-                      : "#dcfce7",
-                }}
-              >
+              <span className="roleTag">
                 {u.role}
               </span>
             </div>
 
-            {/* RIGHT ACTIONS */}
             <div style={{
               display: "flex",
               flexDirection: "column",
               gap: "6px"
             }}>
-              <button
-                onClick={() => handleEdit(u)}
-                style={{
-                  border: "none",
-                  padding: "6px 10px",
-                  borderRadius: "8px",
-                  background: "#dbeafe",
-                  fontSize: "12px"
-                }}
-              >
-                Edit
-              </button>
-
-              <button
-                onClick={() => handleDelete(u.id)}
-                style={{
-                  border: "none",
-                  padding: "6px 10px",
-                  borderRadius: "8px",
-                  background: "#fee2e2",
-                  color: "#b91c1c",
-                  fontSize: "12px"
-                }}
-              >
-                Delete
-              </button>
+              <button onClick={() => handleEdit(u)}>Edit</button>
+              <button onClick={() => handleDelete(u.id)}>Delete</button>
             </div>
 
           </div>
@@ -258,7 +274,6 @@ export default function Users() {
         </div>
       )}
 
-      {/* TOAST */}
       {toast && <div className="toast">{toast}</div>}
     </div>
   );
