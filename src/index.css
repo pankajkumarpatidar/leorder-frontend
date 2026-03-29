@@ -385,3 +385,17 @@ body {
 .editBtn:active {
   transform: scale(0.92);
 }
+
+/* ===== DISABLE TEXT SELECT ===== */
+* {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* ===== ALLOW INPUT ===== */
+input, textarea {
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
