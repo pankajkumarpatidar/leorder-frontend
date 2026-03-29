@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import BASE_URL from "../api";
 
 export default function Users() {
-  const token = localStorage.getItem("token");
-
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [show, setShow] = useState(false);
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState("");
+
+  const token = localStorage.getItem("token"); // 🔥 moved here
 
   const [form, setForm] = useState({
     name: "",
@@ -20,11 +20,15 @@ export default function Users() {
   });
 
   const fetchUsers = async () => {
+    if (!token) return; // 🔥 safety
+
     setLoading(true);
     try {
       const res = await fetch(`${BASE_URL}/users`, {
         headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store", // 🔥 prevent stale data
       });
+
       const data = await res.json();
       setUsers(data.data || []);
     } catch {
@@ -33,9 +37,10 @@ export default function Users() {
     setLoading(false);
   };
 
+  // 🔥 FIX: token change par refetch
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [token]);
 
   const showToast = (msg) => {
     setToast(msg);
@@ -146,11 +151,9 @@ export default function Users() {
         filtered.map((u) => (
           <div key={u.id} className="userCard">
 
-            {/* LEFT */}
             <div style={{ maxWidth: "70%" }}>
               <h4>{u.name}</h4>
 
-              {/* EMAIL FIX */}
               <p style={{
                 fontSize: "12px",
                 color: "#666",
@@ -176,7 +179,6 @@ export default function Users() {
               </span>
             </div>
 
-            {/* RIGHT ACTIONS */}
             <div style={{
               display: "flex",
               flexDirection: "column",
@@ -258,7 +260,6 @@ export default function Users() {
         </div>
       )}
 
-      {/* TOAST */}
       {toast && <div className="toast">{toast}</div>}
     </div>
   );
