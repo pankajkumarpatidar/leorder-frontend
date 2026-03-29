@@ -16,17 +16,18 @@ export default function Profile() {
   const [showPass, setShowPass] = useState(false);
   const [password, setPassword] = useState("");
 
+  // ===== ✅ FIXED PROFILE FETCH =====
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/users`, {
+        const res = await fetch(`${BASE_URL}/users/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         const data = await res.json();
 
-        if (data.data?.length) {
-          const current = data.data[0];
+        if (data.success && data.data) {
+          const current = data.data;
 
           setUser({
             name: current.name,
@@ -34,6 +35,7 @@ export default function Profile() {
             role: current.role,
           });
 
+          // ✅ SAVE CORRECT USER
           localStorage.setItem("name", current.name);
           localStorage.setItem("email", current.email);
           localStorage.setItem("role", current.role);
@@ -44,8 +46,9 @@ export default function Profile() {
     };
 
     fetchProfile();
-  }, []);
+  }, [token]);
 
+  // ===== RESET PASSWORD =====
   const handleResetPassword = async () => {
     if (password.length < 4) {
       return alert("Password too short");
@@ -75,16 +78,17 @@ export default function Profile() {
     }
   };
 
+  // ===== LOGOUT (🔥 HARD RESET FIX) =====
   const handleLogout = () => {
     localStorage.clear();
-    window.location.href = "/login";
+    window.location.replace("/login"); // ✅ FIX (no cache issue)
   };
 
   return (
     <>
       <div className="appContainer">
 
-        {/* HEADER FIX */}
+        {/* HEADER */}
         <div className="header">
 
           {/* MENU */}
@@ -93,7 +97,7 @@ export default function Profile() {
             style={{
               fontSize: 22,
               cursor: "pointer",
-              marginRight: 10 // 🔥 spacing fix
+              marginRight: 10
             }}
           >
             ☰
@@ -108,12 +112,12 @@ export default function Profile() {
         <div className="profileCard">
 
           <div className="profileAvatar">
-            {user.name.charAt(0).toUpperCase()}
+            {user.name?.charAt(0)?.toUpperCase()}
           </div>
 
           <h2>{user.name}</h2>
 
-          {/* 🔥 EMAIL FIX */}
+          {/* EMAIL FIX */}
           <p
             style={{
               wordBreak: "break-all",
@@ -180,6 +184,7 @@ export default function Profile() {
 
       </div>
 
+      {/* BOTTOM NAV */}
       <BottomNav />
     </>
   );
