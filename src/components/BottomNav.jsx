@@ -4,8 +4,7 @@ import {
   Store,
   Package,
   ClipboardList,
-  User,
-  Plus
+  User
 } from "lucide-react";
 
 export default function BottomNav() {
@@ -13,17 +12,9 @@ export default function BottomNav() {
 
   const nav = [
     { path: "/", icon: Home, label: "Home" },
-
-    // Retailers
-    { path: "/retailers", icon: Store, label: "Retailers", add: true },
-
-    // Orders
-    { path: "/orders", icon: Package, label: "Orders", add: true },
-
-    // Daily Work (Worksheet)
-    { path: "/worksheet", icon: ClipboardList, label: "Work", add: true },
-
-    // Profile
+    { path: "/retailers", icon: Store, label: "Retailers" },
+    { path: "/orders", icon: Package, label: "Orders" },
+    { path: "/worksheet", icon: ClipboardList, label: "Work" },
     { path: "/profile", icon: User, label: "Profile" }
   ];
 
@@ -41,32 +32,9 @@ export default function BottomNav() {
             key={item.path}
             to={item.path}
             className={`navItem ${isActive ? "active" : ""}`}
-            style={{ position: "relative" }}
           >
             <Icon size={22} />
             <p>{item.label}</p>
-
-            {/* 🔥 FLOATING ADD ICON */}
-            {item.add && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: -6,
-                  right: -6,
-                  background: "#2563eb",
-                  borderRadius: "50%",
-                  width: 16,
-                  height: 16,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "white",
-                  fontSize: 10
-                }}
-              >
-                <Plus size={10} />
-              </div>
-            )}
           </Link>
         );
       })}
