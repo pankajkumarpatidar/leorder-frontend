@@ -123,11 +123,13 @@ export default function Users() {
   return (
     <div className="appContainer">
 
+      {/* HEADER */}
       <div className="header">
         <h3>Users 👥</h3>
         <p>{users.length}</p>
       </div>
 
+      {/* SEARCH */}
       <input
         className="searchBox"
         placeholder="Search name, email, mobile..."
@@ -135,6 +137,7 @@ export default function Users() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
+      {/* LIST */}
       {loading ? (
         <p style={{ marginTop: 20 }}>Loading...</p>
       ) : filtered.length === 0 ? (
@@ -142,10 +145,21 @@ export default function Users() {
       ) : (
         filtered.map((u) => (
           <div key={u.id} className="userCard">
-            <div>
+
+            {/* LEFT */}
+            <div style={{ maxWidth: "70%" }}>
               <h4>{u.name}</h4>
-              <p>{u.email}</p>
-              <p>{u.mobile}</p>
+
+              {/* EMAIL FIX */}
+              <p style={{
+                fontSize: "12px",
+                color: "#666",
+                wordBreak: "break-all"
+              }}>
+                {u.email}
+              </p>
+
+              <p style={{ fontSize: "13px" }}>{u.mobile}</p>
 
               <span
                 className="roleTag"
@@ -162,16 +176,48 @@ export default function Users() {
               </span>
             </div>
 
-            <div className="actionBtns">
-              <button onClick={() => handleEdit(u)}>Edit</button>
-              <button onClick={() => handleDelete(u.id)}>Delete</button>
+            {/* RIGHT ACTIONS */}
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "6px"
+            }}>
+              <button
+                onClick={() => handleEdit(u)}
+                style={{
+                  border: "none",
+                  padding: "6px 10px",
+                  borderRadius: "8px",
+                  background: "#dbeafe",
+                  fontSize: "12px"
+                }}
+              >
+                Edit
+              </button>
+
+              <button
+                onClick={() => handleDelete(u.id)}
+                style={{
+                  border: "none",
+                  padding: "6px 10px",
+                  borderRadius: "8px",
+                  background: "#fee2e2",
+                  color: "#b91c1c",
+                  fontSize: "12px"
+                }}
+              >
+                Delete
+              </button>
             </div>
+
           </div>
         ))
       )}
 
+      {/* FAB */}
       <button className="fabBtn" onClick={() => setShow(true)}>+</button>
 
+      {/* MODAL */}
       {show && (
         <div className="modal">
           <div className="modalBox">
@@ -212,6 +258,7 @@ export default function Users() {
         </div>
       )}
 
+      {/* TOAST */}
       {toast && <div className="toast">{toast}</div>}
     </div>
   );
