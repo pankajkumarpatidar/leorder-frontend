@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import BASE_URL from "../api";
 
 export default function Users() {
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const [users, setUsers] = useState([]);
@@ -11,9 +13,6 @@ export default function Users() {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState("");
 
-  // 🔥 NEW (sidebar)
-  const [menuOpen, setMenuOpen] = useState(false);
-
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -22,6 +21,7 @@ export default function Users() {
     mobile: "",
   });
 
+  // ===== FETCH USERS =====
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -40,11 +40,13 @@ export default function Users() {
     fetchUsers();
   }, []);
 
+  // ===== TOAST =====
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2000);
   };
 
+  // ===== CREATE / UPDATE =====
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -90,6 +92,7 @@ export default function Users() {
     }
   };
 
+  // ===== DELETE =====
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this user?")) return;
 
@@ -105,6 +108,7 @@ export default function Users() {
     }
   };
 
+  // ===== EDIT =====
   const handleEdit = (u) => {
     setForm({
       name: u.name,
@@ -117,6 +121,7 @@ export default function Users() {
     setShow(true);
   };
 
+  // ===== FILTER =====
   const filtered = users.filter((u) =>
     `${u.name} ${u.email} ${u.mobile}`
       .toLowerCase()
@@ -126,54 +131,13 @@ export default function Users() {
   return (
     <div className="appContainer">
 
-      {/* 🔥 SIDE MENU */}
-      {menuOpen && (
-        <>
-          <div
-            style={{
-              position: "fixed",
-              inset: 0,
-              background: "rgba(0,0,0,0.3)",
-              zIndex: 1500,
-            }}
-            onClick={() => setMenuOpen(false)}
-          />
-
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "250px",
-              height: "100%",
-              background: "white",
-              padding: "20px",
-              zIndex: 2000,
-              boxShadow: "0 0 20px rgba(0,0,0,0.2)",
-            }}
-          >
-            <h3>Menu</h3>
-
-            <p style={{ marginTop: 20, cursor: "pointer" }}>Dashboard</p>
-            <p style={{ marginTop: 10, cursor: "pointer" }}>Leads</p>
-            <p style={{ marginTop: 10, cursor: "pointer" }}>Orders</p>
-            <p style={{ marginTop: 10, cursor: "pointer" }}>Products</p>
-            <p style={{ marginTop: 10, cursor: "pointer" }}>Users</p>
-          </div>
-        </>
-      )}
-
       {/* HEADER */}
       <div className="header">
 
-        {/* 🔥 MENU BUTTON */}
+        {/* ☰ MENU */}
         <div
-          onClick={() => setMenuOpen(true)}
-          style={{
-            fontSize: "22px",
-            cursor: "pointer",
-            marginRight: "10px",
-          }}
+          onClick={() => navigate("/menu")}
+          style={{ fontSize: 22, cursor: "pointer" }}
         >
           ☰
         </div>
@@ -199,31 +163,70 @@ export default function Users() {
         filtered.map((u) => (
           <div key={u.id} className="userCard">
 
+            {/* LEFT */}
             <div style={{ maxWidth: "70%" }}>
               <h4>{u.name}</h4>
 
-              <p style={{
-                fontSize: "12px",
-                color: "#666",
-                wordBreak: "break-all"
-              }}>
+              <p
+                style={{
+                  fontSize: "12px",
+                  color: "#666",
+                  wordBreak: "break-all",
+                }}
+              >
                 {u.email}
               </p>
 
               <p style={{ fontSize: "13px" }}>{u.mobile}</p>
 
-              <span className="roleTag">
+              <span
+                className="roleTag"
+                style={{
+                  background:
+                    u.role === "admin"
+                      ? "#fee2e2"
+                      : u.role === "staff"
+                      ? "#dbeafe"
+                      : "#dcfce7",
+                }}
+              >
                 {u.role}
               </span>
             </div>
 
-            <div style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "6px"
-            }}>
-              <button onClick={() => handleEdit(u)}>Edit</button>
-              <button onClick={() => handleDelete(u.id)}>Delete</button>
+            {/* RIGHT ACTIONS */}
+            <div className="actionBtns">
+
+              <button
+                onClick={() => handleEdit(u)}
+                style={{
+                  background: "#2563eb",
+                  color: "white",
+                  padding: "6px 12px",
+                  borderRadius: "10px",
+                  border: "none",
+                  fontSize: "12px",
+                  fontWeight: "500",
+                }}
+              >
+                Edit
+              </button>
+
+              <button
+                onClick={() => handleDelete(u.id)}
+                style={{
+                  background: "#fee2e2",
+                  color: "#b91c1c",
+                  padding: "6px 12px",
+                  borderRadius: "10px",
+                  border: "none",
+                  fontSize: "12px",
+                  fontWeight: "500",
+                }}
+              >
+                Delete
+              </button>
+
             </div>
 
           </div>
@@ -231,7 +234,9 @@ export default function Users() {
       )}
 
       {/* FAB */}
-      <button className="fabBtn" onClick={() => setShow(true)}>+</button>
+      <button className="fabBtn" onClick={() => setShow(true)}>
+        +
+      </button>
 
       {/* MODAL */}
       {show && (
@@ -241,21 +246,45 @@ export default function Users() {
             <h3>{editId ? "Edit User" : "Add User"}</h3>
 
             <form onSubmit={handleSubmit}>
-              <input placeholder="Name" value={form.name}
-                onChange={(e)=>setForm({...form,name:e.target.value})}/>
+              <input
+                placeholder="Name"
+                value={form.name}
+                onChange={(e) =>
+                  setForm({ ...form, name: e.target.value })
+                }
+              />
 
-              <input placeholder="Email" value={form.email}
-                onChange={(e)=>setForm({...form,email:e.target.value})}/>
+              <input
+                placeholder="Email"
+                value={form.email}
+                onChange={(e) =>
+                  setForm({ ...form, email: e.target.value })
+                }
+              />
 
-              <input type="password" placeholder="Password"
+              <input
+                type="password"
+                placeholder="Password"
                 value={form.password}
-                onChange={(e)=>setForm({...form,password:e.target.value})}/>
+                onChange={(e) =>
+                  setForm({ ...form, password: e.target.value })
+                }
+              />
 
-              <input placeholder="Mobile" value={form.mobile}
-                onChange={(e)=>setForm({...form,mobile:e.target.value})}/>
+              <input
+                placeholder="Mobile"
+                value={form.mobile}
+                onChange={(e) =>
+                  setForm({ ...form, mobile: e.target.value })
+                }
+              />
 
-              <select value={form.role}
-                onChange={(e)=>setForm({...form,role:e.target.value})}>
+              <select
+                value={form.role}
+                onChange={(e) =>
+                  setForm({ ...form, role: e.target.value })
+                }
+              >
                 <option value="staff">Staff</option>
                 <option value="salesman">Salesman</option>
               </select>
@@ -265,8 +294,13 @@ export default function Users() {
               </button>
             </form>
 
-            <button className="closeBtn"
-              onClick={()=>{setShow(false);setEditId(null);}}>
+            <button
+              className="closeBtn"
+              onClick={() => {
+                setShow(false);
+                setEditId(null);
+              }}
+            >
               Close
             </button>
 
@@ -274,6 +308,7 @@ export default function Users() {
         </div>
       )}
 
+      {/* TOAST */}
       {toast && <div className="toast">{toast}</div>}
     </div>
   );
