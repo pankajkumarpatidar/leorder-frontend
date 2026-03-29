@@ -25,6 +25,7 @@ export default function Menu() {
       <Item label="Retailers" path="/retailers" />
       <Item label="Products" path="/products" />
       <Item label="Worksheet" path="/worksheet" />
+      <Item label="Users" path="/users" /> {/* ✅ ADDED */}
 
       <Item label="About App" path="/about" />
       <Item label="Pricing Plans" path="/pricing" />
