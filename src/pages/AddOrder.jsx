@@ -30,18 +30,22 @@ export default function AddOrder() {
   }, [items]);
 
   const fetchData = async () => {
-    const headers = { Authorization: `Bearer ${token}` };
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
 
-    const [rRes, pRes] = await Promise.all([
-      fetch(`${BASE_URL}/retailers`, { headers }),
-      fetch(`${BASE_URL}/products`, { headers }),
-    ]);
+      const [rRes, pRes] = await Promise.all([
+        fetch(`${BASE_URL}/retailers`, { headers }),
+        fetch(`${BASE_URL}/products`, { headers }),
+      ]);
 
-    const rData = await rRes.json();
-    const pData = await pRes.json();
+      const rData = await rRes.json();
+      const pData = await pRes.json();
 
-    setRetailers(rData.data || rData || []);
-    setProducts(pData.data || pData || []);
+      setRetailers(rData.data || rData || []);
+      setProducts(pData.data || pData || []);
+    } catch (err) {
+      console.log("Fetch error", err);
+    }
   };
 
   const addItem = () => {
@@ -50,6 +54,7 @@ export default function AddOrder() {
       {
         product_id: "",
         qty: 1,
+        unit: "PCS",
         final_qty: 0,
         price: 0,
         trade_discount: 0,
@@ -62,15 +67,21 @@ export default function AddOrder() {
   };
 
   const calculateItem = (item, product) => {
-    const conversion = product?.pcs_per_box || 1;
+    const conversion =
+      item.unit === "BOX"
+        ? product?.pcs_per_box || 1
+        : 1;
+
     const price = product?.dp_per_pcs || 0;
 
     const final_qty = item.qty * conversion;
     let base = final_qty * price;
 
     let afterTrade = base - (base * item.trade_discount) / 100;
-    let afterSpecial = afterTrade - (afterTrade * item.special_discount) / 100;
-    let afterCash = afterSpecial - (afterSpecial * item.cash_discount) / 100;
+    let afterSpecial =
+      afterTrade - (afterTrade * item.special_discount) / 100;
+    let afterCash =
+      afterSpecial - (afterSpecial * item.cash_discount) / 100;
 
     return {
       ...item,
@@ -83,7 +94,12 @@ export default function AddOrder() {
 
   const handleChange = (i, field, value) => {
     const updated = [...items];
-    updated[i][field] = Number(value);
+
+    if (field === "product_id" || field === "unit") {
+      updated[i][field] = value;
+    } else {
+      updated[i][field] = Number(value);
+    }
 
     const product = products.find(
       (p) => p.id == updated[i].product_id
@@ -121,13 +137,14 @@ export default function AddOrder() {
       }),
     });
 
-    alert("Order Created");
+    alert("✅ Order Created");
     setItems([]);
   };
 
   return (
     <div className="appContainer">
 
+      {/* HEADER */}
       <div className="header">
         <h3>Add Order</h3>
       </div>
@@ -142,7 +159,10 @@ export default function AddOrder() {
 
       {/* PAYMENT */}
       <div className="cardItem">
-        <select onChange={(e) => setPaymentType(e.target.value)}>
+        <select
+          value={paymentType}
+          onChange={(e) => setPaymentType(e.target.value)}
+        >
           <option value="CASH">Cash</option>
           <option value="CREDIT">Credit</option>
         </select>
@@ -168,21 +188,58 @@ export default function AddOrder() {
             </h4>
           </div>
 
-          <input
-            type="number"
-            placeholder="Qty"
-            onChange={(e) => handleChange(i, "qty", e.target.value)}
-          />
+          {/* QTY + UNIT */}
+          <div style={{ display: "flex", gap: 10 }}>
+            <input
+              type="number"
+              value={item.qty}
+              onChange={(e) =>
+                handleChange(i, "qty", e.target.value)
+              }
+            />
 
+            <select
+              value={item.unit}
+              onChange={(e) =>
+                handleChange(i, "unit", e.target.value)
+              }
+            >
+              <option value="PCS">PCS</option>
+              <option value="BOX">BOX</option>
+            </select>
+          </div>
+
+          {/* PRICE */}
           <input value={item.price} readOnly />
 
-          <input placeholder="Trade %" onChange={(e) => handleChange(i, "trade_discount", e.target.value)} />
-          <input placeholder="Special %" onChange={(e) => handleChange(i, "special_discount", e.target.value)} />
-          <input placeholder="Cash %" onChange={(e) => handleChange(i, "cash_discount", e.target.value)} />
+          {/* DISCOUNTS */}
+          <div style={{ display: "flex", gap: 8 }}>
+            <input
+              placeholder="T%"
+              onChange={(e) =>
+                handleChange(i, "trade_discount", e.target.value)
+              }
+            />
+            <input
+              placeholder="S%"
+              onChange={(e) =>
+                handleChange(i, "special_discount", e.target.value)
+              }
+            />
+            <input
+              placeholder="C%"
+              onChange={(e) =>
+                handleChange(i, "cash_discount", e.target.value)
+              }
+            />
+          </div>
 
-          <p>Qty: {item.final_qty}</p>
-          <p>Rate: ₹{item.net_rate?.toFixed(2)}</p>
-          <h3>₹ {item.total?.toFixed(0)}</h3>
+          {/* RESULT */}
+          <div className="highlightCard">
+            <p>Final Qty: {item.final_qty}</p>
+            <p>Rate: ₹{item.net_rate?.toFixed(2)}</p>
+            <h3>₹ {item.total?.toFixed(0)}</h3>
+          </div>
 
         </div>
       ))}
@@ -191,6 +248,7 @@ export default function AddOrder() {
         ➕ Add Product
       </button>
 
+      {/* TOTAL */}
       <div className="highlightCard">
         <p>Total</p>
         <h2>₹ {total}</h2>
@@ -211,7 +269,9 @@ export default function AddOrder() {
             />
 
             {retailers
-              .filter(r => r.name.toLowerCase().includes(searchRetailer.toLowerCase()))
+              .filter(r =>
+                r.name.toLowerCase().includes(searchRetailer.toLowerCase())
+              )
               .map(r => (
                 <div
                   key={r.id}
@@ -244,7 +304,9 @@ export default function AddOrder() {
             />
 
             {products
-              .filter(p => p.name.toLowerCase().includes(searchProduct.toLowerCase()))
+              .filter(p =>
+                p.name.toLowerCase().includes(searchProduct.toLowerCase())
+              )
               .map(p => (
                 <div
                   key={p.id}
