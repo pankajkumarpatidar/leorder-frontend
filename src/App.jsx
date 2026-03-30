@@ -8,12 +8,13 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Leads from "./pages/Leads";
 import Orders from "./pages/Orders";
+import AddOrder from "./pages/AddOrder";   // ✅ NEW
 import Products from "./pages/Products";
 import Users from "./pages/Users";
 import Worksheet from "./pages/Worksheet";
 import Profile from "./pages/Profile";
 import Menu from "./pages/Menu";
-import Retailers from "./pages/Retailers"; // 🔥 ADD THIS
+import Retailers from "./pages/Retailers";
 
 // LAYOUT
 import Layout from "./components/Layout";
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
 
         {/* ===== MAIN APP ===== */}
+
         <Route path="/" element={
           <Private>
             <Layout><Dashboard /></Layout>
@@ -46,7 +48,6 @@ export default function App() {
           </Private>
         } />
 
-        {/* 🔥 ADD THIS */}
         <Route path="/retailers" element={
           <Private>
             <Layout><Retailers /></Layout>
@@ -56,6 +57,13 @@ export default function App() {
         <Route path="/orders" element={
           <Private>
             <Layout><Orders /></Layout>
+          </Private>
+        } />
+
+        {/* 🔥 ADD ORDER ROUTE */}
+        <Route path="/add-order" element={
+          <Private>
+            <Layout><AddOrder /></Layout>
           </Private>
         } />
 
