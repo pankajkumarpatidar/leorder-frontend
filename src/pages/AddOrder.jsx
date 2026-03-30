@@ -14,7 +14,6 @@ export default function AddOrder() {
   const [paymentType, setPaymentType] = useState("CASH");
   const [creditDays, setCreditDays] = useState(0);
 
-  // 🔥 MODALS
   const [showRetailer, setShowRetailer] = useState(false);
   const [showProductIndex, setShowProductIndex] = useState(null);
 
@@ -41,8 +40,23 @@ export default function AddOrder() {
       const rData = await rRes.json();
       const pData = await pRes.json();
 
-      setRetailers(rData.data || rData || []);
-      setProducts(pData.data || pData || []);
+      // 🔥 DEBUG (important)
+      console.log("Retailers API:", rData);
+
+      // 🔥 SAFE FIX
+      const retailerList = Array.isArray(rData)
+        ? rData
+        : rData.data || [];
+
+      const productList = Array.isArray(pData)
+        ? pData
+        : pData.data || [];
+
+      setRetailers(retailerList);
+      setProducts(productList);
+
+      console.log("Final Retailers:", retailerList);
+
     } catch (err) {
       console.log("Fetch error", err);
     }
@@ -144,7 +158,6 @@ export default function AddOrder() {
   return (
     <div className="appContainer">
 
-      {/* HEADER */}
       <div className="header">
         <h3>Add Order</h3>
       </div>
@@ -180,7 +193,6 @@ export default function AddOrder() {
       {items.map((item, i) => (
         <div key={i} className="cardItem">
 
-          {/* PRODUCT */}
           <div onClick={() => setShowProductIndex(i)}>
             <p>Product</p>
             <h4>
@@ -188,7 +200,6 @@ export default function AddOrder() {
             </h4>
           </div>
 
-          {/* QTY + UNIT */}
           <div style={{ display: "flex", gap: 10 }}>
             <input
               type="number"
@@ -209,32 +220,14 @@ export default function AddOrder() {
             </select>
           </div>
 
-          {/* PRICE */}
           <input value={item.price} readOnly />
 
-          {/* DISCOUNTS */}
           <div style={{ display: "flex", gap: 8 }}>
-            <input
-              placeholder="T%"
-              onChange={(e) =>
-                handleChange(i, "trade_discount", e.target.value)
-              }
-            />
-            <input
-              placeholder="S%"
-              onChange={(e) =>
-                handleChange(i, "special_discount", e.target.value)
-              }
-            />
-            <input
-              placeholder="C%"
-              onChange={(e) =>
-                handleChange(i, "cash_discount", e.target.value)
-              }
-            />
+            <input placeholder="T%" onChange={(e) => handleChange(i, "trade_discount", e.target.value)} />
+            <input placeholder="S%" onChange={(e) => handleChange(i, "special_discount", e.target.value)} />
+            <input placeholder="C%" onChange={(e) => handleChange(i, "cash_discount", e.target.value)} />
           </div>
 
-          {/* RESULT */}
           <div className="highlightCard">
             <p>Final Qty: {item.final_qty}</p>
             <p>Rate: ₹{item.net_rate?.toFixed(2)}</p>
@@ -248,7 +241,6 @@ export default function AddOrder() {
         ➕ Add Product
       </button>
 
-      {/* TOTAL */}
       <div className="highlightCard">
         <p>Total</p>
         <h2>₹ {total}</h2>
@@ -268,9 +260,13 @@ export default function AddOrder() {
               onChange={(e) => setSearchRetailer(e.target.value)}
             />
 
+            {retailers.length === 0 && (
+              <p style={{ textAlign: "center" }}>No retailers found</p>
+            )}
+
             {retailers
               .filter(r =>
-                r.name.toLowerCase().includes(searchRetailer.toLowerCase())
+                r.name?.toLowerCase().includes(searchRetailer.toLowerCase())
               )
               .map(r => (
                 <div
@@ -305,7 +301,7 @@ export default function AddOrder() {
 
             {products
               .filter(p =>
-                p.name.toLowerCase().includes(searchProduct.toLowerCase())
+                p.name?.toLowerCase().includes(searchProduct.toLowerCase())
               )
               .map(p => (
                 <div
