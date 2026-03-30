@@ -399,3 +399,20 @@ input, textarea {
   -ms-user-select: text;
   user-select: text;
 }
+
+.cardItem {
+  background: #fff;
+  padding: 15px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.highlightCard {
+  background: linear-gradient(135deg, #111, #333);
+  color: #fff;
+  padding: 20px;
+  border-radius: 16px;
+}
