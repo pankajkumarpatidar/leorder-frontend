@@ -14,55 +14,50 @@ export default function Orders() {
   }, []);
 
   const fetchOrders = async () => {
-    try {
-      const res = await fetch(`${BASE_URL}/orders`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    const res = await fetch(`${BASE_URL}/orders`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-      const data = await res.json();
-      setOrders(data.data || []);
-    } catch (err) {
-      console.log("Orders error", err);
-    }
+    const data = await res.json();
+    setOrders(data.data || []);
   };
 
   return (
-    <div className="appContainer">
+    <div className="appContainer" style={{ paddingBottom: 80 }}>
 
-      {/* HEADER */}
       <div className="header">
         <h3>📋 Orders</h3>
         <p>Total: {orders.length}</p>
       </div>
 
-      {/* SUMMARY */}
       <div className="highlightCard">
         <p>Total Orders</p>
         <h2>{orders.length}</h2>
       </div>
 
-      {/* LIST */}
+      {orders.length === 0 && (
+        <p style={{ marginTop: 20 }}>No orders yet</p>
+      )}
+
       {orders.map((o) => (
         <div
           key={o.id}
-          className="userCard"
+          className="cardItem"
           onClick={() => navigate(`/orders/${o.id}`)}
         >
           <h4>{o.retailer_name || "Walk-in"}</h4>
 
           <p>₹ {o.total}</p>
 
-          <div style={{ display: "flex", gap: 10 }}>
+          <div className="row">
             <small>{o.payment_type}</small>
             <small>{o.status}</small>
           </div>
 
-          {/* 🔥 OVERDUE */}
           {o.is_overdue && (
-            <p style={{ color: "red" }}>Overdue</p>
+            <span style={{ color: "red" }}>Overdue</span>
           )}
 
-          {/* DUE DATE */}
           {o.due_date && (
             <small>
               Due: {new Date(o.due_date).toDateString()}
@@ -71,9 +66,7 @@ export default function Orders() {
         </div>
       ))}
 
-      {/* ➕ ADD ORDER */}
       <Fab onClick={() => navigate("/add-order")} />
-
     </div>
   );
 }
