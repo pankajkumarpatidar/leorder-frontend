@@ -40,17 +40,8 @@ export default function AddOrder() {
       const rData = await rRes.json();
       const pData = await pRes.json();
 
-      const retailerList = Array.isArray(rData)
-        ? rData
-        : rData.data || [];
-
-      const productList = Array.isArray(pData)
-        ? pData
-        : pData.data || [];
-
-      setRetailers(retailerList);
-      setProducts(productList);
-
+      setRetailers(rData.data || []);
+      setProducts(pData.data || []);
     } catch (err) {
       console.log("Fetch error", err);
     }
@@ -225,7 +216,7 @@ export default function AddOrder() {
           <div className="highlightCard">
             <p>Final Qty: {item.final_qty}</p>
             <p>Rate: ₹{item.net_rate?.toFixed(2)}</p>
-            <h3>₹ {item.total?.toFixed(0)}</h3>
+            <h3>₹ {Math.round(item.total)}</h3>
           </div>
 
         </div>
@@ -237,7 +228,7 @@ export default function AddOrder() {
 
       <div className="highlightCard">
         <p>Total</p>
-        <h2>₹ {total}</h2>
+        <h2>₹ {Math.round(total).toLocaleString()}</h2>
       </div>
 
       <button className="cardItem" onClick={handleSubmit}>
@@ -274,7 +265,20 @@ export default function AddOrder() {
                 </div>
               ))}
 
-            <button className="closeBtn" onClick={() => setShowRetailer(false)}>
+            {/* 🔥 FIXED CLOSE BUTTON */}
+            <button
+              onClick={() => setShowRetailer(false)}
+              style={{
+                marginTop: 12,
+                width: "100%",
+                padding: 12,
+                borderRadius: 12,
+                border: "none",
+                background: "linear-gradient(135deg,#ef4444,#dc2626)",
+                color: "white",
+                fontWeight: "600"
+              }}
+            >
               Close
             </button>
 
@@ -308,7 +312,19 @@ export default function AddOrder() {
                 </div>
               ))}
 
-            <button className="closeBtn" onClick={() => setShowProductIndex(null)}>
+            <button
+              onClick={() => setShowProductIndex(null)}
+              style={{
+                marginTop: 12,
+                width: "100%",
+                padding: 12,
+                borderRadius: 12,
+                border: "none",
+                background: "linear-gradient(135deg,#ef4444,#dc2626)",
+                color: "white",
+                fontWeight: "600"
+              }}
+            >
               Close
             </button>
 
