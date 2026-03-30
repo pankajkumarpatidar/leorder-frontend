@@ -28,6 +28,7 @@ export default function AddOrder() {
     setTotal(items.reduce((s, i) => s + i.total, 0));
   }, [items]);
 
+  // ✅ FIXED FETCH
   const fetchData = async () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
@@ -40,8 +41,17 @@ export default function AddOrder() {
       const rData = await rRes.json();
       const pData = await pRes.json();
 
-      setRetailers(rData.data || []);
-      setProducts(pData.data || []);
+      const retailerList = Array.isArray(rData)
+        ? rData
+        : rData.data || [];
+
+      const productList = Array.isArray(pData)
+        ? pData
+        : pData.data || [];
+
+      setRetailers(retailerList);
+      setProducts(productList);
+
     } catch (err) {
       console.log("Fetch error", err);
     }
@@ -247,6 +257,10 @@ export default function AddOrder() {
               onChange={(e) => setSearchRetailer(e.target.value)}
             />
 
+            {retailers.length === 0 && (
+              <p style={{ textAlign: "center" }}>No retailers found</p>
+            )}
+
             {retailers
               .filter(r =>
                 r.business_name?.toLowerCase().includes(searchRetailer.toLowerCase())
@@ -265,7 +279,6 @@ export default function AddOrder() {
                 </div>
               ))}
 
-            {/* 🔥 FIXED CLOSE BUTTON */}
             <button
               onClick={() => setShowRetailer(false)}
               style={{

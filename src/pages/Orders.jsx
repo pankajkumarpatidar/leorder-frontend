@@ -12,8 +12,6 @@ export default function Orders() {
 
   const [search, setSearch] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("ALL");
-
-  // 🔥 NEW DATE FILTER
   const [dateFilter, setDateFilter] = useState("ALL");
 
   useEffect(() => {
@@ -24,6 +22,7 @@ export default function Orders() {
     applyFilter();
   }, [orders, search, paymentFilter, dateFilter]);
 
+  // ✅ SAFE FETCH
   const fetchOrders = async () => {
     try {
       const res = await fetch(`${BASE_URL}/orders`, {
@@ -31,17 +30,25 @@ export default function Orders() {
       });
 
       const data = await res.json();
-      setOrders(data.data || []);
+
+      const orderList = Array.isArray(data)
+        ? data
+        : data.data || [];
+
+      console.log("Orders:", orderList);
+
+      setOrders(orderList);
+
     } catch (err) {
       console.log(err);
     }
   };
 
-  // 🔥 FILTER LOGIC
+  // ✅ FILTER LOGIC FIXED
   const applyFilter = () => {
     let data = [...orders];
 
-    // 🔍 SEARCH
+    // 🔍 SEARCH (SAFE)
     if (search) {
       data = data.filter((o) =>
         (o.retailer_name || "")
@@ -62,6 +69,7 @@ export default function Orders() {
 
     if (dateFilter === "TODAY") {
       data = data.filter((o) => {
+        if (!o.created_at) return false;
         const d = new Date(o.created_at);
         return d.toDateString() === today.toDateString();
       });
@@ -69,6 +77,7 @@ export default function Orders() {
 
     if (dateFilter === "TOMORROW") {
       data = data.filter((o) => {
+        if (!o.created_at) return false;
         const d = new Date(o.created_at);
         return d.toDateString() === tomorrow.toDateString();
       });
@@ -131,7 +140,7 @@ export default function Orders() {
         ))}
       </div>
 
-      {/* 🔥 NEW DATE FILTER ROW */}
+      {/* DATE FILTER */}
       <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
         {["ALL", "TODAY", "TOMORROW"].map((f) => (
           <button
@@ -142,9 +151,7 @@ export default function Orders() {
               borderRadius: 10,
               border: "none",
               background:
-                dateFilter === f
-                  ? "#111"
-                  : "#eee",
+                dateFilter === f ? "#111" : "#eee",
               color: dateFilter === f ? "white" : "#333",
               fontSize: 11,
             }}
