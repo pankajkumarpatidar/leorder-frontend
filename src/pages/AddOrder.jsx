@@ -11,7 +11,6 @@ export default function AddOrder() {
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
 
-  // 🔥 NEW
   const [paymentType, setPaymentType] = useState("CASH");
   const [creditDays, setCreditDays] = useState(0);
 
@@ -34,20 +33,17 @@ export default function AddOrder() {
     const rData = await rRes.json();
     const pData = await pRes.json();
 
-    setRetailers(rData.data || rData || []);
-    setProducts(pData.data || pData || []);
+    setRetailers(rData.data || []);
+    setProducts(pData.data || []);
   };
 
-  // ➕ Add item
   const addItem = () => {
     setItems([
       ...items,
       {
         product_id: "",
         qty: 1,
-        unit: "PCS",
         final_qty: 1,
-        conversion: 1,
         price: 0,
         trade_discount: 0,
         special_discount: 0,
@@ -58,24 +54,26 @@ export default function AddOrder() {
     ]);
   };
 
-  // ❌ Remove item
   const removeItem = (i) => {
     const updated = [...items];
     updated.splice(i, 1);
     setItems(updated);
   };
 
-  // 🧠 Calculation (FULL LOGIC)
   const calculateItem = (item, product) => {
-    const conversion = product?.conversion || 1;
+    const conversion = product?.pcs_per_box || 1;
+    const price = product?.dp_per_pcs || 0;
 
     const final_qty = item.qty * conversion;
 
-    let base = final_qty * item.price;
+    let base = final_qty * price;
 
-    let afterTrade = base - (base * item.trade_discount) / 100;
+    let afterTrade =
+      base - (base * item.trade_discount) / 100;
+
     let afterSpecial =
       afterTrade - (afterTrade * item.special_discount) / 100;
+
     let afterCash =
       afterSpecial - (afterSpecial * item.cash_discount) / 100;
 
@@ -84,21 +82,20 @@ export default function AddOrder() {
 
     return {
       ...item,
-      conversion,
       final_qty,
+      price,
       net_rate: Number(net_rate.toFixed(2)),
       total: Number(afterCash.toFixed(2)),
     };
   };
 
-  // 🔄 Handle change
   const handleChange = (i, field, value) => {
     const updated = [...items];
-    updated[i][field] = Number(value);
 
     if (field === "product_id") {
-      const p = products.find((x) => x.id == value);
-      updated[i].price = p?.price || 0;
+      updated[i][field] = value;
+    } else {
+      updated[i][field] = Number(value);
     }
 
     const product = products.find(
@@ -110,13 +107,11 @@ export default function AddOrder() {
     setItems(updated);
   };
 
-  // 💰 Total
   const calculateTotal = () => {
     const sum = items.reduce((s, i) => s + i.total, 0);
     setTotal(sum);
   };
 
-  // 📅 Due Date
   const getDueDate = () => {
     if (paymentType !== "CREDIT") return null;
 
@@ -126,7 +121,6 @@ export default function AddOrder() {
     return d.toISOString();
   };
 
-  // 🚀 Submit
   const handleSubmit = async () => {
     if (!retailerId || items.length === 0) {
       alert("Fill all fields");
@@ -135,10 +129,6 @@ export default function AddOrder() {
 
     const payload = {
       retailer_id: retailerId,
-      distributor_id: 1, // dynamic later
-      created_by: 1,
-      total,
-      status: "pending",
       payment_type: paymentType,
       credit_days: paymentType === "CREDIT" ? creditDays : 0,
       due_date: getDueDate(),
@@ -154,54 +144,57 @@ export default function AddOrder() {
       body: JSON.stringify(payload),
     });
 
-    const data = await res.json();
-
     if (res.ok) {
       alert("✅ Order Created");
       setItems([]);
       setRetailerId("");
       setPaymentType("CASH");
       setCreditDays(0);
-    } else {
-      alert(data.message || "Error");
     }
   };
 
   return (
     <div className="appContainer">
 
-      <h2>🧾 Add Order (PRO)</h2>
+      {/* HEADER */}
+      <div className="header">
+        <h3>🧾 Add Order</h3>
+      </div>
 
-      {/* Retailer */}
-      <select
-        value={retailerId}
-        onChange={(e) => setRetailerId(e.target.value)}
-      >
-        <option value="">Select Retailer</option>
-        {retailers.map((r) => (
-          <option key={r.id} value={r.id}>
-            {r.name}
-          </option>
-        ))}
-      </select>
+      {/* RETAILER */}
+      <div className="cardItem">
+        <select
+          value={retailerId}
+          onChange={(e) => setRetailerId(e.target.value)}
+        >
+          <option value="">Select Retailer</option>
+          {retailers.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {/* PAYMENT */}
-      <select
-        value={paymentType}
-        onChange={(e) => setPaymentType(e.target.value)}
-      >
-        <option value="CASH">Cash</option>
-        <option value="CREDIT">Credit</option>
-      </select>
+      <div className="cardItem">
+        <select
+          value={paymentType}
+          onChange={(e) => setPaymentType(e.target.value)}
+        >
+          <option value="CASH">Cash</option>
+          <option value="CREDIT">Credit</option>
+        </select>
 
-      {paymentType === "CREDIT" && (
-        <input
-          type="number"
-          placeholder="Credit Days"
-          value={creditDays}
-          onChange={(e) => setCreditDays(e.target.value)}
-        />
-      )}
+        {paymentType === "CREDIT" && (
+          <input
+            type="number"
+            placeholder="Credit Days"
+            value={creditDays}
+            onChange={(e) => setCreditDays(e.target.value)}
+          />
+        )}
+      </div>
 
       {/* ITEMS */}
       {items.map((item, i) => (
@@ -227,7 +220,6 @@ export default function AddOrder() {
             onChange={(e) =>
               handleChange(i, "qty", e.target.value)
             }
-            placeholder="Qty"
           />
 
           <input value={item.price} readOnly />
@@ -259,19 +251,30 @@ export default function AddOrder() {
             }
           />
 
-          <input value={item.final_qty} readOnly />
-          <input value={item.net_rate} readOnly />
-          <input value={item.total} readOnly />
+          <div>
+            <small>Qty: {item.final_qty}</small>
+            <small>Rate: ₹{item.net_rate}</small>
+          </div>
+
+          <h4>₹ {item.total}</h4>
 
           <button onClick={() => removeItem(i)}>❌</button>
         </div>
       ))}
 
-      <button onClick={addItem}>➕ Add Item</button>
+      <button className="cardItem" onClick={addItem}>
+        ➕ Add Product
+      </button>
 
-      <h3>Total: ₹ {total}</h3>
+      {/* TOTAL */}
+      <div className="highlightCard">
+        <p>Total</p>
+        <h2>₹ {total}</h2>
+      </div>
 
-      <button onClick={handleSubmit}>Submit Order</button>
+      <button className="cardItem" onClick={handleSubmit}>
+        Submit Order
+      </button>
 
     </div>
   );
