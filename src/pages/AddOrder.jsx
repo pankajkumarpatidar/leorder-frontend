@@ -40,10 +40,6 @@ export default function AddOrder() {
       const rData = await rRes.json();
       const pData = await pRes.json();
 
-      // 🔥 DEBUG (important)
-      console.log("Retailers API:", rData);
-
-      // 🔥 SAFE FIX
       const retailerList = Array.isArray(rData)
         ? rData
         : rData.data || [];
@@ -54,8 +50,6 @@ export default function AddOrder() {
 
       setRetailers(retailerList);
       setProducts(productList);
-
-      console.log("Final Retailers:", retailerList);
 
     } catch (err) {
       console.log("Fetch error", err);
@@ -166,7 +160,7 @@ export default function AddOrder() {
       <div className="cardItem" onClick={() => setShowRetailer(true)}>
         <p>Retailer</p>
         <h4>
-          {retailers.find(r => r.id == retailerId)?.name || "Select Retailer"}
+          {retailers.find(r => r.id == retailerId)?.business_name || "Select Retailer"}
         </h4>
       </div>
 
@@ -200,7 +194,7 @@ export default function AddOrder() {
             </h4>
           </div>
 
-          <div style={{ display: "flex", gap: 10 }}>
+          <div className="row">
             <input
               type="number"
               value={item.qty}
@@ -222,7 +216,7 @@ export default function AddOrder() {
 
           <input value={item.price} readOnly />
 
-          <div style={{ display: "flex", gap: 8 }}>
+          <div className="row">
             <input placeholder="T%" onChange={(e) => handleChange(i, "trade_discount", e.target.value)} />
             <input placeholder="S%" onChange={(e) => handleChange(i, "special_discount", e.target.value)} />
             <input placeholder="C%" onChange={(e) => handleChange(i, "cash_discount", e.target.value)} />
@@ -237,7 +231,7 @@ export default function AddOrder() {
         </div>
       ))}
 
-      <button className="cardItem" onClick={addItem}>
+      <button className="cardItem addBtn" onClick={addItem}>
         ➕ Add Product
       </button>
 
@@ -254,19 +248,17 @@ export default function AddOrder() {
       {showRetailer && (
         <div className="modal">
           <div className="modalBox">
+
             <input
-              placeholder="Search Retailer"
+              className="searchBox"
+              placeholder="Search Retailer..."
               value={searchRetailer}
               onChange={(e) => setSearchRetailer(e.target.value)}
             />
 
-            {retailers.length === 0 && (
-              <p style={{ textAlign: "center" }}>No retailers found</p>
-            )}
-
             {retailers
               .filter(r =>
-                r.name?.toLowerCase().includes(searchRetailer.toLowerCase())
+                r.business_name?.toLowerCase().includes(searchRetailer.toLowerCase())
               )
               .map(r => (
                 <div
@@ -275,15 +267,17 @@ export default function AddOrder() {
                   onClick={() => {
                     setRetailerId(r.id);
                     setShowRetailer(false);
+                    setSearchRetailer("");
                   }}
                 >
-                  {r.name}
+                  {r.business_name}
                 </div>
               ))}
 
             <button className="closeBtn" onClick={() => setShowRetailer(false)}>
               Close
             </button>
+
           </div>
         </div>
       )}
@@ -294,7 +288,8 @@ export default function AddOrder() {
           <div className="modalBox">
 
             <input
-              placeholder="Search Product"
+              className="searchBox"
+              placeholder="Search Product..."
               value={searchProduct}
               onChange={(e) => setSearchProduct(e.target.value)}
             />
