@@ -10,9 +10,11 @@ export default function Orders() {
   const [orders, setOrders] = useState([]);
   const [filtered, setFiltered] = useState([]);
 
-  // 🔥 filters
   const [search, setSearch] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("ALL");
+
+  // 🔥 NEW DATE FILTER
+  const [dateFilter, setDateFilter] = useState("ALL");
 
   useEffect(() => {
     fetchOrders();
@@ -20,7 +22,7 @@ export default function Orders() {
 
   useEffect(() => {
     applyFilter();
-  }, [orders, search, paymentFilter]);
+  }, [orders, search, paymentFilter, dateFilter]);
 
   const fetchOrders = async () => {
     try {
@@ -39,7 +41,7 @@ export default function Orders() {
   const applyFilter = () => {
     let data = [...orders];
 
-    // search
+    // 🔍 SEARCH
     if (search) {
       data = data.filter((o) =>
         (o.retailer_name || "")
@@ -48,16 +50,37 @@ export default function Orders() {
       );
     }
 
-    // payment filter
+    // 💳 PAYMENT
     if (paymentFilter !== "ALL") {
       data = data.filter((o) => o.payment_type === paymentFilter);
+    }
+
+    // 📅 DATE FILTER
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    if (dateFilter === "TODAY") {
+      data = data.filter((o) => {
+        const d = new Date(o.created_at);
+        return d.toDateString() === today.toDateString();
+      });
+    }
+
+    if (dateFilter === "TOMORROW") {
+      data = data.filter((o) => {
+        const d = new Date(o.created_at);
+        return d.toDateString() === tomorrow.toDateString();
+      });
     }
 
     setFiltered(data);
   };
 
-  // 🔥 total amount
-  const totalAmount = filtered.reduce((s, o) => s + Number(o.total || 0), 0);
+  const totalAmount = filtered.reduce(
+    (s, o) => s + Number(o.total || 0),
+    0
+  );
 
   return (
     <div className="appContainer">
@@ -68,7 +91,7 @@ export default function Orders() {
         <p>Total: {filtered.length}</p>
       </div>
 
-      {/* 🔥 SUMMARY CARD */}
+      {/* SUMMARY */}
       <div className="highlightCard">
         <p>Total Orders</p>
         <h2>{filtered.length}</h2>
@@ -77,7 +100,7 @@ export default function Orders() {
         </p>
       </div>
 
-      {/* 🔍 SEARCH */}
+      {/* SEARCH */}
       <input
         className="searchBox"
         placeholder="Search retailer..."
@@ -85,7 +108,7 @@ export default function Orders() {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {/* 🔥 FILTER BUTTONS */}
+      {/* PAYMENT FILTER */}
       <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
         {["ALL", "CASH", "CREDIT"].map((f) => (
           <button
@@ -108,14 +131,37 @@ export default function Orders() {
         ))}
       </div>
 
-      {/* ❌ EMPTY */}
+      {/* 🔥 NEW DATE FILTER ROW */}
+      <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
+        {["ALL", "TODAY", "TOMORROW"].map((f) => (
+          <button
+            key={f}
+            onClick={() => setDateFilter(f)}
+            style={{
+              padding: "7px 12px",
+              borderRadius: 10,
+              border: "none",
+              background:
+                dateFilter === f
+                  ? "#111"
+                  : "#eee",
+              color: dateFilter === f ? "white" : "#333",
+              fontSize: 11,
+            }}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
+
+      {/* EMPTY */}
       {filtered.length === 0 && (
         <div className="cardItem">
           <p>No orders found</p>
         </div>
       )}
 
-      {/* 📦 ORDER LIST */}
+      {/* LIST */}
       {filtered.map((o) => (
         <div
           key={o.id}
@@ -145,7 +191,6 @@ export default function Orders() {
         </div>
       ))}
 
-      {/* ➕ FAB */}
       <Fab onClick={() => navigate("/add-order")} />
 
     </div>
