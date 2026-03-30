@@ -14,6 +14,13 @@ export default function AddOrder() {
   const [paymentType, setPaymentType] = useState("CASH");
   const [creditDays, setCreditDays] = useState(0);
 
+  // 🔥 MODALS
+  const [showRetailer, setShowRetailer] = useState(false);
+  const [showProductIndex, setShowProductIndex] = useState(null);
+
+  const [searchRetailer, setSearchRetailer] = useState("");
+  const [searchProduct, setSearchProduct] = useState("");
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -23,22 +30,18 @@ export default function AddOrder() {
   }, [items]);
 
   const fetchData = async () => {
-    try {
-      const headers = { Authorization: `Bearer ${token}` };
+    const headers = { Authorization: `Bearer ${token}` };
 
-      const [rRes, pRes] = await Promise.all([
-        fetch(`${BASE_URL}/retailers`, { headers }),
-        fetch(`${BASE_URL}/products`, { headers }),
-      ]);
+    const [rRes, pRes] = await Promise.all([
+      fetch(`${BASE_URL}/retailers`, { headers }),
+      fetch(`${BASE_URL}/products`, { headers }),
+    ]);
 
-      const rData = await rRes.json();
-      const pData = await pRes.json();
+    const rData = await rRes.json();
+    const pData = await pRes.json();
 
-      setRetailers(rData.data || rData || []);
-      setProducts(pData.data || pData || []);
-    } catch (err) {
-      console.log("Fetch error", err);
-    }
+    setRetailers(rData.data || rData || []);
+    setProducts(pData.data || pData || []);
   };
 
   const addItem = () => {
@@ -80,17 +83,23 @@ export default function AddOrder() {
 
   const handleChange = (i, field, value) => {
     const updated = [...items];
-
-    updated[i][field] =
-      field === "product_id" ? value : Number(value);
+    updated[i][field] = Number(value);
 
     const product = products.find(
       (p) => p.id == updated[i].product_id
     );
 
     updated[i] = calculateItem(updated[i], product);
+    setItems(updated);
+  };
+
+  const handleSelectProduct = (i, product) => {
+    const updated = [...items];
+    updated[i].product_id = product.id;
+    updated[i] = calculateItem(updated[i], product);
 
     setItems(updated);
+    setShowProductIndex(null);
   };
 
   const handleSubmit = async () => {
@@ -123,15 +132,15 @@ export default function AddOrder() {
         <h3>Add Order</h3>
       </div>
 
-      <div className="cardItem">
-        <select onChange={(e) => setRetailerId(e.target.value)}>
-          <option>Select Retailer</option>
-          {retailers.map((r) => (
-            <option key={r.id} value={r.id}>{r.name}</option>
-          ))}
-        </select>
+      {/* RETAILER */}
+      <div className="cardItem" onClick={() => setShowRetailer(true)}>
+        <p>Retailer</p>
+        <h4>
+          {retailers.find(r => r.id == retailerId)?.name || "Select Retailer"}
+        </h4>
       </div>
 
+      {/* PAYMENT */}
       <div className="cardItem">
         <select onChange={(e) => setPaymentType(e.target.value)}>
           <option value="CASH">Cash</option>
@@ -147,50 +156,29 @@ export default function AddOrder() {
         )}
       </div>
 
+      {/* ITEMS */}
       {items.map((item, i) => (
         <div key={i} className="cardItem">
 
-          <select
-            onChange={(e) =>
-              handleChange(i, "product_id", e.target.value)
-            }
-          >
-            <option>Select Product</option>
-            {products.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
+          {/* PRODUCT */}
+          <div onClick={() => setShowProductIndex(i)}>
+            <p>Product</p>
+            <h4>
+              {products.find(p => p.id == item.product_id)?.name || "Select Product"}
+            </h4>
+          </div>
 
           <input
             type="number"
             placeholder="Qty"
-            onChange={(e) =>
-              handleChange(i, "qty", e.target.value)
-            }
+            onChange={(e) => handleChange(i, "qty", e.target.value)}
           />
 
           <input value={item.price} readOnly />
 
-          <input
-            placeholder="Trade %"
-            onChange={(e) =>
-              handleChange(i, "trade_discount", e.target.value)
-            }
-          />
-
-          <input
-            placeholder="Special %"
-            onChange={(e) =>
-              handleChange(i, "special_discount", e.target.value)
-            }
-          />
-
-          <input
-            placeholder="Cash %"
-            onChange={(e) =>
-              handleChange(i, "cash_discount", e.target.value)
-            }
-          />
+          <input placeholder="Trade %" onChange={(e) => handleChange(i, "trade_discount", e.target.value)} />
+          <input placeholder="Special %" onChange={(e) => handleChange(i, "special_discount", e.target.value)} />
+          <input placeholder="Cash %" onChange={(e) => handleChange(i, "cash_discount", e.target.value)} />
 
           <p>Qty: {item.final_qty}</p>
           <p>Rate: ₹{item.net_rate?.toFixed(2)}</p>
@@ -211,6 +199,70 @@ export default function AddOrder() {
       <button className="cardItem" onClick={handleSubmit}>
         Submit Order
       </button>
+
+      {/* 🔍 RETAILER MODAL */}
+      {showRetailer && (
+        <div className="modal">
+          <div className="modalBox">
+            <input
+              placeholder="Search Retailer"
+              value={searchRetailer}
+              onChange={(e) => setSearchRetailer(e.target.value)}
+            />
+
+            {retailers
+              .filter(r => r.name.toLowerCase().includes(searchRetailer.toLowerCase()))
+              .map(r => (
+                <div
+                  key={r.id}
+                  className="userCard"
+                  onClick={() => {
+                    setRetailerId(r.id);
+                    setShowRetailer(false);
+                  }}
+                >
+                  {r.name}
+                </div>
+              ))}
+
+            <button className="closeBtn" onClick={() => setShowRetailer(false)}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 🔍 PRODUCT MODAL */}
+      {showProductIndex !== null && (
+        <div className="modal">
+          <div className="modalBox">
+
+            <input
+              placeholder="Search Product"
+              value={searchProduct}
+              onChange={(e) => setSearchProduct(e.target.value)}
+            />
+
+            {products
+              .filter(p => p.name.toLowerCase().includes(searchProduct.toLowerCase()))
+              .map(p => (
+                <div
+                  key={p.id}
+                  className="userCard"
+                  onClick={() => handleSelectProduct(showProductIndex, p)}
+                >
+                  {p.name}
+                </div>
+              ))}
+
+            <button className="closeBtn" onClick={() => setShowProductIndex(null)}>
+              Close
+            </button>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
