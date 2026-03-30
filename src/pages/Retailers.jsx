@@ -19,7 +19,7 @@ export default function Retailers() {
     pincode: "",
   });
 
-  // ===== FETCH =====
+  // ===== FETCH (🔥 FIXED) =====
   const fetchRetailers = async () => {
     try {
       const res = await fetch(`${BASE_URL}/retailers`, {
@@ -27,15 +27,25 @@ export default function Retailers() {
       });
 
       const data = await res.json();
-      setRetailers(data.data || []);
-    } catch {
+
+      // 🔥 SAFE FIX (IMPORTANT)
+      const list = Array.isArray(data)
+        ? data
+        : data.data || [];
+
+      console.log("Retailers:", list);
+
+      setRetailers(list);
+
+    } catch (err) {
+      console.log("Retailer fetch error:", err);
       showToast("Error loading");
     }
   };
 
   useEffect(() => {
-    fetchRetailers();
-  }, []);
+    if (token) fetchRetailers();
+  }, [token]);
 
   const showToast = (msg) => {
     setToast(msg);
@@ -77,6 +87,7 @@ export default function Retailers() {
 
         setShow(false);
         setEditId(null);
+
         setForm({
           business_name: "",
           email: "",
@@ -127,9 +138,9 @@ export default function Retailers() {
     }
   };
 
-  // ===== FILTER =====
+  // ===== FILTER (🔥 SAFE FIX) =====
   const filtered = retailers.filter((r) =>
-    `${r.business_name} ${r.mobile} ${r.email}`
+    `${r.business_name || ""} ${r.mobile || ""} ${r.email || ""}`
       .toLowerCase()
       .includes(search.toLowerCase())
   );
@@ -158,7 +169,6 @@ export default function Retailers() {
         filtered.map((r) => (
           <div key={r.id} className="userCard">
 
-            {/* LEFT */}
             <div style={{ maxWidth: "70%" }}>
               <h4>{r.business_name}</h4>
 
@@ -187,7 +197,6 @@ export default function Retailers() {
               </span>
             </div>
 
-            {/* RIGHT */}
             <div className="actionBtns">
 
               <button
@@ -237,7 +246,6 @@ export default function Retailers() {
             <h3>{editId ? "Edit Retailer" : "Add Retailer"}</h3>
 
             <form onSubmit={handleSubmit}>
-
               <input
                 placeholder="Business Name"
                 value={form.business_name}
@@ -289,7 +297,6 @@ export default function Retailers() {
               <button type="submit">
                 {editId ? "Update" : "Create"}
               </button>
-
             </form>
 
             <button
