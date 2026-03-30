@@ -46,6 +46,8 @@ body {
 .avatar {
   width: 46px;
   height: 46px;
+  min-width: 46px;
+  min-height: 46px;
   border-radius: 50%;
   background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
@@ -53,41 +55,56 @@ body {
   align-items: center;
   justify-content: center;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 /* ===== MAIN CARD ===== */
 .highlightCard {
-  margin-top: 16px;
-  padding: 18px;
-  border-radius: 18px;
+  margin-top: 18px;
+  padding: 20px;
+  border-radius: 20px;
   background: linear-gradient(135deg, #111, #2d2d2d);
   color: white;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
 }
 
 .highlightCard h2 {
+  margin-top: 6px;
   font-size: 26px;
+}
+
+/* ===== GRID ===== */
+.cards {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
 }
 
 /* ===== CARD ===== */
 .cardItem {
   background: #fff;
-  padding: 14px;
+  padding: 16px;
   margin-top: 12px;
-  border-radius: 14px;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  transition: 0.2s;
 }
 
 .cardItem:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 .cardItem p {
-  font-size: 12px;
+  font-size: 13px;
   color: #666;
+}
+
+.cardItem h3 {
+  font-size: 20px;
 }
 
 .cardItem h4 {
@@ -100,7 +117,7 @@ body {
 .cardItem select {
   width: 100%;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: none;
   background: #eef2f7;
   font-size: 14px;
@@ -135,6 +152,7 @@ button {
   border: none;
   background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
+  font-weight: 500;
 }
 
 /* ===== ADD BTN ===== */
@@ -148,19 +166,51 @@ button {
 /* ===== USER CARD ===== */
 .userCard {
   background: white;
-  padding: 14px;
-  border-radius: 14px;
-  margin-top: 10px;
+  padding: 16px;
+  border-radius: 18px;
+  margin-top: 12px;
   display: flex;
   justify-content: space-between;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  align-items: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+
+/* ===== ROLE TAG ===== */
+.roleTag {
+  font-size: 11px;
+  background: #dbeafe;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* ===== DELETE ===== */
+.deleteBtn {
+  border: none;
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+/* ===== SEARCH ===== */
+.searchBox {
+  margin-top: 14px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  background: white;
+  font-size: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
 }
 
 /* ===== MODAL ===== */
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -169,10 +219,10 @@ button {
 
 .modalBox {
   background: white;
-  padding: 18px;
-  border-radius: 16px;
+  padding: 22px;
+  border-radius: 20px;
   width: 90%;
-  max-width: 360px;
+  max-width: 380px;
   max-height: 80vh;
   overflow-y: auto;
 }
@@ -187,134 +237,119 @@ button {
   color: black !important;
 }
 
+/* ===== PROFILE ===== */
+.profileCard {
+  margin-top: 10px;
+  background: white;
+  border-radius: 22px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+.profileAvatar {
+  width: 90px;
+  height: 90px;
+  margin: auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: white;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.profileActions {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.primaryBtn {
+  padding: 13px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: white;
+  border: none;
+  font-weight: bold;
+}
+
+.logoutBtn {
+  padding: 13px;
+  border-radius: 14px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: none;
+  font-weight: bold;
+}
+
 /* ===== FAB ===== */
 .fabBtn {
   position: fixed;
   bottom: 95px;
   right: 18px;
-  width: 56px;
-  height: 56px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   border: none;
   background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
-  font-size: 26px;
+  font-size: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12px 25px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 15px 30px rgba(37, 99, 235, 0.45);
+  z-index: 1000;
 }
 
-/* ===== BOTTOM NAV ===== */
+/* ===== BOTTOM NAV (PREMIUM) ===== */
 .bottomNav {
   position: fixed;
   bottom: 14px;
   left: 14px;
   right: 14px;
-  height: 70px;
-  background: rgba(255,255,255,0.9);
+  height: 74px;
+  background: rgba(255,255,255,0.85);
   backdrop-filter: blur(20px);
-  border-radius: 24px;
+  border-radius: 28px;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.18);
+  z-index: 999;
 }
 
 .navItem {
+  text-decoration: none;
   color: #888;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-size: 11px;
+  padding: 8px 12px;
+  border-radius: 16px;
 }
 
 .navItem.active {
-  color: white;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
-  padding: 8px 12px;
-  border-radius: 14px;
-}
-
-/* ===== EMPTY STATE ===== */
-.emptyState {
-  text-align: center;
-  margin-top: 30px;
-  color: #888;
-}
-
-/* ===== PROFILE FIX ===== */
-.profileCard {
-  margin-top: 10px;
-  background: white;
-  border-radius: 20px;
-  padding: 22px;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-}
-
-.profileAvatar {
-  width: 80px;
-  height: 80px;
-  margin: auto;
-  border-radius: 50%;
   background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: white;
-  font-size: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
+  transform: translateY(-8px);
 }
 
-.profileActions {
-  margin-top: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+/* ===== DESKTOP ===== */
+@media(min-width:768px){
+  .appContainer {
+    max-width: 900px;
+    margin: auto;
+  }
 
-.primaryBtn {
-  padding: 12px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
-  color: white;
-  border: none;
-  font-weight: 600;
-}
-
-.logoutBtn {
-  padding: 12px;
-  border-radius: 12px;
-  background: #fee2e2;
-  color: #b91c1c;
-  border: none;
-  font-weight: 600;
-}
-
-/* ===== SEARCH FIX ===== */
-.searchBox {
-  margin-top: 14px;
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: none;
-  outline: none;
-  background: white;
-  font-size: 14px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.06);
-}
-
-/* ===== ROLE TAG ===== */
-.roleTag {
-  font-size: 11px;
-  background: #dbeafe;
-  padding: 4px 10px;
-  border-radius: 10px;
-}
-
-/* ===== DELETE BUTTON ===== */
-.deleteBtn {
-  border: none;
-  background: #fee2e2;
-  color: #b91c1c;
-  padding: 6px 10px;
-  border-radius: 8px;
+  .bottomNav {
+    max-width: 500px;
+    margin: auto;
+    left: 0;
+    right: 0;
+  }
 }
