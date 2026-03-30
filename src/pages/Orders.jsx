@@ -14,19 +14,23 @@ export default function Orders() {
   }, []);
 
   const fetchOrders = async () => {
-    const res = await fetch(`${BASE_URL}/orders`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    try {
+      const res = await fetch(`${BASE_URL}/orders`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    const data = await res.json();
-    setOrders(data.data || []);
+      const data = await res.json();
+      setOrders(data.data || []);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
-    <div className="appContainer" style={{ paddingBottom: 80 }}>
+    <div className="appContainer">
 
       <div className="header">
-        <h3>📋 Orders</h3>
+        <h3>Orders</h3>
         <p>Total: {orders.length}</p>
       </div>
 
@@ -35,34 +39,30 @@ export default function Orders() {
         <h2>{orders.length}</h2>
       </div>
 
+      {/* 🔥 EMPTY FIX */}
       {orders.length === 0 && (
-        <p style={{ marginTop: 20 }}>No orders yet</p>
+        <div className="cardItem">
+          <p>No orders yet</p>
+        </div>
       )}
 
       {orders.map((o) => (
         <div
           key={o.id}
-          className="cardItem"
+          className="userCard"
           onClick={() => navigate(`/orders/${o.id}`)}
         >
-          <h4>{o.retailer_name || "Walk-in"}</h4>
-
-          <p>₹ {o.total}</p>
-
-          <div className="row">
-            <small>{o.payment_type}</small>
-            <small>{o.status}</small>
+          <div>
+            <h4>{o.retailer_name || "Walk-in"}</h4>
+            <p>₹ {o.total}</p>
           </div>
 
-          {o.is_overdue && (
-            <span style={{ color: "red" }}>Overdue</span>
-          )}
-
-          {o.due_date && (
-            <small>
-              Due: {new Date(o.due_date).toDateString()}
-            </small>
-          )}
+          <div>
+            <small>{o.payment_type}</small>
+            {o.is_overdue && (
+              <span style={{ color: "red" }}>Overdue</span>
+            )}
+          </div>
         </div>
       ))}
 

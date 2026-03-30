@@ -23,18 +23,22 @@ export default function AddOrder() {
   }, [items]);
 
   const fetchData = async () => {
-    const headers = { Authorization: `Bearer ${token}` };
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
 
-    const [rRes, pRes] = await Promise.all([
-      fetch(`${BASE_URL}/retailers`, { headers }),
-      fetch(`${BASE_URL}/products`, { headers }),
-    ]);
+      const [rRes, pRes] = await Promise.all([
+        fetch(`${BASE_URL}/retailers`, { headers }),
+        fetch(`${BASE_URL}/products`, { headers }),
+      ]);
 
-    const rData = await rRes.json();
-    const pData = await pRes.json();
+      const rData = await rRes.json();
+      const pData = await pRes.json();
 
-    setRetailers(rData.data || rData || []);
-    setProducts(pData.data || pData || []);
+      setRetailers(rData.data || rData || []);
+      setProducts(pData.data || pData || []);
+    } catch (err) {
+      console.log("Fetch error", err);
+    }
   };
 
   const addItem = () => {
@@ -89,13 +93,6 @@ export default function AddOrder() {
     setItems(updated);
   };
 
-  const getDueDate = () => {
-    if (paymentType !== "CREDIT") return null;
-    const d = new Date();
-    d.setDate(d.getDate() + Number(creditDays));
-    return d.toISOString();
-  };
-
   const handleSubmit = async () => {
     if (!retailerId || !items.length) {
       return alert("Fill all fields");
@@ -111,7 +108,6 @@ export default function AddOrder() {
         retailer_id: retailerId,
         payment_type: paymentType,
         credit_days: creditDays,
-        due_date: getDueDate(),
         items,
       }),
     });
@@ -124,7 +120,7 @@ export default function AddOrder() {
     <div className="appContainer">
 
       <div className="header">
-        <h3>🧾 Add Order</h3>
+        <h3>Add Order</h3>
       </div>
 
       <div className="cardItem">
@@ -145,7 +141,7 @@ export default function AddOrder() {
         {paymentType === "CREDIT" && (
           <input
             type="number"
-            placeholder="Days"
+            placeholder="Credit Days"
             onChange={(e) => setCreditDays(e.target.value)}
           />
         )}
@@ -175,32 +171,30 @@ export default function AddOrder() {
 
           <input value={item.price} readOnly />
 
-          <div className="row">
-            <input
-              placeholder="T%"
-              onChange={(e) =>
-                handleChange(i, "trade_discount", e.target.value)
-              }
-            />
-            <input
-              placeholder="S%"
-              onChange={(e) =>
-                handleChange(i, "special_discount", e.target.value)
-              }
-            />
-            <input
-              placeholder="C%"
-              onChange={(e) =>
-                handleChange(i, "cash_discount", e.target.value)
-              }
-            />
-          </div>
+          <input
+            placeholder="Trade %"
+            onChange={(e) =>
+              handleChange(i, "trade_discount", e.target.value)
+            }
+          />
 
-          <div className="highlightCard">
-            <p>Qty: {item.final_qty}</p>
-            <p>Rate: ₹{item.net_rate?.toFixed(2)}</p>
-            <h3>₹ {item.total?.toFixed(0)}</h3>
-          </div>
+          <input
+            placeholder="Special %"
+            onChange={(e) =>
+              handleChange(i, "special_discount", e.target.value)
+            }
+          />
+
+          <input
+            placeholder="Cash %"
+            onChange={(e) =>
+              handleChange(i, "cash_discount", e.target.value)
+            }
+          />
+
+          <p>Qty: {item.final_qty}</p>
+          <p>Rate: ₹{item.net_rate?.toFixed(2)}</p>
+          <h3>₹ {item.total?.toFixed(0)}</h3>
 
         </div>
       ))}
