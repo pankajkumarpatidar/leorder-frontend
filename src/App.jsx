@@ -16,7 +16,6 @@ import AddProduct from "./pages/AddProduct";
 import ProductDetails from "./pages/ProductDetails";
 
 import Retailers from "./pages/Retailers";
-import AddRetailer from "./pages/AddRetailer";
 import RetailerDetails from "./pages/RetailerDetails";
 
 import Leads from "./pages/Leads";
@@ -33,7 +32,9 @@ import AddWorksheet from "./pages/AddWorksheet";
 import Profile from "./pages/Profile";
 import Menu from "./pages/Menu";
 
-import PrivacyPolicy from "./pages/PrivacyPolicy";
+// ✅ FIXED (Privacy.jsx)
+import PrivacyPolicy from "./pages/Privacy";
+
 import Support from "./pages/Support";
 
 // ===== PROTECTED ROUTE =====
@@ -42,7 +43,7 @@ const ProtectedRoute = ({ children }) => {
   return token ? children : <Navigate to="/login" />;
 };
 
-// ===== ROLE CHECK (OPTIONAL SAFE) =====
+// ===== ROLE BASED ROUTE =====
 const RoleRoute = ({ children, roles }) => {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -85,7 +86,6 @@ export default function App() {
 
         {/* ===== RETAILERS ===== */}
         <Route path="/retailers" element={<ProtectedRoute><Retailers /></ProtectedRoute>} />
-        <Route path="/add-retailer" element={<ProtectedRoute><AddRetailer /></ProtectedRoute>} />
         <Route path="/retailers/:id" element={<ProtectedRoute><RetailerDetails /></ProtectedRoute>} />
 
         {/* ===== LEADS ===== */}
@@ -93,7 +93,7 @@ export default function App() {
         <Route path="/add-lead" element={<ProtectedRoute><AddLead /></ProtectedRoute>} />
         <Route path="/leads/:id" element={<ProtectedRoute><LeadDetails /></ProtectedRoute>} />
 
-        {/* ===== USERS (ADMIN/STAFF ONLY) ===== */}
+        {/* ===== USERS (ADMIN / STAFF ONLY) ===== */}
         <Route
           path="/users"
           element={
