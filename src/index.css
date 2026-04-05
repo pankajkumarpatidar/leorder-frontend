@@ -1,35 +1,61 @@
-/* ===== RESET ===== */
+/* ================= RESET ================= */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
-input, textarea {
-  user-select: text;
-}
-
-/* ===== BODY ===== */
 body {
   font-family: "Inter", sans-serif;
   background: #f4f6fb;
-  -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
+  color: #111;
+  overflow-x: hidden;
 }
 
-/* ===== APP ===== */
+
+/* ================= APP ================= */
 .appContainer {
-  padding: 18px;
-  padding-bottom: 120px;
-  max-width: 520px;
+  padding: 16px;
+  padding-bottom: 110px;
+  max-width: 500px;
   margin: auto;
 }
 
-/* ===== HEADER ===== */
+
+/* ================= AUTH ================= */
+.authPage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px;
+}
+
+.authHeader {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.authHeader h1 {
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.authHeader p {
+  font-size: 13px;
+  color: #777;
+}
+
+.authBox {
+  background: white;
+  padding: 22px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+
+/* ================= HEADER ================= */
 .header {
   display: flex;
   justify-content: space-between;
@@ -38,75 +64,22 @@ body {
 
 .header h3 {
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .header p {
-  font-size: 13px;
+  font-size: 12px;
   color: #777;
 }
 
-/* ===== AVATAR ===== */
-.avatar {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-}
 
-/* ===== LOGIN ===== */
-.loginWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
-
-.loginCard {
-  width: 100%;
-  max-width: 380px;
-  background: white;
-  padding: 22px;
-  border-radius: 18px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-}
-
-.loginTitle {
-  font-size: 22px;
-  font-weight: 600;
-}
-
-.loginSub {
-  font-size: 13px;
-  color: #777;
-  margin-bottom: 12px;
-}
-
-/* ===== MAIN CARD ===== */
-.highlightCard {
-  margin-top: 16px;
-  padding: 18px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #111, #2d2d2d);
-  color: white;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-/* ===== CARD ===== */
+/* ================= CARD ================= */
 .cardItem {
-  background: #fff;
-  padding: 14px;
+  background: white;
+  padding: 16px;
   margin-top: 12px;
-  border-radius: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
   transition: 0.2s;
 }
 
@@ -114,26 +87,55 @@ body {
   transform: scale(0.97);
 }
 
-/* ===== INPUT ===== */
-.cardItem input,
-.cardItem select,
-input,
-textarea {
+
+/* ================= USER CARD ================= */
+.userCard {
+  background: white;
+  padding: 16px;
+  margin-top: 12px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.07);
+}
+
+
+/* ================= SEARCH ================= */
+.searchBox {
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
+  margin-top: 14px;
+  padding: 13px 15px;
+  border-radius: 14px;
+  border: none;
+  background: white;
+  font-size: 14px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+}
+
+
+/* ================= INPUT ================= */
+input, select, textarea {
+  width: 100%;
+  padding: 13px;
+  margin-top: 10px;
+  border-radius: 14px;
   border: none;
   background: #eef2f7;
   font-size: 14px;
   outline: none;
+  transition: 0.2s;
 }
 
-input:focus, select:focus, textarea:focus {
-  background: #fff;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+input:focus,
+select:focus,
+textarea:focus {
+  background: white;
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
 }
 
-/* ===== ROW ===== */
+
+/* ================= ROW ================= */
 .row {
   display: flex;
   gap: 10px;
@@ -144,77 +146,35 @@ input:focus, select:focus, textarea:focus {
   flex: 1;
 }
 
-/* ===== BUTTON ===== */
+
+/* ================= BUTTON ================= */
 button {
   cursor: pointer;
-  border: none;
 }
 
-.cardItem button,
 .primaryBtn {
-  padding: 12px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  width: 100%;
+  padding: 13px;
+  margin-top: 12px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg,#2563eb,#4f46e5);
   color: white;
-  font-weight: 500;
-}
-
-.deleteBtn {
-  background: #fee2e2 !important;
-  color: #b91c1c !important;
-}
-
-.secondaryBtn {
-  background: #f1f5f9;
-}
-
-/* ===== ADD BTN ===== */
-.addBtn {
-  text-align: center;
-  border: 2px dashed #ccc;
-  background: #fafafa;
   font-weight: 600;
 }
 
-/* ===== LIST ===== */
-.userCard {
-  background: white;
-  padding: 14px;
-  border-radius: 14px;
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-between;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+.dangerBtn {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
-/* ===== DETAILS ===== */
-.detailsCard {
-  background: white;
-  padding: 16px;
-  border-radius: 16px;
-  margin-top: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-}
 
-.detailRow {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 8px;
-}
-
-.detailLabel {
-  color: #777;
-}
-
-.detailValue {
-  font-weight: 500;
-}
-
-/* ===== STATUS ===== */
-.statusBadge {
-  padding: 4px 10px;
-  border-radius: 10px;
+/* ================= TAG ================= */
+.roleTag {
   font-size: 11px;
+  background: #dbeafe;
+  padding: 4px 10px;
+  border-radius: 12px;
 }
 
 .statusPending {
@@ -227,20 +187,74 @@ button {
   color: #166534;
 }
 
-/* ===== SEARCH ===== */
-.searchBox {
-  margin-top: 14px;
-  padding: 12px;
-  border-radius: 12px;
-  background: white;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+
+/* ================= HIGHLIGHT ================= */
+.highlightCard {
+  margin-top: 18px;
+  padding: 20px;
+  border-radius: 22px;
+  background: linear-gradient(135deg,#111,#2d2d2d);
+  color: white;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3);
 }
 
-/* ===== MODAL ===== */
+
+/* ================= DETAIL ================= */
+.detailCard {
+  background: white;
+  padding: 18px;
+  border-radius: 20px;
+  margin-top: 12px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #555;
+}
+
+
+/* ================= PROFILE ================= */
+.profileCard {
+  background: white;
+  border-radius: 22px;
+  padding: 24px;
+  margin-top: 16px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+.profileAvatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin: auto;
+  background: linear-gradient(135deg,#2563eb,#4f46e5);
+  color: white;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileName {
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.profileInfo {
+  font-size: 13px;
+  color: #666;
+}
+
+
+/* ================= MODAL ================= */
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.45);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
@@ -250,85 +264,77 @@ button {
 
 .modalBox {
   background: white;
-  padding: 18px;
-  border-radius: 16px;
+  padding: 20px;
+  border-radius: 20px;
   width: 90%;
-  max-width: 360px;
-  max-height: 80vh;
-  overflow-y: auto;
 }
 
-/* ===== FAB ===== */
+
+/* ================= FAB ================= */
 .fabBtn {
   position: fixed;
   bottom: 95px;
-  right: 18px;
-  width: 56px;
-  height: 56px;
+  right: 16px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  border: none;
+  background: linear-gradient(135deg,#2563eb,#4f46e5);
   color: white;
-  font-size: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 12px 25px rgba(37, 99, 235, 0.4);
+  font-size: 28px;
+  box-shadow: 0 15px 30px rgba(37,99,235,0.45);
 }
 
-/* ===== BOTTOM NAV ===== */
+
+/* ================= BOTTOM NAV ================= */
 .bottomNav {
   position: fixed;
   bottom: 14px;
   left: 14px;
   right: 14px;
-  height: 70px;
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(20px);
-  border-radius: 24px;
+  height: 72px;
+  border-radius: 28px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(18px);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.2);
+  z-index: 999;
 }
 
 .navItem {
-  color: #888;
+  color: #777;
   font-size: 11px;
+  text-align: center;
 }
 
 .navItem.active {
+  background: linear-gradient(135deg,#2563eb,#4f46e5);
   color: white;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
-  padding: 8px 12px;
+  padding: 8px 14px;
   border-radius: 14px;
 }
 
-/* ===== EMPTY ===== */
-.emptyState {
+
+/* ================= EMPTY ================= */
+.empty {
   text-align: center;
-  margin-top: 40px;
-  color: #888;
+  margin-top: 30px;
+  color: #999;
 }
 
-/* ===== LOADER ===== */
-.loader {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #eee;
-  border-top: 4px solid #2563eb;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: auto;
-  margin-top: 40px;
-}
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* ===== DESKTOP ===== */
+/* ================= RESPONSIVE ================= */
 @media(min-width:768px){
   .appContainer {
-    max-width: 520px;
+    max-width: 600px;
+  }
+
+  .bottomNav {
+    max-width: 500px;
+    margin: auto;
+    left: 0;
+    right: 0;
   }
 }
