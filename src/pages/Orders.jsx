@@ -1,3 +1,5 @@
+// ===== FILE: Orders.jsx =====
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Fab from "../components/Fab";
@@ -14,15 +16,11 @@ export default function Orders() {
   const [paymentFilter, setPaymentFilter] = useState("ALL");
   const [dateFilter, setDateFilter] = useState("ALL");
 
+  // ================= FETCH =================
   useEffect(() => {
     fetchOrders();
   }, []);
 
-  useEffect(() => {
-    applyFilter();
-  }, [orders, search, paymentFilter, dateFilter]);
-
-  // ✅ SAFE FETCH
   const fetchOrders = async () => {
     try {
       const res = await fetch(`${BASE_URL}/orders`, {
@@ -31,24 +29,27 @@ export default function Orders() {
 
       const data = await res.json();
 
-      const orderList = Array.isArray(data)
+      // 🔥 SAFE FIX
+      const list = Array.isArray(data)
         ? data
         : data.data || [];
 
-      console.log("Orders:", orderList);
-
-      setOrders(orderList);
+      setOrders(list);
 
     } catch (err) {
-      console.log(err);
+      console.log("Order Fetch Error:", err);
     }
   };
 
-  // ✅ FILTER LOGIC FIXED
+  // ================= FILTER =================
+  useEffect(() => {
+    applyFilter();
+  }, [orders, search, paymentFilter, dateFilter]);
+
   const applyFilter = () => {
     let data = [...orders];
 
-    // 🔍 SEARCH (SAFE)
+    // 🔍 SEARCH
     if (search) {
       data = data.filter((o) =>
         (o.retailer_name || "")
@@ -62,7 +63,7 @@ export default function Orders() {
       data = data.filter((o) => o.payment_type === paymentFilter);
     }
 
-    // 📅 DATE FILTER
+    // 📅 DATE
     const today = new Date();
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
@@ -70,22 +71,21 @@ export default function Orders() {
     if (dateFilter === "TODAY") {
       data = data.filter((o) => {
         if (!o.created_at) return false;
-        const d = new Date(o.created_at);
-        return d.toDateString() === today.toDateString();
+        return new Date(o.created_at).toDateString() === today.toDateString();
       });
     }
 
     if (dateFilter === "TOMORROW") {
       data = data.filter((o) => {
         if (!o.created_at) return false;
-        const d = new Date(o.created_at);
-        return d.toDateString() === tomorrow.toDateString();
+        return new Date(o.created_at).toDateString() === tomorrow.toDateString();
       });
     }
 
     setFiltered(data);
   };
 
+  // ================= TOTAL =================
   const totalAmount = filtered.reduce(
     (s, o) => s + Number(o.total || 0),
     0
@@ -150,8 +150,7 @@ export default function Orders() {
               padding: "7px 12px",
               borderRadius: 10,
               border: "none",
-              background:
-                dateFilter === f ? "#111" : "#eee",
+              background: dateFilter === f ? "#111" : "#eee",
               color: dateFilter === f ? "white" : "#333",
               fontSize: 11,
             }}
@@ -177,7 +176,9 @@ export default function Orders() {
         >
           <div>
             <h4>{o.retailer_name || "Walk-in"}</h4>
-            <p>₹ {Math.round(o.total || 0)}</p>
+
+            {/* 🔥 ROUND FIX */}
+            <p>₹ {Math.round(o.total || 0).toLocaleString()}</p>
           </div>
 
           <div style={{ textAlign: "right" }}>
@@ -198,6 +199,7 @@ export default function Orders() {
         </div>
       ))}
 
+      {/* FAB */}
       <Fab onClick={() => navigate("/add-order")} />
 
     </div>

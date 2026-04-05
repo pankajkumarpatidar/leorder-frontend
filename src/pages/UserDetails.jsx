@@ -1,40 +1,58 @@
-// ===== FILE: Profile.jsx =====
+// ===== FILE: UserDetails.jsx =====
 
 import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import BASE_URL from "../api";
 
-export default function Profile() {
+export default function UserDetails() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
+  const [user, setUser] = useState(null);
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
+    fetchUser();
     fetchHistory();
   }, []);
 
+  const fetchUser = async () => {
+    const res = await fetch(`${BASE_URL}/users/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = await res.json();
+    setUser(data.data);
+  };
+
   const fetchHistory = async () => {
-    try {
-      const res = await fetch(`${BASE_URL}/audit-logs/user/${user.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    const res = await fetch(`${BASE_URL}/audit-logs/user/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-      const data = await res.json();
-      setHistory(data.data || []);
-    } catch (e) {
-      console.log(e);
-    }
+    const data = await res.json();
+    setHistory(data.data || []);
   };
 
-  const logout = () => {
-    localStorage.clear();
-    window.location.href = "/login";
+  const deleteUser = async () => {
+    if (!window.confirm("Delete user?")) return;
+
+    await fetch(`${BASE_URL}/users/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    alert("Deleted");
+    navigate("/users");
   };
+
+  if (!user) return <div className="appContainer">Loading...</div>;
 
   return (
     <div className="appContainer">
 
-      {/* PROFILE CARD */}
+      {/* PROFILE */}
       <div className="profileCard">
 
         <div className="profileAvatar">
@@ -59,11 +77,12 @@ export default function Profile() {
             Reset Password
           </button>
 
-          <button className="logoutBtn" onClick={logout}>
-            Logout
+          <button className="logoutBtn" onClick={deleteUser}>
+            Delete User
           </button>
 
         </div>
+
       </div>
 
       {/* HISTORY */}

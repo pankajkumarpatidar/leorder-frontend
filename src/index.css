@@ -4,8 +4,6 @@
   padding: 0;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
-  -webkit-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }
 
@@ -16,14 +14,15 @@ input, textarea {
 body {
   font-family: "Inter", sans-serif;
   background: #f4f6fb;
-  -webkit-font-smoothing: antialiased;
 }
+
 
 /* ===== APP ===== */
 .appContainer {
   padding: 18px;
   padding-bottom: 120px;
 }
+
 
 /* ===== HEADER ===== */
 .header {
@@ -42,28 +41,69 @@ body {
   color: #777;
 }
 
+
+/* ===== AUTH (LOGIN / SIGNUP) ===== */
+.authContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.authBox {
+  width: 100%;
+  max-width: 380px;
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+}
+
+.authBox h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.authBox input {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 13px;
+  border-radius: 12px;
+  border: none;
+  background: #eef2f7;
+}
+
+.authBox button {
+  width: 100%;
+  padding: 13px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg,#2563eb,#4f46e5);
+  color: white;
+  font-weight: 600;
+}
+
+
 /* ===== AVATAR ===== */
 .avatar {
   width: 46px;
   height: 46px;
-  min-width: 46px;
-  min-height: 46px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  background: linear-gradient(135deg,#2563eb,#4f46e5);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  flex-shrink: 0;
 }
 
-/* ===== MAIN CARD ===== */
+
+/* ===== HIGHLIGHT ===== */
 .highlightCard {
   margin-top: 18px;
   padding: 20px;
   border-radius: 20px;
-  background: linear-gradient(135deg, #111, #2d2d2d);
+  background: linear-gradient(135deg,#111,#2d2d2d);
   color: white;
   box-shadow: 0 12px 30px rgba(0,0,0,0.25);
 }
@@ -73,6 +113,7 @@ body {
   font-size: 26px;
 }
 
+
 /* ===== GRID ===== */
 .cards {
   margin-top: 18px;
@@ -81,9 +122,10 @@ body {
   gap: 14px;
 }
 
+
 /* ===== CARD ===== */
 .cardItem {
-  background: #fff;
+  background: white;
   padding: 16px;
   margin-top: 12px;
   border-radius: 16px;
@@ -91,28 +133,12 @@ body {
   flex-direction: column;
   gap: 10px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-  transition: 0.2s;
 }
 
 .cardItem:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
-.cardItem p {
-  font-size: 13px;
-  color: #666;
-}
-
-.cardItem h3 {
-  font-size: 20px;
-}
-
-.cardItem h4 {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-/* ===== INPUT ===== */
 .cardItem input,
 .cardItem select {
   width: 100%;
@@ -120,15 +146,8 @@ body {
   border-radius: 12px;
   border: none;
   background: #eef2f7;
-  font-size: 14px;
-  outline: none;
 }
 
-.cardItem input:focus,
-.cardItem select:focus {
-  background: #fff;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
 
 /* ===== ROW ===== */
 .row {
@@ -141,29 +160,26 @@ body {
   flex: 1;
 }
 
-/* ===== BUTTON ===== */
-button {
-  cursor: pointer;
-}
 
+/* ===== BUTTON ===== */
 .cardItem button {
   padding: 12px;
   border-radius: 12px;
   border: none;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  background: linear-gradient(135deg,#2563eb,#4f46e5);
   color: white;
-  font-weight: 500;
 }
+
 
 /* ===== ADD BTN ===== */
 .addBtn {
   text-align: center;
   border: 2px dashed #ccc;
   background: #fafafa;
-  font-weight: 600;
 }
 
-/* ===== USER CARD ===== */
+
+/* ===== LIST ITEM ===== */
 .userCard {
   background: white;
   padding: 16px;
@@ -171,11 +187,11 @@ button {
   margin-top: 12px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
   box-shadow: 0 8px 20px rgba(0,0,0,0.06);
 }
 
-/* ===== ROLE TAG ===== */
+
+/* ===== TAG ===== */
 .roleTag {
   font-size: 11px;
   background: #dbeafe;
@@ -183,38 +199,34 @@ button {
   border-radius: 12px;
 }
 
+
 /* ===== DELETE ===== */
 .deleteBtn {
-  border: none;
   background: #fee2e2;
   color: #b91c1c;
   padding: 8px 12px;
   border-radius: 10px;
 }
 
+
 /* ===== SEARCH ===== */
 .searchBox {
   margin-top: 14px;
-  width: 100%;
-  padding: 12px 14px;
+  padding: 12px;
   border-radius: 12px;
-  border: none;
-  outline: none;
   background: white;
-  font-size: 14px;
   box-shadow: 0 6px 18px rgba(0,0,0,0.06);
 }
+
 
 /* ===== MODAL ===== */
 .modal {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.45);
-  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
 }
 
 .modalBox {
@@ -222,20 +234,8 @@ button {
   padding: 22px;
   border-radius: 20px;
   width: 90%;
-  max-width: 380px;
-  max-height: 80vh;
-  overflow-y: auto;
 }
 
-.modalBox input {
-  margin-bottom: 10px;
-}
-
-.closeBtn {
-  margin-top: 10px;
-  background: #eee !important;
-  color: black !important;
-}
 
 /* ===== PROFILE ===== */
 .profileCard {
@@ -244,7 +244,6 @@ button {
   border-radius: 22px;
   padding: 25px;
   text-align: center;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
 }
 
 .profileAvatar {
@@ -252,13 +251,12 @@ button {
   height: 90px;
   margin: auto;
   border-radius: 50%;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  background: linear-gradient(135deg,#2563eb,#4f46e5);
   color: white;
   font-size: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 12px;
 }
 
 .profileActions {
@@ -271,10 +269,8 @@ button {
 .primaryBtn {
   padding: 13px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  background: linear-gradient(135deg,#2563eb,#4f46e5);
   color: white;
-  border: none;
-  font-weight: bold;
 }
 
 .logoutBtn {
@@ -282,9 +278,8 @@ button {
   border-radius: 14px;
   background: #fee2e2;
   color: #b91c1c;
-  border: none;
-  font-weight: bold;
 }
+
 
 /* ===== FAB ===== */
 .fabBtn {
@@ -295,17 +290,13 @@ button {
   height: 58px;
   border-radius: 50%;
   border: none;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  background: linear-gradient(135deg,#2563eb,#4f46e5);
   color: white;
-  font-size: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 15px 30px rgba(37, 99, 235, 0.45);
-  z-index: 1000;
+  font-size: 26px;
 }
 
-/* ===== BOTTOM NAV (PREMIUM) ===== */
+
+/* ===== BOTTOM NAV ===== */
 .bottomNav {
   position: fixed;
   bottom: 14px;
@@ -318,26 +309,20 @@ button {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  box-shadow: 0 18px 45px rgba(0,0,0,0.18);
-  z-index: 999;
 }
 
 .navItem {
-  text-decoration: none;
   color: #888;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   font-size: 11px;
+}
+
+.navItem.active {
+  color: white;
+  background: linear-gradient(135deg,#2563eb,#4f46e5);
   padding: 8px 12px;
   border-radius: 16px;
 }
 
-.navItem.active {
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
-  color: white;
-  transform: translateY(-8px);
-}
 
 /* ===== DESKTOP ===== */
 @media(min-width:768px){
@@ -349,7 +334,5 @@ button {
   .bottomNav {
     max-width: 500px;
     margin: auto;
-    left: 0;
-    right: 0;
   }
 }

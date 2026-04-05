@@ -1,3 +1,5 @@
+// ===== FILE: AddOrder.jsx =====
+
 import { useEffect, useState } from "react";
 import BASE_URL from "../api";
 
@@ -10,9 +12,6 @@ export default function AddOrder() {
   const [retailerId, setRetailerId] = useState("");
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
-
-  const [paymentType, setPaymentType] = useState("CASH");
-  const [creditDays, setCreditDays] = useState(0);
 
   const [showRetailer, setShowRetailer] = useState(false);
   const [showProductIndex, setShowProductIndex] = useState(null);
@@ -28,42 +27,29 @@ export default function AddOrder() {
     setTotal(items.reduce((s, i) => s + i.total, 0));
   }, [items]);
 
-  // ✅ FIXED FETCH
   const fetchData = async () => {
-    try {
-      const headers = { Authorization: `Bearer ${token}` };
+    const headers = { Authorization: `Bearer ${token}` };
 
-      const [rRes, pRes] = await Promise.all([
-        fetch(`${BASE_URL}/retailers`, { headers }),
-        fetch(`${BASE_URL}/products`, { headers }),
-      ]);
+    const [rRes, pRes] = await Promise.all([
+      fetch(`${BASE_URL}/retailers`, { headers }),
+      fetch(`${BASE_URL}/products`, { headers }),
+    ]);
 
-      const rData = await rRes.json();
-      const pData = await pRes.json();
+    const rData = await rRes.json();
+    const pData = await pRes.json();
 
-      const retailerList = Array.isArray(rData)
-        ? rData
-        : rData.data || [];
-
-      const productList = Array.isArray(pData)
-        ? pData
-        : pData.data || [];
-
-      setRetailers(retailerList);
-      setProducts(productList);
-
-    } catch (err) {
-      console.log("Fetch error", err);
-    }
+    setRetailers(rData.data || []);
+    setProducts(pData.data || []);
   };
 
+  // ================= ADD ITEM =================
   const addItem = () => {
     setItems([
       ...items,
       {
         product_id: "",
         qty: 1,
-        unit: "PCS",
+        unit: "",
         final_qty: 0,
         price: 0,
         trade_discount: 0,
@@ -75,22 +61,30 @@ export default function AddOrder() {
     ]);
   };
 
+  // ================= CALCULATION =================
   const calculateItem = (item, product) => {
-    const conversion =
-      item.unit === "BOX"
-        ? product?.pcs_per_box || 1
-        : 1;
+    if (!product) return item;
 
-    const price = product?.dp_per_pcs || 0;
+    const isBig = item.unit === product.unit_big;
 
-    const final_qty = item.qty * conversion;
+    const conversion = isBig
+      ? Number(product.conversion || 1)
+      : 1;
+
+    const price = Number(product.dp_small || 0);
+
+    const final_qty = Number(item.qty || 0) * conversion;
+
     let base = final_qty * price;
 
-    let afterTrade = base - (base * item.trade_discount) / 100;
+    let afterTrade =
+      base - (base * (item.trade_discount || 0)) / 100;
+
     let afterSpecial =
-      afterTrade - (afterTrade * item.special_discount) / 100;
+      afterTrade - (afterTrade * (item.special_discount || 0)) / 100;
+
     let afterCash =
-      afterSpecial - (afterSpecial * item.cash_discount) / 100;
+      afterSpecial - (afterSpecial * (item.cash_discount || 0)) / 100;
 
     return {
       ...item,
@@ -101,32 +95,38 @@ export default function AddOrder() {
     };
   };
 
+  // ================= CHANGE =================
   const handleChange = (i, field, value) => {
     const updated = [...items];
 
-    if (field === "product_id" || field === "unit") {
-      updated[i][field] = value;
-    } else {
-      updated[i][field] = Number(value);
-    }
+    updated[i][field] =
+      field === "unit" ? value : Number(value);
 
     const product = products.find(
       (p) => p.id == updated[i].product_id
     );
 
     updated[i] = calculateItem(updated[i], product);
+
     setItems(updated);
   };
 
+  // ================= SELECT PRODUCT =================
   const handleSelectProduct = (i, product) => {
     const updated = [...items];
+
     updated[i].product_id = product.id;
+
+    // 🔥 AUTO SET UNIT SMALL
+    updated[i].unit = product.unit_small;
+
     updated[i] = calculateItem(updated[i], product);
 
     setItems(updated);
     setShowProductIndex(null);
   };
 
+  // ================= SUBMIT =================
   const handleSubmit = async () => {
     if (!retailerId || !items.length) {
       return alert("Fill all fields");
@@ -140,8 +140,6 @@ export default function AddOrder() {
       },
       body: JSON.stringify({
         retailer_id: retailerId,
-        payment_type: paymentType,
-        credit_days: creditDays,
         items,
       }),
     });
@@ -165,72 +163,71 @@ export default function AddOrder() {
         </h4>
       </div>
 
-      {/* PAYMENT */}
-      <div className="cardItem">
-        <select
-          value={paymentType}
-          onChange={(e) => setPaymentType(e.target.value)}
-        >
-          <option value="CASH">Cash</option>
-          <option value="CREDIT">Credit</option>
-        </select>
-
-        {paymentType === "CREDIT" && (
-          <input
-            type="number"
-            placeholder="Credit Days"
-            onChange={(e) => setCreditDays(e.target.value)}
-          />
-        )}
-      </div>
-
       {/* ITEMS */}
-      {items.map((item, i) => (
-        <div key={i} className="cardItem">
+      {items.map((item, i) => {
+        const product = products.find(p => p.id == item.product_id);
 
-          <div onClick={() => setShowProductIndex(i)}>
-            <p>Product</p>
-            <h4>
-              {products.find(p => p.id == item.product_id)?.name || "Select Product"}
-            </h4>
+        return (
+          <div key={i} className="cardItem">
+
+            {/* PRODUCT */}
+            <div onClick={() => setShowProductIndex(i)}>
+              <p>Product</p>
+              <h4>
+                {product?.name || "Select Product"}
+              </h4>
+            </div>
+
+            {/* QTY + UNIT */}
+            <div className="row">
+
+              <input
+                type="number"
+                value={item.qty}
+                onChange={(e) =>
+                  handleChange(i, "qty", e.target.value)
+                }
+              />
+
+              <select
+                value={item.unit}
+                onChange={(e) =>
+                  handleChange(i, "unit", e.target.value)
+                }
+              >
+                <option value={product?.unit_small}>
+                  {product?.unit_small}
+                </option>
+
+                <option value={product?.unit_big}>
+                  {product?.unit_big}
+                </option>
+              </select>
+
+            </div>
+
+            {/* PRICE */}
+            <input value={item.price} readOnly />
+
+            {/* DISCOUNTS */}
+            <div className="row">
+              <input placeholder="T%" onChange={(e) => handleChange(i, "trade_discount", e.target.value)} />
+              <input placeholder="S%" onChange={(e) => handleChange(i, "special_discount", e.target.value)} />
+              <input placeholder="C%" onChange={(e) => handleChange(i, "cash_discount", e.target.value)} />
+            </div>
+
+            {/* RESULT */}
+            <div className="highlightCard">
+              <p>
+                {item.qty} {item.unit} → {item.final_qty} {product?.unit_small}
+              </p>
+              <p>Rate: ₹ {item.net_rate?.toFixed(2)}</p>
+              <h3>₹ {Math.round(item.total)}</h3>
+            </div>
+
           </div>
-
-          <div className="row">
-            <input
-              type="number"
-              value={item.qty}
-              onChange={(e) =>
-                handleChange(i, "qty", e.target.value)
-              }
-            />
-
-            <select
-              value={item.unit}
-              onChange={(e) =>
-                handleChange(i, "unit", e.target.value)
-              }
-            >
-              <option value="PCS">PCS</option>
-              <option value="BOX">BOX</option>
-            </select>
-          </div>
-
-          <input value={item.price} readOnly />
-
-          <div className="row">
-            <input placeholder="T%" onChange={(e) => handleChange(i, "trade_discount", e.target.value)} />
-            <input placeholder="S%" onChange={(e) => handleChange(i, "special_discount", e.target.value)} />
-            <input placeholder="C%" onChange={(e) => handleChange(i, "cash_discount", e.target.value)} />
-          </div>
-
-          <div className="highlightCard">
-            <p>Final Qty: {item.final_qty}</p>
-            <p>Rate: ₹{item.net_rate?.toFixed(2)}</p>
-            <h3>₹ {Math.round(item.total)}</h3>
-          </div>
-
-        </div>
-      ))}
+        );
+      })}
 
       <button className="cardItem addBtn" onClick={addItem}>
         ➕ Add Product
@@ -245,7 +242,7 @@ export default function AddOrder() {
         Submit Order
       </button>
 
-      {/* 🔍 RETAILER MODAL */}
+      {/* RETAILER MODAL */}
       {showRetailer && (
         <div className="modal">
           <div className="modalBox">
@@ -256,10 +253,6 @@ export default function AddOrder() {
               value={searchRetailer}
               onChange={(e) => setSearchRetailer(e.target.value)}
             />
-
-            {retailers.length === 0 && (
-              <p style={{ textAlign: "center" }}>No retailers found</p>
-            )}
 
             {retailers
               .filter(r =>
@@ -272,34 +265,17 @@ export default function AddOrder() {
                   onClick={() => {
                     setRetailerId(r.id);
                     setShowRetailer(false);
-                    setSearchRetailer("");
                   }}
                 >
                   {r.business_name}
                 </div>
               ))}
 
-            <button
-              onClick={() => setShowRetailer(false)}
-              style={{
-                marginTop: 12,
-                width: "100%",
-                padding: 12,
-                borderRadius: 12,
-                border: "none",
-                background: "linear-gradient(135deg,#ef4444,#dc2626)",
-                color: "white",
-                fontWeight: "600"
-              }}
-            >
-              Close
-            </button>
-
           </div>
         </div>
       )}
 
-      {/* 🔍 PRODUCT MODAL */}
+      {/* PRODUCT MODAL */}
       {showProductIndex !== null && (
         <div className="modal">
           <div className="modalBox">
@@ -324,22 +300,6 @@ export default function AddOrder() {
                   {p.name}
                 </div>
               ))}
-
-            <button
-              onClick={() => setShowProductIndex(null)}
-              style={{
-                marginTop: 12,
-                width: "100%",
-                padding: 12,
-                borderRadius: 12,
-                border: "none",
-                background: "linear-gradient(135deg,#ef4444,#dc2626)",
-                color: "white",
-                fontWeight: "600"
-              }}
-            >
-              Close
-            </button>
 
           </div>
         </div>
